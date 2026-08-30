@@ -9,6 +9,7 @@ import { loadPantry, savePantry } from '../lib/pantry.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import { lookupIngredient } from '../lib/ingredientGuide.js'
 import CookMode from './CookMode.jsx'
+import Clock from './Clock.jsx'
 import Disclaimer from './Disclaimer.jsx'
 import MultiDishCookMode from './MultiDishCookMode.jsx'
 import WhoIsEating from './WhoIsEating.jsx'
@@ -595,7 +596,15 @@ export default function MealPlan() {
             Your family&rsquo;s kitchen brain &mdash; one plan for everyone
           </p>
         </div>
-        {plan && <p className="today">{plan.dateLabel}</p>}
+        <p className="today">
+          {plan && (
+            <>
+              {plan.dateLabel}
+              <span className="today-sep" aria-hidden="true">&middot;</span>
+            </>
+          )}
+          <Clock />
+        </p>
       </header>
 
       <main className="content">

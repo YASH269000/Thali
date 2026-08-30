@@ -1,0 +1,13 @@
+/* Sits inside .app-header .today and inherits its 13px muted treatment.
+   Tabular figures keep the width fixed so the header does not twitch once
+   a second as the digits change. */
+
+.clock {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+.today-sep {
+  margin: 0 7px;
+  opacity: 0.5;
+}

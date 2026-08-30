@@ -12,6 +12,7 @@ import {
   LIFE_STAGE_LABEL,
 } from '../data/memberOptions.js'
 import FastingCalendar from './FastingCalendar.jsx'
+import Clock from './Clock.jsx'
 import Disclaimer from './Disclaimer.jsx'
 import MemberModal from './MemberModal.jsx'
 import './FamilyProfile.css'
@@ -145,7 +146,11 @@ export default function FamilyProfile() {
             Your family&rsquo;s kitchen brain &mdash; one plan for everyone
           </p>
         </div>
-        <p className="today">{todayLabel}</p>
+        <p className="today">
+          {todayLabel}
+          <span className="today-sep" aria-hidden="true">&middot;</span>
+          <Clock />
+        </p>
       </header>
 
       <main className="content">
