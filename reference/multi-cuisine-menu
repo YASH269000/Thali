@@ -1,0 +1,288 @@
+# Thali App — Non-Indian / International Recipe Dataset (~111 dishes)
+
+## TL;DR
+- **Weight the dataset heavily toward Indo-Chinese and Italian/fast-food.** Per Swiggy's "How India Swiggy'd 2025" report (Jan 1–Nov 30, 2025), biryani was #1 with 93 million orders (10th straight year), burgers #2 at 44.2 million, and pizzas #3 at 40.1 million — so this set is **22 Indo-Chinese, 15 Italian, 20 Continental/American**, with Mexican, Thai, Middle Eastern, East Asian, desserts and beverages filling out **111 dishes total**.
+- **Fasting flags (ekadashiSafe, navratriSafe, jainSafe) are "No" for essentially every dish here** — these are grain/onion/garlic/root-vegetable-based foods, exactly what Hindu/Jain fasting excludes. That is expected and correct; the app simply won't offer them on fast days.
+- **The flags that matter — vegan, glutenFree, lactoseFree, diabeticFriendly, onionGarlicFree — are classified conservatively.** Refined-flour (maida) bases, white rice, deep-fried items and sugary desserts are marked "No" or "Partial" for diabeticFriendly, never overstated, because the app serves families with Type 1 and Type 2 diabetes.
+
+## Key Findings
+1. **Indo-Chinese is the dominant non-Indian cuisine in India.** Chinese cuisine makes up 33% of all restaurant types in India, per GlobalData's Online Menu Intelligence analysis of 12 million menu items (H1 2024) — the single largest cuisine footprint, with chicken the most-used ingredient (22% of items). Noodle bowls ranked #3 nationally on Zomato in 2023 with over 4.55 crore (45.5M) orders, and momos, manchurian, fried rice and spring rolls all sustain very high volumes. **Weight it heaviest.**
+2. **Italian (pizza + pasta) is the second pillar.** Pizza was #3 on Swiggy 2025 (40.1M orders) and #2 on Zomato 2023 (7.45 crore / 74.5M orders), per each platform's year-end report. Pasta is a major cafe category — per Swiggy's 2024 report, "A single consumer in Bengaluru spent ₹49,900 on a pasta extravaganza, devouring almost 55 Alfredo dishes, 40 Mac & Cheese, and 30 Spaghetti plates."
+3. **Fast food (burgers, fries, rolls, sandwiches) is huge.** Burgers are now #2 nationally on Swiggy (44.2M in 2025); chicken rolls and fries top the snack charts.
+4. **Korean, Mexican and Middle Eastern are the fast-rising "emerging" cuisines.** Swiggy reported a 50% year-on-year increase in Korean food orders (with Gen Z driving 27% of them); Swiggy 2025 logged Mexican at 16 million orders, Tibetan at 12 million+, and Korean at 4.7 million; and Hyderabad "ordered the most chicken shawarmas" nationally per Swiggy 2024. Include a meaningful but smaller allocation for these.
+5. **Strong vegetarian representation is essential** because a large share of Indian families are vegetarian; every cuisine block below leads with veg options and flags veg/non-veg clearly.
+6. **Diabetic-friendliness must be conservative.** White rice has a high glycemic index — Harvard Health classifies "GI of 70 or higher" as high and notes "A serving of white rice has almost the same effect as eating pure glucose"; a study in the American Journal of Clinical Nutrition found rice GI ranged from 64±9 to 93±11. Refined-flour pasta/pizza/noodles/bread sit in the moderate-high range and deep-fried/sugary items spike glucose — so these are marked No/Partial.
+
+## Details
+
+### How to read the tables
+- **Type:** V = vegetarian, NV = non-vegetarian (contains meat/fish/egg).
+- **Role:** the app plate-role (dal / rice / bread / sabzi / accompaniment / beverage / snack / dessert / main).
+- **Flags:** Y = yes, N = no, C = conditional, P = partial.
+- **Flag columns:** Vegan | GF (glutenFree) | LF (lactoseFree) | Diab (diabeticFriendly) | OGF (onionGarlicFree) | Fast (ekadashiSafe / navratriSafe / jainSafe).
+- **Fasting note:** For all 111 dishes ekadashiSafe = navratriSafe = jainSafe = **No** (grain/maida/rice-based, and/or onion-garlic and/or root vegetables). Shown as `N/N/N`. Do not offer these on fast days.
+- **"Conditional" (C)** means a simple documented swap achieves the constraint (e.g., tofu for paneer → vegan). **"Partial" (P)** for diabeticFriendly means acceptable only in small portions or with a lower-GI swap (brown rice, whole-wheat pasta).
+
+---
+
+### 1. INDO-CHINESE (22 dishes) — weight heaviest
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Veg Hakka Noodles | V | main | 3-4 | C | N | Y | N | N | N/N/N |
+| Chicken Hakka Noodles | NV | main | 3-4 | N | N | Y | N | N | N/N/N |
+| Veg Fried Rice | V | rice | 3-4 | Y | C | Y | P | N | N/N/N |
+| Schezwan Fried Rice | V | rice | 3-4 | Y | C | Y | N | N | N/N/N |
+| Chicken Fried Rice | NV | rice | 3-4 | N | C | Y | P | N | N/N/N |
+| Gobi Manchurian (dry) | V | snack | 3-4 | Y | N | Y | N | N | N/N/N |
+| Veg Manchurian (gravy) | V | accompaniment | 3-4 | Y | N | Y | N | N | N/N/N |
+| Chilli Paneer | V | snack | 3-4 | C | N | N | P | N | N/N/N |
+| Chilli Chicken | NV | main | 3-4 | N | N | Y | P | N | N/N/N |
+| Chilli Mushroom | V | snack | 3-4 | Y | N | Y | P | N | N/N/N |
+| Veg Manchow Soup | V | accompaniment | 3-4 | Y | N | Y | P | N | N/N/N |
+| Hot and Sour Soup | V | accompaniment | 3-4 | C | C | Y | P | N | N/N/N |
+| Sweet Corn Soup | V | accompaniment | 3-4 | C | C | Y | P | N | N/N/N |
+| Veg Spring Rolls | V | snack | 4 | Y | N | Y | N | N | N/N/N |
+| Honey Chilli Potato | V | snack | 3-4 | Y | N | Y | N | N | N/N/N |
+| Schezwan Noodles | V | main | 3-4 | Y | N | Y | N | N | N/N/N |
+| American Chopsuey (veg) | V | main | 3-4 | Y | N | Y | N | N | N/N/N |
+| Chicken Lollipop | NV | snack | 4 | N | N | Y | N | N | N/N/N |
+| Veg Momos (steamed) | V | snack | 4 | Y | N | Y | P | N | N/N/N |
+| Chicken Momos (steamed) | NV | snack | 4 | N | N | Y | P | N | N/N/N |
+| Chilli Garlic Fried Rice | V | rice | 3-4 | Y | C | Y | N | N | N/N/N |
+| Crispy Chilli Baby Corn | V | snack | 3-4 | Y | N | Y | N | N | N/N/N |
+
+**Ingredients (home-cook):**
+- *Veg/Chicken Hakka Noodles:* Hakka/egg noodles, cabbage, carrot, capsicum, spring onion, garlic, soy sauce, vinegar, green chilli sauce, black pepper, oil (chicken shreds for NV).
+- *Veg/Chicken/Schezwan/Chilli-Garlic Fried Rice:* cooked basmati/long-grain rice, mixed veg, spring onion, garlic, soy sauce, vinegar, pepper (schezwan sauce / extra garlic for variants; chicken for NV).
+- *Gobi/Veg Manchurian:* cauliflower or mixed-veg balls (maida + cornflour batter), onion, garlic, ginger, capsicum, soy sauce, chilli sauce, vinegar, cornflour slurry (gravy version).
+- *Chilli Paneer / Chilli Chicken / Chilli Mushroom:* paneer/chicken/mushroom, cornflour+maida coat, capsicum, onion, garlic, green chilli, soy sauce, chilli sauce, vinegar (**substitute tofu for paneer for vegan/lactose-free**).
+- *Manchow / Hot & Sour / Sweet Corn Soup:* mixed veg, garlic, ginger, soy sauce, vinegar, cornflour, pepper; fried noodles topping (manchow); sweet corn (sweet corn soup); egg optional.
+- *Spring Rolls:* maida wrappers, cabbage, carrot, noodles, soy sauce, deep-fried.
+- *Honey Chilli Potato / Crispy Chilli Baby Corn:* potato fingers / baby corn, cornflour, honey, red chilli sauce, sesame, garlic.
+- *Momos:* maida wrapper, cabbage/carrot/paneer or minced chicken, garlic, ginger, soy; steamed; served with red chilli-garlic chutney.
+- *Chicken Lollipop:* chicken winglets, maida/cornflour, red chilli, garlic, deep-fried.
+
+**Indian home-kitchen substitutions:** Paneer directly replaces tofu/chicken in chilli and manchurian dishes (the default for veg families). Readymade Ching's Schezwan chutney, soy, green-chilli and red-chilli sauces are pantry staples. For gluten-free, swap regular soy sauce for **tamari** and use rice noodles; most Indian soy sauce contains wheat. Egg is optional in soups and noodles — omit for vegan.
+
+---
+
+### 2. ITALIAN (15 dishes) — second-heaviest weight
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Margherita Pizza | V | main | 2-3 | N | N | N | N | N | N/N/N |
+| Veg Loaded Pizza | V | main | 2-3 | C | N | N | N | N | N/N/N |
+| Chicken Pizza | NV | main | 2-3 | N | N | N | N | N | N/N/N |
+| White Sauce (Alfredo) Pasta | V | main | 2-3 | N | N | N | N | N | N/N/N |
+| Red Sauce (Arrabiata) Pasta | V | main | 2-3 | C | N | C | P | N | N/N/N |
+| Pink Sauce Pasta | V | main | 2-3 | N | N | N | N | N | N/N/N |
+| Pesto Pasta | V | main | 2-3 | C | N | C | P | N | N/N/N |
+| Chicken Alfredo Pasta | NV | main | 2-3 | N | N | N | N | N | N/N/N |
+| Garlic Bread | V | bread | 4 | C | N | N | N | N | N/N/N |
+| Cheese Garlic Bread | V | bread | 4 | N | N | N | N | N | N/N/N |
+| Bruschetta | V | snack | 4 | C | N | Y | P | N | N/N/N |
+| Vegetable Lasagna | V | main | 4 | N | N | N | N | N | N/N/N |
+| Mushroom Risotto | V | rice | 3-4 | C | C | N | P | N | N/N/N |
+| Minestrone Soup | V | accompaniment | 4 | C | C | C | P | N | N/N/N |
+| Caprese Salad | V | accompaniment | 2-3 | N | Y | N | Y | Y | N/N/N |
+
+**Ingredients (home-cook):**
+- *Pizzas:* pizza base (maida) or wheat base, pizza/tomato sauce, mozzarella, capsicum, onion, corn, olives, oregano, chilli flakes (chicken/paneer topping).
+- *Pastas:* penne/spaghetti/fusilli; white sauce = butter, maida, milk, cheese; red sauce = tomato, garlic, herbs; pink = both; pesto = basil, garlic, nuts, parmesan, olive oil (chicken for NV).
+- *Garlic Bread / Bruschetta:* baguette/bread, butter or olive oil, garlic, herbs, cheese (garlic bread); fresh tomato-basil topping (bruschetta).
+- *Lasagna:* lasagna sheets, veg/white sauce, tomato sauce, cheese.
+- *Mushroom Risotto:* arborio rice, mushroom, butter, parmesan, veg stock, white wine (optional).
+- *Minestrone:* mixed veg, beans, small pasta, tomato broth. *Caprese:* tomato, mozzarella, basil, olive oil.
+
+**Indian home-kitchen substitutions:** Indian families routinely "Indianise" pasta with garam masala, extra chilli, capsicum and onion; **paneer replaces chicken** as protein. Use whole-wheat pasta or a wheat pizza base for a lower glycemic load. For vegan/lactose-free, use olive oil instead of butter and vegan/cashew cheese; skip parmesan in pesto. Note: Caprese salad is the rare onion-garlic-free savoury dish here.
+
+---
+
+### 3. CONTINENTAL / AMERICAN / CAFE FAST FOOD (20 dishes)
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Veg Burger | V | main | 2 | C | N | C | N | N | N/N/N |
+| Chicken Burger | NV | main | 2 | N | N | C | N | N | N/N/N |
+| Aloo Tikki Burger | V | main | 2 | C | N | C | N | N | N/N/N |
+| Grilled Cheese Sandwich | V | snack | 2 | N | N | N | N | Y | N/N/N |
+| Bombay Grilled Sandwich | V | snack | 2 | C | N | N | N | N | N/N/N |
+| Club Sandwich | NV | main | 2 | N | N | C | N | N | N/N/N |
+| Veg Frankie / Wrap | V | main | 2 | C | N | C | N | N | N/N/N |
+| Chicken Wrap | NV | main | 2 | N | N | C | N | N | N/N/N |
+| French Fries | V | accompaniment | 2-3 | Y | Y | Y | N | Y | N/N/N |
+| Peri Peri Fries | V | snack | 2-3 | Y | C | Y | N | N | N/N/N |
+| Mac and Cheese | V | main | 3 | N | N | N | N | C | N/N/N |
+| Vegetable au Gratin | V | main | 3 | N | N | N | N | C | N/N/N |
+| Grilled Chicken Steak | NV | main | 2 | N | C | C | Y | N | N/N/N |
+| Fish and Chips | NV | main | 2 | N | N | Y | N | C | N/N/N |
+| Caesar Salad | V/NV | accompaniment | 2-3 | N | C | N | P | N | N/N/N |
+| Coleslaw | V | accompaniment | 4 | C | Y | Y | P | Y | N/N/N |
+| French Toast | V | snack | 2 | N | N | N | N | Y | N/N/N |
+| Pancakes | V | dessert | 2-3 | C | N | C | N | Y | N/N/N |
+| Waffles | V | dessert | 2-3 | C | N | C | N | Y | N/N/N |
+| Masala Omelette | NV | main | 1-2 | N | Y | C | Y | N | N/N/N |
+
+**Ingredients (home-cook):**
+- *Burgers:* bun, veg/aloo/chicken patty, lettuce, tomato, onion, cheese, mayo, ketchup.
+- *Sandwiches:* bread, cheese, butter, veg (cucumber, tomato, onion, capsicum) + green chutney (Bombay); chicken, egg, bacon (club).
+- *Wraps/Frankie:* roti/tortilla, paneer or chicken filling, onion, sauces.
+- *Fries / Peri Peri Fries:* potato, salt (peri peri seasoning + garlic).
+- *Mac & Cheese / au Gratin:* macaroni/veg, white sauce (butter, maida, milk), cheese.
+- *Grilled Chicken Steak:* chicken breast, herbs, butter/olive oil, pepper sauce.
+- *Fish & Chips:* fish fillet, batter (maida), fries, tartar sauce.
+- *Caesar Salad:* romaine/lettuce, croutons, parmesan, creamy dressing (egg, garlic).
+- *Coleslaw:* cabbage, carrot, mayo. *French Toast:* bread, egg, milk, sugar. *Pancakes/Waffles:* maida, egg, milk, sugar, baking powder. *Omelette:* egg, onion, tomato, chilli.
+
+**Indian home-kitchen substitutions:** Aloo-tikki and paneer patties are the standard veg burger fillings. Eggless pancakes/waffles/French toast use milk + banana or curd instead of egg. Grilled chicken steak and masala omelette are the most diabetic-friendly items here (lean protein, low carb) — French fries, burgers and sandwiches on refined buns/bread are not.
+
+---
+
+### 4. MEXICAN (10 dishes) — often vegetarian-adapted in India
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Veg Tacos | V | main | 2-3 | C | C | C | P | N | N/N/N |
+| Chicken Tacos | NV | main | 2-3 | N | C | C | P | N | N/N/N |
+| Veg Burrito | V | main | 2 | C | N | C | N | N | N/N/N |
+| Burrito Bowl | V | rice | 2 | C | C | C | P | N | N/N/N |
+| Quesadilla | V | snack | 2 | N | N | N | N | N | N/N/N |
+| Loaded Nachos | V | snack | 3-4 | C | C | N | N | N | N/N/N |
+| Enchiladas | V | main | 3 | C | C | N | N | N | N/N/N |
+| Guacamole with chips | V | accompaniment | 4 | Y | C | Y | P | N | N/N/N |
+| Mexican Rice | V | rice | 3-4 | Y | Y | Y | P | N | N/N/N |
+| Refried Beans / Bean Dip | V | accompaniment | 4 | C | Y | Y | Y | N | N/N/N |
+
+**Ingredients (home-cook):** corn/flour tortillas or nacho chips; fillings = rajma/black beans, corn, capsicum, onion, tomato, cheese, jalapeño, lettuce; salsa (tomato, onion, coriander, lime); guacamole (avocado, onion, tomato, lime); refried beans; rice (Mexican rice); sour cream/hung curd; chicken for NV.
+
+**Indian home-kitchen substitutions:** Rajma often stands in for black/pinto beans; hung curd replaces sour cream; paneer or soya makes a protein filling; Indian chaat masala and mint/tamarind chutneys are frequently added (Indo-Mex). Refried beans and plain guacamole are genuinely diabetic-friendly (high-fibre legumes, healthy fats); the fried chips, large flour tortillas and white rice are not.
+
+---
+
+### 5. THAI (8 dishes)
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Thai Red Curry (veg) | V | sabzi | 3-4 | Y | C | Y | P | N | N/N/N |
+| Thai Green Curry (veg) | V | sabzi | 3-4 | Y | C | Y | P | N | N/N/N |
+| Thai Green Curry Chicken | NV | main | 3-4 | N | C | Y | P | N | N/N/N |
+| Pad Thai Noodles (veg) | V | main | 2-3 | C | C | Y | P | N | N/N/N |
+| Tom Yum Soup | V/NV | accompaniment | 3-4 | C | C | Y | Y | N | N/N/N |
+| Thai Jasmine / Sticky Rice | V | rice | 4 | Y | Y | Y | N | Y | N/N/N |
+| Pad Krapow (Thai Basil Stir Fry) | V/NV | main | 2-3 | C | C | Y | P | N | N/N/N |
+| Som Tum (Raw Papaya Salad) | V | accompaniment | 2-3 | C | C | Y | P | N | N/N/N |
+
+**Ingredients (home-cook):** coconut milk, red/green curry paste (lemongrass, galangal, kaffir lime, chilli, garlic, shallot), mixed veg/tofu/paneer/chicken, basil, fish sauce or soy; flat rice noodles, tamarind, peanuts, bean sprouts (pad thai); jasmine rice; raw papaya, lime, palm sugar, chilli (som tum); tom yum broth (lemongrass, lime, chilli, mushroom).
+
+**Indian home-kitchen substitutions:** Paneer or tofu replaces chicken; **soy sauce replaces fish sauce** for vegetarians (this also makes curries veg/vegan). Kaffir lime → lime zest; galangal → ginger. Curries themselves are moderate for diabetics but the accompanying jasmine/sticky rice is high-GI — serve smaller rice portions or with brown rice.
+
+---
+
+### 6. MIDDLE EASTERN / LEBANESE (9 dishes)
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Hummus | V | accompaniment | 4 | Y | Y | Y | Y | N | N/N/N |
+| Falafel | V | snack | 4 | Y | C | Y | P | N | N/N/N |
+| Pita Bread | V | bread | 4 | Y | N | Y | N | Y | N/N/N |
+| Chicken Shawarma | NV | main | 2-3 | N | N | C | P | N | N/N/N |
+| Falafel Wrap | V | main | 2 | C | N | C | P | N | N/N/N |
+| Baba Ganoush | V | accompaniment | 4 | Y | Y | Y | Y | N | N/N/N |
+| Tabbouleh | V | accompaniment | 4 | Y | N | Y | P | N | N/N/N |
+| Shakshuka | V (egg) | main | 2-3 | N | Y | Y | Y | N | N/N/N |
+| Baklava | V | dessert | 6-8 | C | N | C | N | Y | N/N/N |
+
+**Ingredients (home-cook):** chickpeas, tahini, garlic, lemon, olive oil (hummus); chickpeas, herbs, spices, deep-fried (falafel); roasted eggplant, tahini, garlic (baba ganoush); bulgur, parsley, tomato, onion, mint, lemon (tabbouleh); eggs poached in tomato-pepper-onion sauce (shakshuka); marinated chicken, pita, garlic-yogurt/tahini sauce (shawarma); phyllo, nuts, sugar syrup/honey (baklava).
+
+**Indian home-kitchen substitutions:** Chana (chickpeas) and Indian eggplant are already staples. Hummus, baba ganoush and shakshuka are standout diabetic-friendly, high-protein/low-carb options. For gluten-free, serve dips with cucumber/carrot sticks instead of pita; falafel is sometimes bound with a little flour, so confirm for gluten-free. Tabbouleh's bulgur is whole-grain (better than refined) but still counts as carbs.
+
+---
+
+### 7. EAST ASIAN — Japanese / Korean / Vietnamese (10 dishes)
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Veg Sushi Roll | V | snack | 2-3 | C | C | Y | P | Y | N/N/N |
+| Chicken Teriyaki | NV | main | 2-3 | N | C | Y | N | N | N/N/N |
+| Veg Ramen | V | main | 2 | C | N | Y | N | N | N/N/N |
+| Korean Fried Chicken | NV | snack | 3-4 | N | N | Y | N | N | N/N/N |
+| Kimchi Fried Rice | V | rice | 2-3 | C | C | Y | N | N | N/N/N |
+| Bibimbap | V | rice | 2 | C | C | Y | P | N | N/N/N |
+| Tteokbokki | V | snack | 2-3 | C | C | Y | N | N | N/N/N |
+| Korean Corn Cheese | V | snack | 2-3 | N | Y | N | N | C | N/N/N |
+| Vietnamese Fresh Spring Rolls | V | snack | 3-4 | C | C | Y | P | C | N/N/N |
+| Pho (Chicken) | NV | main | 2-3 | N | C | Y | P | N | N/N/N |
+
+**Ingredients (home-cook):** sushi rice, nori, cucumber/avocado/carrot, soy, wasabi (sushi); chicken, soy-based teriyaki/gochujang, sugar, garlic, ginger (teriyaki, KFC); wheat ramen noodles, broth, veg, egg (ramen); rice, kimchi, gochujang, egg (kimchi rice); rice, assorted veg, gochujang, egg (bibimbap); rice cakes, gochujang, sugar (tteokbokki); corn, mozzarella, mayo, butter (corn cheese); rice paper, veg/herbs, vermicelli (Viet rolls); rice noodles, broth, herbs (pho).
+
+**Indian home-kitchen substitutions:** Veg sushi and Vietnamese fresh rolls suit vegetarians; use paneer/tofu and lots of veg. Gochujang and Korean sauces are increasingly available in Indian metros/online; use tamari for gluten-free. Korean dishes lean sweet-and-spicy from gochujang and sugar, so most are not diabetic-friendly. Kimchi may contain fish sauce/shrimp — buy or make a vegan version for strict vegetarians.
+
+---
+
+### 8. INTERNATIONAL DESSERTS (10 dishes) — all diabeticFriendly = No
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Tiramisu | V | dessert | 6 | N | N | N | N | Y | N/N/N |
+| Baked Cheesecake | V | dessert | 8 | N | N | N | N | Y | N/N/N |
+| Chocolate Brownie | V | dessert | 8 | C | C | N | N | Y | N/N/N |
+| Churros | V | dessert | 4 | C | N | C | N | Y | N/N/N |
+| Sweet Crepes | V | dessert | 3-4 | C | N | N | N | Y | N/N/N |
+| Chocolate Lava Cake | V | dessert | 4 | C | C | N | N | Y | N/N/N |
+| Panna Cotta | V | dessert | 4 | C | Y | N | N | Y | N/N/N |
+| Chocolate Mousse | V | dessert | 4 | C | Y | N | N | Y | N/N/N |
+| Banoffee Pie | V | dessert | 8 | N | N | N | N | Y | N/N/N |
+| Caramel Custard (Crème Caramel) | V | dessert | 4-6 | N | Y | N | N | Y | N/N/N |
+
+**Ingredients (home-cook):** mascarpone/cream, coffee, ladyfingers, cocoa (tiramisu); cream cheese, biscuit base, sugar (cheesecake); chocolate, butter, eggs, flour, sugar (brownie, lava cake); maida dough fried, cinnamon-sugar (churros); flour, milk, egg, sugar, Nutella/fruit (crepes); cream, sugar, gelatin/agar (panna cotta); chocolate, cream, egg (mousse); banana, toffee/condensed milk, biscuit, cream (banoffee); egg, milk, caramelised sugar (crème caramel).
+
+**Indian home-kitchen substitutions:** Eggless versions (condensed milk, curd, or agar instead of egg/gelatin) are standard in Indian home baking. Panna cotta and mousse can be made gluten-free (no flour). All desserts are high in sugar/refined flour — keep diabeticFriendly = No and reserve for treat days.
+
+---
+
+### 9. BEVERAGES (7 dishes)
+
+| Dish | Type | Role | Serves | Vegan | GF | LF | Diab | OGF | Fast |
+|---|---|---|---|---|---|---|---|---|---|
+| Cold Coffee | V | beverage | 2 | C | Y | N | N | Y | N/N/N |
+| Chocolate Milkshake | V | beverage | 2 | C | Y | N | N | Y | N/N/N |
+| Oreo Milkshake | V | beverage | 2 | C | N | N | N | Y | N/N/N |
+| Mango Smoothie | V | beverage | 2 | C | Y | N | N | Y | N/N/N |
+| Lemon Iced Tea | V | beverage | 2-3 | Y | Y | Y | C | Y | N/N/N |
+| Virgin Mojito | V | beverage | 2 | Y | Y | Y | N | Y | N/N/N |
+| Hot Chocolate | V | beverage | 2 | C | Y | N | N | Y | N/N/N |
+
+**Ingredients (home-cook):** milk, instant coffee, sugar, ice (cold coffee); milk, chocolate syrup/cocoa, ice cream (choc/Oreo shake); mango, yogurt/milk (smoothie); black tea, lemon, sugar (iced tea); mint, lime, soda/sugar syrup (mojito); milk, cocoa, sugar (hot chocolate).
+
+**Indian home-kitchen substitutions:** All milk drinks can be made lactose-free/vegan with almond, soy or oat milk. For diabetics, use a sugar substitute and unsweetened cocoa; unsweetened iced tea/mojito is the only borderline-acceptable option. Beverages have no onion/garlic (OGF = Y) but remain non-fasting foods.
+
+---
+
+### Cuisine distribution summary
+| Cuisine | Dishes | Rationale |
+|---|---|---|
+| Indo-Chinese | 22 | Largest non-Indian footprint (33% of restaurant menus; noodles top-3 nationally) |
+| Continental / American / Cafe | 20 | Burgers #2 nationally; huge fast-food/cafe volumes |
+| Italian | 15 | Pizza #2–3 nationally; pasta a top cafe category |
+| Mexican | 10 | Fast-rising (16M orders 2025); strongly veg-adaptable |
+| East Asian (Jpn/Kor/Viet) | 10 | Emerging; Korean +50% YoY |
+| Middle Eastern / Lebanese | 9 | Strong late-night/regional performer (shawarma) |
+| Thai | 8 | Long-established; coconut-curry favourites |
+| International Desserts | 10 | Cafe/treat-day variety |
+| Beverages | 7 | Shakes/coffees/coolers for non-fast days |
+| **Total** | **111** | |
+
+## Recommendations
+1. **Import in weighted phases.** Load Indo-Chinese (22) and Italian (15) first — they are the highest-usage cuisines and will drive engagement — then Continental/American (20), then Mexican/Thai/Middle Eastern, then East Asian, desserts and beverages.
+2. **Lead with vegetarian defaults.** For every paneer/tofu-swappable dish, default the veg version and expose the non-veg as a variant, given the large vegetarian user base.
+3. **Surface the always-on health flags prominently** (vegan, glutenFree, lactoseFree, diabeticFriendly, onionGarlicFree) and treat fasting flags as day-gated (auto-hidden on Ekadashi/Navratri/fast days). Benchmark: if a user sets "diabetic" as a household constraint, the app should filter to only Y/P items and warn on P.
+4. **Encode the substitution notes as structured tips** (tofu↔paneer, tamari↔soy, soy↔fish sauce, plant-milk↔dairy, rajma↔black beans, hung curd↔sour cream) so the AI step-generator can auto-adapt recipes to a household's constraints.
+5. **Re-weight annually** against the latest Swiggy/Zomato year-end reports. Trigger to expand a cuisine: if Korean or Middle Eastern sustains >40% YoY order growth (Korean was already +50% YoY on Swiggy in 2025), promote them from "emerging" (currently 10 and 9 dishes) to a full block of 15–20.
+
+## Caveats
+- Popularity figures come from Swiggy's and Zomato's annual year-end marketing reports (self-reported, unaudited platform data) and GlobalData menu analysis. Swiggy's own 2024 release even lists its chicken-roll and burger figures inconsistently across paragraphs, so treat order counts as directional, not precise.
+- Compliance flags are conservative defaults for typical home-cook recipes; exact values shift with the specific recipe (e.g., adding egg, using tamari, swapping tofu). The app should let users override per household.
+- The diabeticFriendly flag reflects glycemic load, not calories: white rice (GI up to ~93), refined-flour bases and deep-fried/sugary items are marked No/Partial; lean-protein and legume/vegetable-forward dishes (grilled chicken steak, hummus, baba ganoush, refried beans, shakshuka, Caprese) are the genuine Yes cases. "Partial" means acceptable only in controlled portions or with a lower-GI swap (brown rice, whole-wheat pasta).
+- Jain classification is honest and strict: nearly all dishes use onion/garlic and/or root vegetables and are marked jainSafe = No; a few (Caprese, plain jasmine rice) are onion-garlic-free but still not fasting-compliant in the app's model.
+- This is a metadata dataset only — per the brief, no step-by-step cooking instructions are included, since the app generates those on demand.

@@ -297,12 +297,32 @@ const QUOTAS = {
   dinner: { dal: 14, sabzi: 20, bread: 14, rice: 8, accompaniment: 10, main: 8 },
 }
 
+// Share of each role's quota reserved for recipes that carry preparation
+// steps. The rest is drawn from everything else in that role, so the 989
+// ingredients-only imports actually reach the model.
+const FULL_PREP_SHARE = 0.6
+
+/** Random sample without replacement, RNG injectable so tests can seed it. */
+function sampleFrom(items, count, random = Math.random) {
+  if (count <= 0 || items.length === 0) return []
+  if (items.length <= count) return [...items]
+  const pool = [...items]
+  const out = []
+  for (let i = 0; i < count; i += 1) {
+    const j = Math.floor(random() * pool.length)
+    out.push(pool.splice(j, 1)[0])
+  }
+  return out
+}
+
 /**
  * Meal-type aware, role-stratified candidate selection.
  * `excludeIds` drops recently served dishes — but only while enough
  * candidates remain, so a narrow fasting day never ends up with nothing.
  */
-export function selectCandidatesForMeal(mains, mealType, { limit = 80, excludeIds = [] } = {}) {
+export function selectCandidatesForMeal(
+  mains, mealType, { limit = 80, excludeIds = [], random = Math.random } = {},
+) {
   const exclude = new Set(excludeIds)
   const eligible = mains.filter((r) => fitsMealType(r, mealType))
 
@@ -322,9 +342,26 @@ export function selectCandidatesForMeal(mains, mealType, { limit = 80, excludeId
   const picked = []
   for (const [role, quota] of Object.entries(quotas)) {
     const bucket = byRole.get(role) || []
-    // Thali Originals first — they are the only recipes with prep steps.
-    bucket.sort((a, b) => Number(b.hasFullPreparation) - Number(a.hasFullPreparation))
-    picked.push(...bucket.slice(0, quota))
+    const withSteps = bucket.filter((r) => r.hasFullPreparation)
+    const rest = bucket.filter((r) => !r.hasFullPreparation)
+
+    // Reserve most of the quota for recipes carrying preparation steps, so
+    // Cook Mode works on what comes back — but not the whole quota. Sorting
+    // steps-first and taking the top N starved whole roles of everything
+    // else: `main` had 318 ingredients-only recipes available and sent zero.
+    const targetFull = Math.round(quota * FULL_PREP_SHARE)
+    const chosenFull = withSteps.slice(0, targetFull)
+
+    // The remainder is sampled rather than sliced, so it is not always the
+    // same handful sitting at the top of the file.
+    const chosenRest = sampleFrom(rest, quota - chosenFull.length, random)
+
+    // A role short on either kind fills up from the other rather than
+    // leaving the quota unmet.
+    const shortfall = quota - chosenFull.length - chosenRest.length
+    const topUp = shortfall > 0 ? withSteps.slice(targetFull, targetFull + shortfall) : []
+
+    picked.push(...chosenFull, ...chosenRest, ...topUp)
   }
 
   // Backfill if quotas under-filled, so a thin day still offers choice.
