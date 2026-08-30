@@ -206,6 +206,8 @@ export default function CookMode({ dish, onClose }) {
       setSpeaking(false)
       voiceRef.current?.unmute()
       setNotice(res.reason)
+    } else if (res.fellBackTo) {
+      setNotice(`No ${res.requestedLabel} voice on this device — reading in English. Voice commands still work in ${res.requestedLabel}.`)
     }
   }, [shownStep, language])
 

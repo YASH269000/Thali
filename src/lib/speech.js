@@ -88,10 +88,44 @@ export async function speak(text, code, { onEnd } = {}) {
   const voice = pickVoice(voices, code)
   const lang = languageByCode(code)
 
+  // No voice for the requested language: speak the text with an English voice
+  // rather than staying silent. The words are still the translated ones, so it
+  // reads Hindi text with an English mouth — imperfect, but audible, and the
+  // microphone keeps listening in the selected language regardless.
   if (!voice) {
+    const fallback = pickVoice(voices, 'en-IN') || pickVoice(voices, 'en-US')
+      || voices.find((v) => v.lang?.toLowerCase().startsWith('en'))
+      || null
+
+    if (!fallback) {
+      return {
+        ok: false,
+        reason: `Voice not available for ${lang.label} on this device. Try installing more voices in your system settings.`,
+      }
+    }
+
+    console.warn(
+      `[Thali] No speech voice installed for ${lang.label} (${code}). ` +
+      `Falling back to English voice "${fallback.name}" (${fallback.lang}). ` +
+      'Voice recognition stays on ' + code + '.',
+    )
+
+    const fb = new window.SpeechSynthesisUtterance(clean)
+    fb.voice = fallback
+    fb.lang = fallback.lang || 'en-IN'
+    fb.rate = 0.92
+    fb.pitch = 1
+    if (onEnd) {
+      fb.onend = onEnd
+      fb.onerror = onEnd
+    }
+    window.speechSynthesis.speak(fb)
     return {
-      ok: false,
-      reason: `Voice not available for ${lang.label} on this device. Try installing more voices in your system settings.`,
+      ok: true,
+      voice: fallback.name,
+      fellBackTo: fb.lang,
+      requested: code,
+      requestedLabel: lang.label,
     }
   }
 

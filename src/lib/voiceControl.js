@@ -135,9 +135,12 @@ export function createVoiceController({ lang = 'en-IN', onCommand, onStateChange
     }
 
     // Chrome stops after silence; keep it alive while hands-free is on.
+    // recognition.lang is only read at start(), so re-apply it here: a
+    // language changed mid-session takes effect on this restart.
     r.onend = () => {
       if (!active) return
       try {
+        r.lang = currentLang
         r.start()
       } catch {
         // Already starting — the next onend will retry.
@@ -176,9 +179,17 @@ export function createVoiceController({ lang = 'en-IN', onCommand, onStateChange
     // spoken step is slow and drops the first word of the next command.
     mute() { muted = true },
     unmute() { muted = false },
+    // Applied immediately where the engine allows it, and re-applied on the
+    // next restart either way.
     setLang(next) {
       currentLang = next
-      if (active && recognition) recognition.lang = next
+      if (!active || !recognition) return
+      recognition.lang = next
+      try {
+        recognition.stop() // onend restarts it with the new lang
+      } catch {
+        // Not running yet; the pending start() already carries currentLang.
+      }
     },
     isActive: () => active,
   }
