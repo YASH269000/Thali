@@ -535,3 +535,62 @@
 
 .swap-actions { display: flex; gap: 18px; margin-top: 12px; }
 .swap-cancel { color: var(--muted); }
+
+/* ---------------------------------------------------- cuisine picker */
+
+.cuisine-picker { margin-top: 26px; padding-top: 22px; border-top: var(--rule); }
+
+.cuisine-title {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.cuisine-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.cuisine-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 16px;
+  font: inherit;
+  text-align: left;
+  border: 0.5px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.cuisine-chip:hover { border-color: var(--ink); background: var(--surface); }
+.cuisine-chip:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.cuisine-chip.is-on { background: var(--ink); border-color: var(--ink); color: #ffffff; }
+.cuisine-chip.is-on .cuisine-chip-hint { color: rgba(255, 255, 255, 0.72); }
+
+.cuisine-chip-name { font-size: 14px; font-weight: 500; }
+.cuisine-chip-hint { font-size: 11px; color: var(--muted); }
+
+.cuisine-fasting-note {
+  margin: 22px 0 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  border: 0.5px solid var(--fast-line);
+  border-radius: 8px;
+  background: var(--fast-bg);
+  color: var(--fast-ink);
+}
+
+.attendance-cuisine { color: var(--ink); font-weight: 500; }
+
+@media (max-width: 620px) {
+  .cuisine-row { flex-direction: column; }
+  .cuisine-chip { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 10px; }
+}

@@ -16,8 +16,17 @@ const STORAGE_KEY = 'thali_family'
 const RECENT_KEY = 'thali_recent_meals'
 const MEAL_TYPE_KEY = 'thali_meal_type'
 const PRESENT_KEY = 'thali_present_members'
+const CUISINE_KEY = 'thali_cuisine'
 const RECENT_LIMIT = 5
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner']
+
+const CUISINE_CHOICES = [
+  { id: 'indian', label: 'Indian', hint: 'The usual thali' },
+  { id: 'Indo-Chinese', label: 'Indo-Chinese', hint: 'Noodles, fried rice, manchurian' },
+  { id: 'Italian', label: 'Italian', hint: 'Pasta, pizza, garlic bread' },
+  { id: 'Continental', label: 'Continental', hint: 'Burgers, wraps, grills' },
+  { id: 'surprise', label: 'Surprise me', hint: 'Pick a cuisine for us' },
+]
 
 const MEAL_HINTS = {
   breakfast: 'Light morning meal',
@@ -46,6 +55,19 @@ function saveMealType(type) {
 
 // Remembered attendance, validated against the family as it stands now: a
 // member deleted since the last session must not linger in the selection.
+function loadCuisine() {
+  try {
+    const v = window.sessionStorage.getItem(CUISINE_KEY)
+    return CUISINE_CHOICES.some((c) => c.id === v) ? v : 'indian'
+  } catch {
+    return 'indian'
+  }
+}
+
+function saveCuisine(v) {
+  try { window.sessionStorage.setItem(CUISINE_KEY, v) } catch { /* not fatal */ }
+}
+
 function loadPresent(family) {
   try {
     const raw = window.sessionStorage.getItem(PRESENT_KEY)
@@ -287,6 +309,9 @@ export default function MealPlan() {
   // Kept across reopens of the attendance screen, so unchecking one child
   // does not wipe a guest list the user just typed in.
   const [guests, setGuests] = useState(loadGuests)
+  const [cuisine, setCuisine] = useState(loadCuisine)
+  // Which cuisines today's constraints can actually furnish a meal from.
+  const [cuisineInfo, setCuisineInfo] = useState(null)
   const [plan, setPlan] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -297,7 +322,7 @@ export default function MealPlan() {
   // chooser with the same choice costs nothing.
   const generatedFor = useRef(null)
 
-  const generate = useCallback(async (type, ids, guestList) => {
+  const generate = useCallback(async (type, ids, guestList, pick) => {
     // StrictMode double-invokes effects in dev; without this the screen would
     // fire two requests per view and burn the 10 RPM free-tier budget.
     if (inFlight.current) inFlight.current.abort()
@@ -316,6 +341,7 @@ export default function MealPlan() {
           guests: normaliseGuests(guestList || []),
           date: new Date().toISOString(),
           mealType: type,
+          cuisine: pick,
           recentRecipeIds: recentRecipeIds(),
         }),
         signal: controller.signal,
@@ -343,8 +369,8 @@ export default function MealPlan() {
   const guestSignature = (list) => normaliseGuests(list)
     .map((g) => `${g.restriction}:${g.count}`).sort().join(',')
 
-  const planKey = (type, ids, list) =>
-    `${type}|${[...ids].sort().join(',')}|${guestSignature(list)}`
+  const planKey = (type, ids, list, pick) =>
+    `${type}|${[...ids].sort().join(',')}|${guestSignature(list)}|${pick}`
 
   useEffect(() => {
     if (family.length === 0) {
@@ -354,14 +380,36 @@ export default function MealPlan() {
     if (stage !== 'plan' || !mealType || present.length === 0) return undefined
     // Reopening a chooser and confirming the same meal and the same people
     // must not spend another Gemini call.
-    if (generatedFor.current === planKey(mealType, present, guests)) return undefined
-    generatedFor.current = planKey(mealType, present, guests)
+    if (generatedFor.current === planKey(mealType, present, guests, cuisine)) return undefined
+    generatedFor.current = planKey(mealType, present, guests, cuisine)
     // Fetching is exactly the "synchronise with an external system" case
     // effects exist for; the setState inside is the request's loading flag.
     // oxlint-disable-next-line react/set-state-in-effect
-    generate(mealType, present, guests)
+    generate(mealType, present, guests, cuisine)
     return () => { if (inFlight.current) inFlight.current.abort() }
-  }, [family.length, mealType, present, stage, guests, generate, navigate])
+  }, [family.length, mealType, present, stage, guests, cuisine, generate, navigate])
+
+  useEffect(() => {
+    if (stage !== 'meal' || family.length === 0) return undefined
+    let cancelled = false
+    fetch('/api/cuisine-options', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        family, presentMembers: present, guests: normaliseGuests(guests),
+        date: new Date().toISOString(),
+      }),
+    })
+      .then((r) => r.json())
+      .then((d) => { if (!cancelled) setCuisineInfo(d) })
+      .catch(() => { if (!cancelled) setCuisineInfo(null) })
+    return () => { cancelled = true }
+  }, [stage, family, present, guests])
+
+  const chooseCuisine = (id) => {
+    saveCuisine(id)
+    setCuisine(id)
+  }
 
   const chooseMeal = (type) => {
     saveMealType(type)
@@ -376,8 +424,8 @@ export default function MealPlan() {
   }
 
   const regenerate = () => {
-    generatedFor.current = planKey(mealType, present, guests)
-    generate(mealType, present, guests)
+    generatedFor.current = planKey(mealType, present, guests, cuisine)
+    generate(mealType, present, guests, cuisine)
   }
 
   const changeWho = () => setStage('who')
@@ -468,6 +516,37 @@ export default function MealPlan() {
                 </button>
               ))}
             </div>
+            {/* Hidden entirely when anyone is fasting: no international option
+                exists on a fast day, so an all-disabled row would only puzzle. */}
+            {cuisineInfo && !cuisineInfo.anyFasting && (
+              <div className="cuisine-picker">
+                <p className="cuisine-title">Which cuisine?</p>
+                <div className="cuisine-row">
+                  {CUISINE_CHOICES.map((c) => {
+                    const offerable = c.id === 'indian' || c.id === 'surprise'
+                      ? (c.id === 'indian' || cuisineInfo.offerable.length > 0)
+                      : cuisineInfo.offerable.includes(c.id)
+                    if (!offerable) return null
+                    return (
+                      <button key={c.id} type="button"
+                        className={`cuisine-chip${cuisine === c.id ? ' is-on' : ''}`}
+                        onClick={() => chooseCuisine(c.id)}
+                        aria-pressed={cuisine === c.id}>
+                        <span className="cuisine-chip-name">{c.label}</span>
+                        <span className="cuisine-chip-hint">{c.hint}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {cuisineInfo?.anyFasting && (
+              <p className="cuisine-fasting-note">
+                {cuisineInfo.activeFasts.join(', ')} today &mdash; the meal stays traditional Indian.
+              </p>
+            )}
+
             {plan && (
               <button type="button" className="link-btn chooser-back"
                 onClick={() => setStage('plan')}>
@@ -513,7 +592,12 @@ export default function MealPlan() {
 
         {stage === 'plan' && plan && !loading && (
           <>
-            <p className="attendance">{attendanceLabel}</p>
+            <p className="attendance">
+              {attendanceLabel}
+              {plan.meta?.internationalCuisine && (
+                <span className="attendance-cuisine"> &middot; {plan.meta.internationalCuisine}</span>
+              )}
+            </p>
 
             {(plan.guestNotes || []).map((n) => (
               <div key={n.kind} className="guest-note">

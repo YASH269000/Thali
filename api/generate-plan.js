@@ -47,33 +47,50 @@ const MEAL_BRIEF_FASTING = {
     'than lunch: go easier on fried and heavy dishes. Aim for 3-4 dishes.',
 }
 
-const MEAL_BRIEF_OPEN = {
+// Shape guidance only — deliberately cuisine-neutral. Naming the Indian
+// structure here ("1 dal, 1 sabzi, 1 roti") made Indian the default-shaped
+// answer, and the model returned it every time even with a coherent
+// single-cuisine alternative sitting in the candidate list.
+const MEAL_SHAPE = {
   breakfast:
-    'Suggest a light, quick breakfast — Indian, or another cuisine the family ' +
-    'enjoys. Typically 1 main + 1 side (like chutney/pickle) + 1 beverage. ' +
-    'Keep it to 2-3 dishes. Do NOT return a dal-rice-roti thali; this is breakfast.',
+    'Keep it to 2-3 dishes: one main, one side, one beverage. Do NOT return a ' +
+    'dal-rice-roti thali; this is breakfast.',
   lunch:
-    'Suggest a complete lunch — the heaviest meal of the day. An Indian thali ' +
-    'is the usual choice: 1 dal, 1 rice OR roti (or both), 1-2 sabzis, ' +
-    '1 raita/salad, optional pickle. But the family also enjoys Indo-Chinese, ' +
-    'Italian and other cuisines, so a coherent non-Indian lunch is welcome ' +
-    'when the candidates suit it — do not mix cuisines incoherently in one ' +
-    'meal. Lunch is where the family eats together, so make it complete. ' +
-    'Aim for 4-5 dishes.',
+    'Aim for 4-5 dishes. Lunch is the heaviest meal and where the family eats ' +
+    'together, so make it complete.',
   dinner:
-    'Suggest a lighter dinner — Indian, Indo-Chinese, Italian, or another ' +
-    'cuisine the family enjoys. An Indian dinner is typically 1 dal, 1 sabzi, ' +
-    '1 roti/paratha and optional rice; a non-Indian dinner should be equally ' +
-    'coherent (for example noodles with a starter, or pasta with garlic bread ' +
-    'and a salad) rather than a mixture of unrelated dishes. Dinner should be ' +
-    'easier to digest than lunch: go easier on fried and heavy dishes. ' +
-    'Aim for 3-4 dishes.',
+    'Aim for 3-4 dishes. Dinner should be easier to digest than lunch: go ' +
+    'easier on fried and heavy dishes.',
+}
+
+/**
+ * Non-fast-day brief. When a coherent international cuisine is on offer the
+ * two options are stated as equals and its dishes are named outright, so the
+ * model can see a real meal exists on both sides.
+ */
+function openBrief(mealType, cuisine, intlDishes) {
+  const shape = MEAL_SHAPE[mealType] || MEAL_SHAPE.dinner
+
+  // No cuisine reserved: the family asked for Indian, or nothing else could
+  // furnish a meal today. This is the original Indian brief.
+  if (!cuisine || intlDishes.length === 0) {
+    return MEAL_BRIEF_FASTING[mealType] || MEAL_BRIEF_FASTING.dinner
+  }
+
+  // A cuisine was chosen. Instruct it — offering a choice was tried and the
+  // model returned the Indian thali nine times out of nine.
+  return `Build a complete ${cuisine} ${mealType}. The family has chosen ${cuisine} food for this meal, so do NOT return an Indian thali.
+
+Use these ${cuisine} dishes — they are the only ones that fit today's dietary constraints:
+${intlDishes.map((d) => `- ${d}`).join('\n')}
+
+Choose the ones that make a coherent ${cuisine} ${mealType} together. Every dish you return must come from this ${cuisine} list. Do not add Indian dishes to it. ${shape}`
 }
 
 function buildPrompt({
   family, constraints, mealType, dateLabel, calendarNotes, foodRules, candidates,
   recentRecipeIds, guestSummary = [], guestCount = 0, guestNotes = [], headcount,
-  anyFasting = false,
+  anyFasting = false, internationalCuisine = null, internationalDishes = [],
 }) {
   const members = constraints.map((c) => ({
     memberId: c.id,
@@ -103,7 +120,9 @@ ${guestNotes.map((n) => `- ${n.message}`).join('\n')}\n`
   return `You are the kitchen planner for an Indian joint family. Plan ONE ${mealType} for ${dateLabel} that the whole family can eat from a single kitchen.
 
 MEAL BRIEF — ${mealType.toUpperCase()}:
-${(anyFasting ? MEAL_BRIEF_FASTING : MEAL_BRIEF_OPEN)[mealType]}${anyFasting ? '\nSomeone is fasting today, so keep the whole meal traditional and Indian.' : ''}
+${anyFasting
+  ? `${MEAL_BRIEF_FASTING[mealType]}\nSomeone is fasting today, so keep the whole meal traditional and Indian.`
+  : openBrief(mealType, internationalCuisine, internationalDishes)}
 
 EATING THIS MEAL — ${family.length} ${family.length === 1 ? 'person' : 'people'}:
 ${JSON.stringify(members, null, 2)}
@@ -269,6 +288,9 @@ export default async function handler(req, res) {
   const headcount = diners.length + guestCount
 
   const mealType = MEAL_TYPES.includes(body.mealType) ? body.mealType : 'dinner'
+  // 'indian' (default) | a cuisine name | 'surprise'
+  const requestedCuisine = typeof body.cuisine === 'string' ? body.cuisine : 'indian'
+
   const recentRecipeIds = Array.isArray(body.recentRecipeIds)
     ? body.recentRecipeIds.filter((x) => typeof x === 'string').slice(0, 60)
     : []
@@ -291,9 +313,15 @@ export default async function handler(req, res) {
     })
   }
 
+  // Computed once and reused for both the candidate reservation and the
+  // meal brief, so the two can never disagree about whether today is a fast.
+  const anyFasting = constraints.some((c) => c.activeFasts.length > 0)
+
   const selection = selectCandidatesForMeal(mains, mealType, {
     limit: MAX_CANDIDATES,
     excludeIds: recentRecipeIds,
+    anyFasting,
+    forceCuisine: anyFasting ? 'indian' : requestedCuisine,
   })
 
   if (selection.candidates.length === 0) {
@@ -316,7 +344,11 @@ export default async function handler(req, res) {
   const prompt = buildPrompt({
     family: diners, constraints, mealType, dateLabel, recentRecipeIds,
     guestSummary, guestCount, guestNotes, headcount,
-    anyFasting: constraints.some((c) => c.activeFasts.length > 0),
+    anyFasting,
+    internationalCuisine: selection.internationalCuisine,
+    internationalDishes: candidates
+      .filter((c) => c.source === 'International')
+      .map((c) => `${c.name} (${c.category})`),
     calendarNotes: calendarNotesOn(date),
     foodRules: foodRulesFor(activeLabels),
     candidates,
@@ -481,6 +513,9 @@ export default async function handler(req, res) {
       eligibleForMealType: selection.eligible,
       recentExclusionApplied: selection.excludedApplied,
       recentExcludedCount: recentRecipeIds.length,
+      anyFasting,
+      internationalCandidates: candidates.filter((c) => c.source === 'International').length,
+      internationalCuisine: selection.internationalCuisine,
       candidateRoles: candidates.reduce((a, c) => {
         a[c.role] = (a[c.role] || 0) + 1
         return a

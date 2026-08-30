@@ -241,6 +241,7 @@ export function compactForPrompt(recipe) {
     cookTimeMin: recipe.cookTimeMin,
     calories: recipe.caloriesPerServing,
     hasSteps: recipe.hasFullPreparation,
+    source: recipe.source,
     ingredients: String(recipe.ingredients || '').slice(0, 220),
   }
 }
@@ -309,6 +310,70 @@ const QUOTAS = {
 // ingredients-only imports actually reach the model.
 const FULL_PREP_SHARE = 0.6
 
+// Share of each role's quota held for non-Indian dishes on ordinary days.
+// Without a reservation they compete with ~800 Indian imports for the same
+// variety slots and about two per pool survive — too few for the model to
+// assemble a coherent non-Indian meal from. Zero when anyone is fasting: a
+// pizza is never ekadashiSafe.
+const INTERNATIONAL_SHARE = 0.20
+
+// One cuisine per generation, weighted by how much Indian households actually
+// order it (the dataset's own research: Indo-Chinese is the largest non-Indian
+// cuisine footprint, Italian second, fast food third). Spreading the reserved
+// slots across cuisines produced a Thai sabzi beside Italian bread beside
+// Indo-Chinese rice — no coherent meal, so the model ignored all of it.
+const INTERNATIONAL_CUISINE_WEIGHTS = {
+  'Indo-Chinese': 35,
+  Italian: 22,
+  Continental: 18,
+  Mexican: 8,
+  Thai: 7,
+  'Middle Eastern': 5,
+  'East Asian': 5,
+}
+
+// Below this a cuisine cannot furnish a meal, so it is not worth choosing.
+const MIN_CUISINE_DISHES = 3
+
+/**
+ * Weighted pick of one international cuisine that can actually supply a meal
+ * from this pool. Returns null when none can.
+ */
+export function internationalCuisineOptions(pool, mealType) {
+  const counts = new Map()
+  for (const r of pool) {
+    if (r.source !== 'International') continue
+    if (mealType && !fitsMealType(r, mealType)) continue
+    counts.set(r.region, (counts.get(r.region) || 0) + 1)
+  }
+  return Object.keys(INTERNATIONAL_CUISINE_WEIGHTS)
+    .map((region) => ({
+      cuisine: region,
+      count: counts.get(region) || 0,
+      available: (counts.get(region) || 0) >= MIN_CUISINE_DISHES,
+    }))
+}
+
+export function pickInternationalCuisine(pool, random = Math.random) {
+  const counts = new Map()
+  for (const r of pool) {
+    if (r.source !== 'International') continue
+    counts.set(r.region, (counts.get(r.region) || 0) + 1)
+  }
+  const eligible = [...counts.entries()]
+    .filter(([region, n]) => n >= MIN_CUISINE_DISHES && INTERNATIONAL_CUISINE_WEIGHTS[region])
+    .map(([region]) => region)
+  if (eligible.length === 0) return null
+
+  const total = eligible.reduce((sum, r) => sum + INTERNATIONAL_CUISINE_WEIGHTS[r], 0)
+  let roll = random() * total
+  for (const region of eligible) {
+    roll -= INTERNATIONAL_CUISINE_WEIGHTS[region]
+    if (roll <= 0) return region
+  }
+  return eligible[eligible.length - 1]
+}
+
 /** Random sample without replacement, RNG injectable so tests can seed it. */
 function sampleFrom(items, count, random = Math.random) {
   if (count <= 0 || items.length === 0) return []
@@ -328,7 +393,13 @@ function sampleFrom(items, count, random = Math.random) {
  * candidates remain, so a narrow fasting day never ends up with nothing.
  */
 export function selectCandidatesForMeal(
-  mains, mealType, { limit = 80, excludeIds = [], random = Math.random } = {},
+  mains, mealType,
+  {
+    limit = 80, excludeIds = [], random = Math.random, anyFasting = false,
+    // 'indian' -> no international slots. A cuisine name -> that one only.
+    // 'surprise' or undefined -> weighted random pick.
+    forceCuisine = undefined,
+  } = {},
 ) {
   const exclude = new Set(excludeIds)
   const eligible = mains.filter((r) => fitsMealType(r, mealType))
@@ -339,6 +410,21 @@ export function selectCandidatesForMeal(
   const excludedApplied = trimmed.length >= MIN_POOL
 
   const quotas = QUOTAS[mealType] || QUOTAS.dinner
+
+  // All reserved slots come from this one cuisine, so the pool can furnish a
+  // meal someone would actually cook together.
+  const mealPool = pool.filter((r) => fitsMealType(r, mealType))
+  let cuisine = null
+  if (!anyFasting && forceCuisine !== 'indian') {
+    if (forceCuisine && forceCuisine !== 'surprise') {
+      // Honour the request only if that cuisine can actually furnish a meal.
+      const opt = internationalCuisineOptions(mealPool, mealType)
+        .find((o) => o.cuisine === forceCuisine)
+      cuisine = opt?.available ? forceCuisine : null
+    } else {
+      cuisine = pickInternationalCuisine(mealPool, random)
+    }
+  }
   const byRole = new Map()
   for (const r of pool) {
     const role = roleOf(r)
@@ -349,26 +435,40 @@ export function selectCandidatesForMeal(
   const picked = []
   for (const [role, quota] of Object.entries(quotas)) {
     const bucket = byRole.get(role) || []
-    const withSteps = bucket.filter((r) => r.hasFullPreparation)
-    const rest = bucket.filter((r) => !r.hasFullPreparation)
 
-    // Reserve most of the quota for recipes carrying preparation steps, so
-    // Cook Mode works on what comes back — but not the whole quota. Sorting
-    // steps-first and taking the top N starved whole roles of everything
-    // else: `main` had 318 ingredients-only recipes available and sent zero.
-    const targetFull = Math.round(quota * FULL_PREP_SHARE)
+    // Non-Indian dishes are drawn from their own reserved slice first, so a
+    // handful always reach the model rather than being crowded out.
+    const intlPool = cuisine
+      ? bucket.filter((r) => r.source === 'International' && r.region === cuisine)
+      : []
+    const domestic = bucket.filter((r) => r.source !== 'International')
+    const intlTarget = cuisine ? Math.round(quota * INTERNATIONAL_SHARE) : 0
+    const chosenIntl = sampleFrom(intlPool, intlTarget, random)
+
+    // Whatever the reservation did not use returns to the domestic quota.
+    const domesticQuota = quota - chosenIntl.length
+
+    const withSteps = domestic.filter((r) => r.hasFullPreparation)
+    const rest = domestic.filter((r) => !r.hasFullPreparation)
+
+    // Reserve most of the remaining quota for recipes carrying preparation
+    // steps, so Cook Mode works on what comes back — but not the whole quota.
+    // Sorting steps-first and taking the top N starved whole roles of
+    // everything else: `main` had 318 ingredients-only recipes available and
+    // sent zero.
+    const targetFull = Math.round(domesticQuota * FULL_PREP_SHARE)
     const chosenFull = withSteps.slice(0, targetFull)
 
     // The remainder is sampled rather than sliced, so it is not always the
     // same handful sitting at the top of the file.
-    const chosenRest = sampleFrom(rest, quota - chosenFull.length, random)
+    const chosenRest = sampleFrom(rest, domesticQuota - chosenFull.length, random)
 
-    // A role short on either kind fills up from the other rather than
-    // leaving the quota unmet.
-    const shortfall = quota - chosenFull.length - chosenRest.length
+    // A role short on any kind fills up from the others rather than leaving
+    // the quota unmet.
+    const shortfall = domesticQuota - chosenFull.length - chosenRest.length
     const topUp = shortfall > 0 ? withSteps.slice(targetFull, targetFull + shortfall) : []
 
-    picked.push(...chosenFull, ...chosenRest, ...topUp)
+    picked.push(...chosenIntl, ...chosenFull, ...chosenRest, ...topUp)
   }
 
   // Backfill if quotas under-filled, so a thin day still offers choice.
@@ -382,6 +482,7 @@ export function selectCandidatesForMeal(
 
   return {
     candidates: picked.slice(0, limit),
+    internationalCuisine: cuisine,
     eligible: eligible.length,
     excludedApplied,
     roleCounts: Object.fromEntries(
