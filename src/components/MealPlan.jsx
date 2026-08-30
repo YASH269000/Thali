@@ -6,6 +6,7 @@ import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
 import { applyPantry } from '../lib/shoppingList.js'
 import { buildShoppingList } from '../lib/shoppingList.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
+import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import { lookupIngredient } from '../lib/ingredientGuide.js'
 import CookMode from './CookMode.jsx'
 import MultiDishCookMode from './MultiDishCookMode.jsx'
@@ -180,6 +181,17 @@ function SwapIcon() {
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M4 8h13l-3-3M20 16H7l3 3" fill="none" stroke="currentColor"
         strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function WhatsAppIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 2.6a9.3 9.3 0 00-8 14.1L3 22l5.5-1.4A9.3 9.3 0 1012 2.6z"
+        fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M9 8.2c.3-.1.6 0 .8.3l.8 1.3c.2.3.1.6-.1.8l-.5.5c-.1.2-.2.4 0 .6a6 6 0 002.3 2.3c.2.1.4 0 .6-.1l.5-.5c.2-.2.5-.3.8-.1l1.3.8c.3.2.4.5.3.8-.2.7-.9 1.3-1.7 1.3-2.9 0-6.6-3.7-6.6-6.6 0-.8.6-1.5 1.5-1.4z"
+        fill="currentColor" />
     </svg>
   )
 }
@@ -768,6 +780,25 @@ export default function MealPlan() {
                     ? shopping.lines.map((item, i) => <li key={i}>{item}</li>)
                     : <li className="shopping-empty">Everything is already in your pantry.</li>}
                 </ul>
+
+                <div className="share-row">
+                  {shopping.lines.length > 0 ? (
+                    <a className="btn share-btn"
+                      href={whatsappUrl(buildShareMessage(
+                        shopping.lines, plan.mealType, plan.dateLabel,
+                      ))}
+                      target="_blank" rel="noopener noreferrer">
+                      <WhatsAppIcon /> Share on WhatsApp
+                    </a>
+                  ) : (
+                    <button type="button" className="btn share-btn" disabled>
+                      <WhatsAppIcon /> Nothing to buy
+                    </button>
+                  )}
+                  <span className="share-note">
+                    Shares what you still need &mdash; pantry items are left out.
+                  </span>
+                </div>
 
                 <Pantry items={pantry} onChange={updatePantry}
                   removedCount={shopping.removed.length} />
