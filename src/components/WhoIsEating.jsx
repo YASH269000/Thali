@@ -24,6 +24,11 @@ export default function WhoIsEating({
   const count = selected.length
   const guestCount = guestHeadcount(guests)
   const none = count === 0 && guestCount === 0
+  // Guests alone cannot carry a meal: the whole plan is built around the
+  // family's diets, health conditions and fasts, and the API rejects an empty
+  // diner list. Confirming used to be allowed here and then hung on the plan
+  // screen, so the block moved to where it can be explained.
+  const canGenerate = count > 0
 
   const toggle = (id) => {
     onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id])
@@ -185,12 +190,16 @@ export default function WhoIsEating({
 
       <div className="who-actions">
         <button type="button" className="btn btn-solid btn-block"
-          onClick={onConfirm} disabled={none}>
-          {none ? 'Generate meal' : label}
+          onClick={onConfirm} disabled={!canGenerate}>
+          {canGenerate ? label : 'Generate meal'}
         </button>
         {none && <p className="who-hint">Select at least one person</p>}
         {count === 0 && guestCount > 0 && (
-          <p className="who-hint">No family member selected — this meal is for guests only.</p>
+          <p className="who-hint">
+            Guests are counted for portions, but a meal still needs at least one
+            family member eating — the plan is built around their diets,
+            health conditions and fasts.
+          </p>
         )}
         <button type="button" className="link-btn who-back" onClick={onBack}>
           Back to meal type

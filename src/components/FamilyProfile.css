@@ -388,6 +388,14 @@
   margin-top: 24px;
 }
 
+/* The meal planner hides this bar with the `hidden` attribute while the user
+   is still choosing. `display: flex` above outranks the browser's
+   `[hidden] { display: none }`, so without this the plan's Regenerate and
+   Back-to-family buttons sat under the meal chooser. */
+.actions[hidden] {
+  display: none;
+}
+
 .actions-note {
   margin: 0;
   font-size: 12px;

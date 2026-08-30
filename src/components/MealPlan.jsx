@@ -389,8 +389,15 @@ export default function MealPlan() {
   // exception worth a tap.
   const [present, setPresent] = useState(() => loadPresent(family) || family.map((m) => m.id))
   // 'meal' -> 'who' -> 'plan'. Nothing is generated before 'plan'.
-  const [stage, setStage] = useState(() =>
-    (loadMealType() && loadPresent(family)) ? 'plan' : 'meal')
+  //
+  // Always starts at 'meal', even when this session already has a meal type
+  // and an attendance list saved. Resuming straight to 'plan' meant every
+  // visit after the first generated immediately and never asked who was
+  // eating — the step existed but you only ever saw it once, and "Change
+  // who's eating" on the plan screen became the only way back to it. The
+  // saved values are still loaded above; they now serve as pre-filled
+  // defaults on the chooser rather than as a reason to skip it.
+  const [stage, setStage] = useState('meal')
   // Kept across reopens of the attendance screen, so unchecking one child
   // does not wipe a guest list the user just typed in.
   const [guests, setGuests] = useState(loadGuests)
@@ -463,7 +470,24 @@ export default function MealPlan() {
       navigate('/', { replace: true })
       return undefined
     }
-    if (stage !== 'plan' || !mealType || present.length === 0) return undefined
+    if (stage !== 'plan') return undefined
+    // Reaching 'plan' with nothing to plan for used to return here silently.
+    // Nothing fetched, so `loading` stayed false and `planCurrent` false,
+    // which left awaitingPlan true forever: a spinner with no request behind
+    // it, no error and no timeout. Guests-only reached this every time —
+    // confirm allowed it, and the server rejects an empty diner list anyway.
+    // Any selection that cannot be planned now says why. The plan controls
+    // above stay rendered, so "Change who's eating" is the way out.
+    if (!mealType || present.length === 0) {
+      // oxlint-disable-next-line react/set-state-in-effect
+      setError(present.length === 0
+        ? {
+          error: 'Nobody from the family is eating this meal.',
+          hint: 'Thali plans around your family\u2019s diets, health conditions and fasts, so at least one family member has to be eating. Use \u201cChange who\u2019s eating\u201d to pick someone.',
+        }
+        : { error: 'Choose a meal type first.' })
+      return undefined
+    }
     // Reopening a chooser and confirming the same meal and the same people
     // must not spend another Gemini call.
     if (generatedFor.current === planKey(mealType, present, guests, cuisine)) return undefined
@@ -696,6 +720,14 @@ export default function MealPlan() {
                 Back to the {mealType} plan
               </button>
             )}
+            {/* The plan's action bar used to leak onto this screen through a
+                `hidden` attribute that CSS was overriding, and its "Back to
+                family" button was the only way off the chooser. With that
+                leak fixed the way out has to be a real control. */}
+            <button type="button" className="link-btn chooser-back"
+              onClick={() => navigate('/')}>
+              Back to family
+            </button>
           </section>
         )}
 
