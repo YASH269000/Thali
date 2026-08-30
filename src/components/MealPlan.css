@@ -668,3 +668,63 @@
 @media (max-width: 620px) {
   .share-btn { flex: 1 1 100%; justify-content: center; }
 }
+
+/* ------------------------------------------------- guest portions */
+
+.portions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: -4px 0 12px;
+  padding: 12px 14px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.portions-control { display: flex; align-items: center; gap: 12px; }
+.portions-label { font-size: 13px; font-weight: 500; }
+
+.portions-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.portions-stepper button {
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.portions-stepper button:hover:not(:disabled) { background: #f4f4ef; }
+.portions-stepper button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.portions-n {
+  min-width: 26px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.portions-reset { margin-top: 0; font-size: 12px; color: var(--muted); }
+.portions-reset:hover { color: var(--ink); }
+
+.portions-summary { margin: 0; font-size: 12px; color: var(--muted); }
+.portions-summary strong { color: var(--ink); font-weight: 600; }
+
+@media (max-width: 620px) {
+  .portions { flex-direction: column; align-items: flex-start; gap: 10px; }
+}

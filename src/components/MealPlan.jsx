@@ -22,6 +22,7 @@ const RECENT_KEY = 'thali_recent_meals'
 const MEAL_TYPE_KEY = 'thali_meal_type'
 const PRESENT_KEY = 'thali_present_members'
 const CUISINE_KEY = 'thali_cuisine'
+const EXTRA_GUESTS_KEY = 'thali_extra_guests'
 const RECENT_LIMIT = 5
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner']
 
@@ -106,6 +107,23 @@ function loadCuisine() {
 
 function saveCuisine(v) {
   try { window.sessionStorage.setItem(CUISINE_KEY, v) } catch { /* not fatal */ }
+}
+
+// Extra mouths at the table, for portions only. Separate from the guest
+// groups on the who-screen: those carry dietary restrictions and change which
+// dishes are chosen, and are already counted in plan.headcount. This number
+// only multiplies quantities on the shopping list.
+function loadExtraGuests() {
+  try {
+    const n = Number(window.sessionStorage.getItem(EXTRA_GUESTS_KEY))
+    return Number.isFinite(n) && n > 0 ? Math.min(Math.floor(n), 50) : 0
+  } catch {
+    return 0
+  }
+}
+
+function saveExtraGuests(n) {
+  try { window.sessionStorage.setItem(EXTRA_GUESTS_KEY, String(n)) } catch { /* not fatal */ }
 }
 
 function loadPresent(family) {
@@ -378,6 +396,7 @@ export default function MealPlan() {
   // Which cuisines today's constraints can actually furnish a meal from.
   const [cuisineInfo, setCuisineInfo] = useState(null)
   const [pantry, setPantry] = useState(loadPantry)
+  const [extraGuests, setExtraGuests] = useState(loadExtraGuests)
   // The planKey the plan currently in state was generated for. When the user
   // changes cuisine or meal, this no longer matches and the plan on screen is
   // known to be stale — so it is not shown as if it described the new choice.
@@ -529,7 +548,23 @@ export default function MealPlan() {
   // A change is selected but its plan has not arrived yet.
   const awaitingPlan = stage === 'plan' && !error && (loading || !planCurrent)
 
-  const shopping = applyPantry(plan?.ingredientsAggregated || [], pantry, lookupIngredient)
+  // Quantities are recomputed from the dishes rather than read off the plan,
+  // so extra guests scale the list through the same serve-based arithmetic the
+  // server uses — tempering, oil and ghee stay constant, as they do there.
+  const baseServings = plan?.headcount || 1
+  const totalServings = baseServings + extraGuests
+  const baseLines = plan?.dishes?.length
+    ? buildShoppingList(plan.dishes, totalServings)
+    : (plan?.ingredientsAggregated || [])
+
+  const shopping = applyPantry(baseLines, pantry, lookupIngredient)
+
+  // Named apart from setGuests, which owns the who-screen guest groups.
+  const changeExtraGuests = (n) => {
+    const next = Math.max(0, Math.min(50, Math.floor(n) || 0))
+    setExtraGuests(next)
+    saveExtraGuests(next)
+  }
 
   const updatePantry = (next) => {
     setPantry(next)
@@ -771,6 +806,32 @@ export default function MealPlan() {
             {plan.ingredientsAggregated?.length > 0 && (
               <>
                 <h2 className="section-heading">Shopping list</h2>
+                <div className="portions">
+                  <div className="portions-control">
+                    <span className="portions-label">Guests coming</span>
+                    <span className="portions-stepper">
+                      <button type="button" aria-label="One fewer guest"
+                        onClick={() => changeExtraGuests(extraGuests - 1)}
+                        disabled={extraGuests === 0}>&minus;</button>
+                      <span className="portions-n">{extraGuests}</span>
+                      <button type="button" aria-label="One more guest"
+                        onClick={() => changeExtraGuests(extraGuests + 1)}>+</button>
+                    </span>
+                    {extraGuests > 0 && (
+                      <button type="button" className="link-btn portions-reset"
+                        onClick={() => changeExtraGuests(0)}>Reset</button>
+                    )}
+                  </div>
+                  <p className="portions-summary">
+                    {extraGuests > 0
+                      ? <>Quantities scaled for <strong>{totalServings}</strong>{' '}
+                          &mdash; {baseServings} eating plus {extraGuests}{' '}
+                          {extraGuests === 1 ? 'guest' : 'guests'}.</>
+                      : <>Quantities are for <strong>{baseServings}</strong>{' '}
+                          {baseServings === 1 ? 'person' : 'people'}.</>}
+                  </p>
+                </div>
+
                 <p className="pantry-note">
                   Not shown: everyday staples (water, salt, oil, basic spices).
                   This list assumes you already have these.
