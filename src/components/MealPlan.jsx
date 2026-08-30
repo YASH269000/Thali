@@ -59,6 +59,17 @@ function saveMealType(type) {
 
 // Remembered attendance, validated against the family as it stands now: a
 // member deleted since the last session must not linger in the selection.
+// Identity of a plan: the inputs that determine it. Used both to skip a
+// redundant regeneration and to tell whether the plan on screen still
+// describes what the user currently has selected.
+function guestSignature(list) {
+  return normaliseGuests(list).map((g) => `${g.restriction}:${g.count}`).sort().join(',')
+}
+
+function planKey(type, ids, list, pick) {
+  return `${type}|${[...ids].sort().join(',')}|${guestSignature(list)}|${pick}`
+}
+
 function loadCuisine() {
   try {
     const v = window.sessionStorage.getItem(CUISINE_KEY)
@@ -317,6 +328,10 @@ export default function MealPlan() {
   // Which cuisines today's constraints can actually furnish a meal from.
   const [cuisineInfo, setCuisineInfo] = useState(null)
   const [pantry, setPantry] = useState(loadPantry)
+  // The planKey the plan currently in state was generated for. When the user
+  // changes cuisine or meal, this no longer matches and the plan on screen is
+  // known to be stale — so it is not shown as if it described the new choice.
+  const [planKeyOf, setPlanKeyOf] = useState(null)
   const [plan, setPlan] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -357,6 +372,7 @@ export default function MealPlan() {
         setPlan(null)
       } else {
         setPlan(data)
+        setPlanKeyOf(planKey(type, ids, guestList || [], pick))
         rememberMeal(type, data.dishes.map((d) => d.recipeId))
       }
     } catch (err) {
@@ -370,12 +386,6 @@ export default function MealPlan() {
       }
     }
   }, [family])
-
-  const guestSignature = (list) => normaliseGuests(list)
-    .map((g) => `${g.restriction}:${g.count}`).sort().join(',')
-
-  const planKey = (type, ids, list, pick) =>
-    `${type}|${[...ids].sort().join(',')}|${guestSignature(list)}|${pick}`
 
   useEffect(() => {
     if (family.length === 0) {
@@ -414,6 +424,11 @@ export default function MealPlan() {
   const chooseCuisine = (id) => {
     saveCuisine(id)
     setCuisine(id)
+    // Changing cuisine on the chooser used to leave the user there with no
+    // sign anything had happened: the generation effect is gated on
+    // stage === 'plan', so nothing regenerated until they navigated back.
+    // Returning to the plan lets it run immediately, loading state and all.
+    if (plan) setStage('plan')
   }
 
   const chooseMeal = (type) => {
@@ -451,6 +466,13 @@ export default function MealPlan() {
 
   // Shopping-list only: the pantry never touches meal generation, so a family
   // that already has paneer still gets paneer dishes suggested.
+  // True only while the plan in state matches what is currently selected.
+  // Both the thali visual and the shopping list read this same plan object,
+  // which is why they went stale together.
+  const planCurrent = Boolean(plan) && planKeyOf === planKey(mealType, present, guests, cuisine)
+  // A change is selected but its plan has not arrived yet.
+  const awaitingPlan = stage === 'plan' && !error && (loading || !planCurrent)
+
   const shopping = applyPantry(plan?.ingredientsAggregated || [], pantry, lookupIngredient)
 
   const updatePantry = (next) => {
@@ -583,7 +605,7 @@ export default function MealPlan() {
           />
         )}
 
-        {stage === 'plan' && loading && (
+        {awaitingPlan && (
           <div className="loading-state" role="status" aria-live="polite">
             <p className="loading-title">Thinking through your family&rsquo;s kitchen&hellip;</p>
             <p className="loading-body">
@@ -604,7 +626,7 @@ export default function MealPlan() {
           </div>
         )}
 
-        {stage === 'plan' && plan && !loading && (
+        {stage === 'plan' && plan && planCurrent && !loading && (
           <>
             <p className="attendance">
               {attendanceLabel}
@@ -733,7 +755,7 @@ export default function MealPlan() {
         )}
 
         <div className="actions" hidden={stage !== 'plan'}>
-          {plan && !loading && plan.dishes.length > 1 && (
+          {plan && planCurrent && !loading && plan.dishes.length > 1 && (
             <button type="button" className="btn btn-cook btn-block"
               onClick={() => setWholeMeal(true)}>
               <PlayIcon /> Cook the whole meal
