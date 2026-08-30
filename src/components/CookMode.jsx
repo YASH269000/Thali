@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { formatDuration, parseStep, splitSteps } from '../lib/timerParser.js'
 import { LANGUAGES, cancel as cancelSpeech, languageByCode, playChime, speak } from '../lib/speech.js'
+import { createVoiceController, isVoiceSupported } from '../lib/voiceControl.js'
 import IngredientText from './IngredientPopover.jsx'
 import './CookMode.css'
 
@@ -27,6 +28,16 @@ const CloseIcon = () => <Icon d="M6 6l12 12M18 6L6 18" />
 const PrevIcon = () => <Icon d="M14.5 6l-6 6 6 6" />
 const NextIcon = () => <Icon d="M9.5 6l6 6-6 6" />
 const ChevronUp = () => <Icon d="M6.5 14.5l5.5-5 5.5 5" />
+
+function MicIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor" />
+      <path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v3" fill="none" stroke="currentColor"
+        strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  )
+}
 
 /* ------------------------------------------------------------------ *
  * Ingredients                                                         *
@@ -122,7 +133,13 @@ export default function CookMode({ dish, onClose }) {
   const [activeTimer, setActiveTimer] = useState(null)
   const [generatedSteps, setGeneratedSteps] = useState(null)
   const [generating, setGenerating] = useState(false)
+  const [handsFree, setHandsFree] = useState(false)
+  const [heard, setHeard] = useState(null)
   const contentRef = useRef(null)
+  const voiceRef = useRef(null)
+  const commandRef = useRef(null)
+  const autoReadRef = useRef(false)
+  const startTimerRef = useRef(null)
 
   const baseSteps = useMemo(() => {
     if (dish.hasFullPreparation && dish.preparation) return splitSteps(dish.preparation)
@@ -176,9 +193,18 @@ export default function CookMode({ dish, onClose }) {
   const readAloud = useCallback(async () => {
     setNotice(null)
     setSpeaking(true)
-    const res = await speak(shownStep, language, { onEnd: () => setSpeaking(false) })
+    // Mute rather than stop: the microphone would otherwise hear the app's
+    // own voice and trigger its own commands.
+    voiceRef.current?.mute()
+    const res = await speak(shownStep, language, {
+      onEnd: () => {
+        setSpeaking(false)
+        voiceRef.current?.unmute()
+      },
+    })
     if (!res.ok) {
       setSpeaking(false)
+      voiceRef.current?.unmute()
       setNotice(res.reason)
     }
   }, [shownStep, language])
@@ -209,6 +235,62 @@ export default function CookMode({ dish, onClose }) {
 
   useEffect(() => () => cancelSpeech(), [])
 
+  /* ---- hands-free voice control ---- */
+
+  const handleCommand = (cmd, transcript) => {
+    setHeard(transcript || cmd)
+    if (cmd === 'next') {
+      if (isLast) close()
+      else { autoReadRef.current = true; goTo(stepIndex + 1) }
+    } else if (cmd === 'previous') {
+      autoReadRef.current = true
+      goTo(stepIndex - 1)
+    } else if (cmd === 'repeat') {
+      readAloud()
+    } else if (cmd === 'timer') {
+      const first = parsed.timers[0]
+      if (first) startTimerRef.current(first)
+      else setNotice('This step has no timer.')
+    } else if (cmd === 'ingredients') {
+      setDrawerOpen((o) => !o)
+    } else if (cmd === 'stop') {
+      setHandsFree(false)
+    }
+  }
+
+  // Kept in refs so the recogniser is never rebuilt mid-session, and so the
+  // handler always sees the current step rather than a stale closure.
+  useEffect(() => { commandRef.current = handleCommand })
+
+  useEffect(() => {
+    if (!heard) return undefined
+    const id = setTimeout(() => setHeard(null), 2200)
+    return () => clearTimeout(id)
+  }, [heard])
+
+  useEffect(() => {
+    if (!handsFree) {
+      voiceRef.current?.stop()
+      voiceRef.current = null
+      return undefined
+    }
+    const controller = createVoiceController({
+      lang: language,
+      onCommand: (cmd, transcript) => commandRef.current?.(cmd, transcript),
+      onError: (msg) => { setNotice(msg); setHandsFree(false) },
+    })
+    voiceRef.current = controller
+    controller.start()
+    return () => { controller.stop(); voiceRef.current = null }
+  }, [handsFree, language])
+
+  // Advancing by voice reads the new step without being asked.
+  useEffect(() => {
+    if (!handsFree || !autoReadRef.current) return
+    autoReadRef.current = false
+    readAloud()
+  }, [stepIndex, handsFree, readAloud])
+
   /* ---- generate steps for INDB recipes ---- */
   const generateSteps = async () => {
     setGenerating(true)
@@ -237,6 +319,8 @@ export default function CookMode({ dish, onClose }) {
     try { window.Notification?.requestPermission?.() } catch { /* ignore */ }
     setActiveTimer(timer)
   }
+  useEffect(() => { startTimerRef.current = startTimer })
+
 
   const toggleIngredient = (item) => {
     setChecked((prev) => {
@@ -267,6 +351,19 @@ export default function CookMode({ dish, onClose }) {
               ))}
             </select>
           </label>
+          <button type="button"
+            className={`ck-mic-toggle${handsFree ? ' is-on' : ''}`}
+            onClick={() => {
+              if (!handsFree && !isVoiceSupported()) {
+                setNotice('Voice control is not available in this browser. Try Chrome on desktop or Android.')
+                return
+              }
+              setHandsFree((v) => !v)
+            }}
+            aria-pressed={handsFree}>
+            <MicIcon />
+            <span className="ck-mic-text">{handsFree ? 'Listening' : 'Hands-free'}</span>
+          </button>
           <button type="button" className="ck-icon-btn" onClick={close} aria-label="Close cook mode">
             <CloseIcon />
           </button>
@@ -327,6 +424,13 @@ export default function CookMode({ dish, onClose }) {
           </>
         )}
 
+        {handsFree && total > 0 && (
+          <p className="ck-voice-hint">
+            Say &ldquo;next&rdquo; for the next step, &ldquo;repeat&rdquo; to hear it again,
+            &ldquo;timer&rdquo;, &ldquo;ingredients&rdquo;, or &ldquo;stop&rdquo;.
+          </p>
+        )}
+
         {notice && <p className="ck-notice" role="status">{notice}</p>}
       </main>
 
@@ -369,6 +473,19 @@ export default function CookMode({ dish, onClose }) {
               ))}
             </ul>
           )}
+        </div>
+      )}
+
+      {heard && (
+        <div className="ck-heard" role="status" aria-live="polite">
+          Heard: {heard}
+        </div>
+      )}
+
+      {handsFree && (
+        <div className="ck-mic-dot" aria-hidden="true">
+          <span className={`ck-mic-pulse${speaking ? ' is-muted' : ''}`} />
+          <MicIcon />
         </div>
       )}
 

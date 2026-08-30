@@ -495,3 +495,43 @@
   line-height: 1.5;
   color: var(--muted);
 }
+
+/* ------------------------------------------------------- dish swap */
+
+.swap-link { display: inline-flex; align-items: center; gap: 6px; }
+.swap-link svg { width: 14px; height: 14px; }
+
+.swap-picker {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: var(--rule);
+}
+
+.swap-prompt { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.swap-none { margin: 0; font-size: 13px; color: var(--muted); }
+
+.swap-options { display: flex; flex-direction: column; gap: 8px; }
+
+.swap-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 11px 13px;
+  font: inherit;
+  text-align: left;
+  border: 0.5px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.swap-option:hover { border-color: var(--ink); background: var(--surface); }
+.swap-option:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.swap-option-name { font-size: 14px; font-weight: 500; }
+.swap-option-meta { font-size: 12px; color: var(--muted); }
+
+.swap-actions { display: flex; gap: 18px; margin-top: 12px; }
+.swap-cancel { color: var(--muted); }

@@ -374,6 +374,39 @@ export default async function handler(req, res) {
     }
   })
 
+  // Alternates for in-place dish swapping. Only the roles actually on the
+  // plate, 12 each, so the payload stays around 70 KB instead of shipping the
+  // whole 1.8 MB database to the browser.
+  const planRoles = [...new Set(dishes.map((d) => roleOf(byId.get(d.recipeId) || {})))]
+  const onPlate = new Set(dishes.map((d) => d.recipeId))
+  const alternates = {}
+  for (const role of planRoles) {
+    alternates[role] = mains
+      .filter((r) => roleOf(r) === role && !onPlate.has(r.recipeId))
+      .slice(0, 12)
+      .map((r) => ({
+        recipeId: r.recipeId,
+        name: r.name,
+        role,
+        hindiName: r.hindiName || '',
+        category: r.category || '',
+        region: r.region || '',
+        serves: r.serves ?? null,
+        prepTimeMin: r.prepTimeMin ?? null,
+        cookTimeMin: r.cookTimeMin ?? null,
+        difficulty: r.difficulty || null,
+        caloriesPerServing: r.caloriesPerServing ?? null,
+        ingredients: r.ingredients || '',
+        preparation: r.preparation || null,
+        tips: r.tips || null,
+        hasFullPreparation: Boolean(r.hasFullPreparation),
+        source: r.source || null,
+        flags: r.flags || null,
+        known: true,
+        why: '',
+      }))
+  }
+
   const possibleSwaps = swaps.slice(0, 12).map(({ recipe, modifications }) => ({
     recipeId: recipe.recipeId,
     name: recipe.name,
@@ -406,6 +439,7 @@ export default async function handler(req, res) {
     ),
     planSummary: plan.planSummary || '',
     possibleSwaps,
+    alternates,
     meta: {
       model: MODEL,
       candidatesSent: candidates.length,

@@ -527,3 +527,103 @@
   color: var(--muted);
   text-align: center;
 }
+
+/* ------------------------------------------------------ hands-free */
+
+.ck-mic-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 15px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.ck-mic-toggle:hover { background: #f4f4ef; color: var(--ink); }
+.ck-mic-toggle svg { width: 18px; height: 18px; }
+
+.ck-mic-toggle.is-on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+
+.ck-voice-hint {
+  max-width: 560px;
+  margin: 22px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Confirmation of what was heard, so a misfire is visible. */
+.ck-heard {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  z-index: 105;
+  padding: 9px 16px;
+  font-size: 13px;
+  border: var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  white-space: nowrap;
+  max-width: calc(100vw - 40px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ck-mic-dot {
+  position: fixed;
+  right: 20px;
+  bottom: 96px;
+  z-index: 104;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.ck-mic-dot svg { width: 20px; height: 20px; position: relative; }
+
+/* Ring pulses while listening; goes still while the app is speaking, so the
+   cook can see the microphone is muted rather than ignoring them. */
+.ck-mic-pulse {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  animation: ck-pulse 1.9s ease-out infinite;
+}
+
+.ck-mic-pulse.is-muted { animation: none; opacity: 0.25; }
+
+@keyframes ck-pulse {
+  0%   { transform: scale(1);    opacity: 0.55; }
+  70%  { transform: scale(1.45); opacity: 0; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ck-mic-pulse { animation: none; opacity: 0.5; }
+}
+
+@media (max-width: 620px) {
+  .ck-mic-text { display: none; }
+  .ck-mic-toggle { padding: 0 12px; }
+  .ck-mic-dot { width: 42px; height: 42px; bottom: 88px; right: 14px; }
+}

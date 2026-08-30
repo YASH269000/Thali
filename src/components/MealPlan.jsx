@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loadGuests, normaliseGuests, saveGuests } from '../lib/guests.js'
 import { displayName } from '../lib/names.js'
+import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
+import { buildShoppingList } from '../lib/shoppingList.js'
 import CookMode from './CookMode.jsx'
 import MultiDishCookMode from './MultiDishCookMode.jsx'
 import WhoIsEating from './WhoIsEating.jsx'
@@ -112,6 +114,15 @@ function rememberMeal(mealType, recipeIds) {
   }
 }
 
+function SwapIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M4 8h13l-3-3M20 16H7l3 3" fill="none" stroke="currentColor"
+        strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function PlayIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -130,9 +141,18 @@ function loadFamily() {
   }
 }
 
-function DishCard({ dish, onStartCooking }) {
+function DishCard({ dish, onStartCooking, alternates, onSwap, recentIds }) {
   const [open, setOpen] = useState(false)
+  const [swapping, setSwapping] = useState(false)
+  const [offset, setOffset] = useState(0)
   const time = [dish.prepTimeMin, dish.cookTimeMin].filter((n) => typeof n === 'number')
+
+  const picked = pickAlternatives(alternates, {
+    excludeIds: [dish.recipeId],
+    recentIds,
+    offset,
+    seed: dish.recipeId,
+  })
   const totalTime = time.length ? time.reduce((a, b) => a + b, 0) : null
 
   return (
@@ -173,7 +193,52 @@ function DishCard({ dish, onStartCooking }) {
           aria-expanded={open}>
           {open ? 'Hide recipe' : 'See full recipe'}
         </button>
+        {picked.total > 0 && (
+          <button type="button" className="link-btn swap-link"
+            onClick={() => { setSwapping((v) => !v); setOffset(0) }}
+            aria-expanded={swapping}>
+            <SwapIcon /> Swap
+          </button>
+        )}
       </div>
+
+      {swapping && (
+        <div className="swap-picker">
+          <p className="swap-prompt">Replace {dish.name} with:</p>
+          {picked.options.length === 0 ? (
+            <p className="swap-none">No other {dish.role || 'dish'} fits today&rsquo;s constraints.</p>
+          ) : (
+            <div className="swap-options">
+              {picked.options.map((alt) => (
+                <button key={alt.recipeId} type="button" className="swap-option"
+                  onClick={() => { onSwap(dish.recipeId, alt); setSwapping(false) }}>
+                  <span className="swap-option-name">{alt.name}</span>
+                  <span className="swap-option-meta">
+                    {[
+                      alt.prepTimeMin != null && alt.cookTimeMin != null
+                        ? `${alt.prepTimeMin + alt.cookTimeMin} min` : null,
+                      alt.region,
+                      alt.hasFullPreparation ? 'full recipe' : 'ingredients only',
+                    ].filter(Boolean).join(' · ')}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="swap-actions">
+            {picked.hasMore && (
+              <button type="button" className="link-btn"
+                onClick={() => setOffset((o) => o + 3)}>
+                Show more options
+              </button>
+            )}
+            <button type="button" className="link-btn swap-cancel"
+              onClick={() => setSwapping(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {open && (
         <div className="dish-detail">
@@ -316,6 +381,20 @@ export default function MealPlan() {
   }
 
   const changeWho = () => setStage('who')
+
+  const handleSwap = (outgoingId, incoming) => {
+    setPlan((prev) => {
+      if (!prev) return prev
+      const dishes = swapDish(prev.dishes, outgoingId, incoming)
+      return {
+        ...prev,
+        dishes,
+        // The list is computed from the recipes, so a swap recalculates it
+        // exactly — no stale quantities from the dish that left.
+        ingredientsAggregated: buildShoppingList(dishes, prev.headcount || 1),
+      }
+    })
+  }
 
   const presentMembers = family.filter((m) => present.includes(m.id))
   const presentNames = presentMembers.map((m) => displayName(m.name))
@@ -472,7 +551,10 @@ export default function MealPlan() {
             <h2 className="section-heading">The plan</h2>
             <ul className="dish-list">
               {plan.dishes.map((d) => (
-                <DishCard key={d.recipeId} dish={d} onStartCooking={setCookingDish} />
+                <DishCard key={d.recipeId} dish={d} onStartCooking={setCookingDish}
+                  alternates={plan.alternates?.[d.role] || []}
+                  recentIds={recentRecipeIds()}
+                  onSwap={handleSwap} />
               ))}
             </ul>
 
