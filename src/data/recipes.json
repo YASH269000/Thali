@@ -62123,5 +62123,615 @@
       }
     },
     "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT086",
+    "name": "Veg Tacos",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Mexican",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "taco shells (corn), rajma or black beans, onion, tomato, capsicum, lettuce, cheese, jalapeño, lime, coriander",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    }
+  },
+  {
+    "recipeId": "INT087",
+    "name": "Chicken Tacos",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Mexican",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "taco shells (corn), shredded chicken, onion, tomato, capsicum, lettuce, cheese, jalapeño, lime, coriander",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "C",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "dietKind": "non_veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    }
+  },
+  {
+    "recipeId": "INT088",
+    "name": "Veg Burrito",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Mexican",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flour tortilla, rajma or black beans, rice, onion, capsicum, corn, cheese, salsa, sour cream or hung curd",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    }
+  },
+  {
+    "recipeId": "INT089",
+    "name": "Burrito Bowl",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "Mexican",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "rice, rajma or black beans, corn, capsicum, onion, tomato, lettuce, cheese, salsa, lime",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    }
+  },
+  {
+    "recipeId": "INT090",
+    "name": "Quesadilla",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Mexican",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flour tortilla, cheese, capsicum, onion, jalapeño, salsa",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    }
+  },
+  {
+    "recipeId": "INT091",
+    "name": "Loaded Nachos",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Mexican",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "nacho chips, rajma or black beans, cheese, tomato, onion, jalapeño, sour cream or hung curd, salsa",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    }
+  },
+  {
+    "recipeId": "INT092",
+    "name": "Enchiladas",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Mexican",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "corn tortillas, rajma or black beans, cheese, tomato-chilli sauce, onion, capsicum",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    }
+  },
+  {
+    "recipeId": "INT093",
+    "name": "Guacamole with chips",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Mexican",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "avocado, onion, tomato, lime, coriander, green chilli, nacho chips",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    }
+  },
+  {
+    "recipeId": "INT094",
+    "name": "Mexican Rice",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "Mexican",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "rice, tomato, onion, garlic, capsicum, corn, cumin, coriander",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    }
+  },
+  {
+    "recipeId": "INT095",
+    "name": "Refried Beans / Bean Dip",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Mexican",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "rajma or pinto beans, onion, garlic, cumin, oil, cheese optional",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Mexican",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "Y",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "dietKind": "veg",
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    }
   }
 ]
