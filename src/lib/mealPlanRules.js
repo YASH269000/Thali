@@ -30,6 +30,13 @@ const EGG_RE = /\b(egg|eggs|omelet|omelette|anda|ande|bhurji)\b/i
 
 /** 'non_veg' | 'egg' | 'veg' — the most restrictive category a recipe fits. */
 export function dietKind(recipe) {
+  // An explicit dietKind on the record always wins. Imported international
+  // dishes carry one, because keyword inference cannot tell that "Pad Thai",
+  // "Bibimbap", "Carbonara" or "Pho" contain meat — nothing in those names
+  // says so, and a vegetarian must never be served one by accident.
+  const explicit = recipe.dietKind
+  if (explicit === 'veg' || explicit === 'egg' || explicit === 'non_veg') return explicit
+
   const blob = `${recipe.name || ''} ${recipe.ingredients || ''}`
   if (MEAT_RE.test(blob)) return 'non_veg'
   if (EGG_RE.test(blob)) return 'egg'

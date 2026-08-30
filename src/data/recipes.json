@@ -56938,5 +56938,5190 @@
         "note": "Yes"
       }
     }
+  },
+  {
+    "recipeId": "INT001",
+    "name": "Veg Hakka Noodles",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "Hakka/egg noodles, cabbage, carrot, capsicum, spring onion, garlic, soy sauce, vinegar, green chilli sauce, black pepper, oil (chicken shreds for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT002",
+    "name": "Chicken Hakka Noodles",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "Hakka/egg noodles, cabbage, carrot, capsicum, spring onion, garlic, soy sauce, vinegar, green chilli sauce, black pepper, oil (chicken shreds for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT003",
+    "name": "Veg Fried Rice",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "cooked basmati/long-grain rice, mixed veg, spring onion, garlic, soy sauce, vinegar, pepper (schezwan sauce / extra garlic for variants; chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT004",
+    "name": "Schezwan Fried Rice",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "cooked basmati/long-grain rice, mixed veg, spring onion, garlic, soy sauce, vinegar, pepper (schezwan sauce / extra garlic for variants; chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT005",
+    "name": "Chicken Fried Rice",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "cooked basmati/long-grain rice, mixed veg, spring onion, garlic, soy sauce, vinegar, pepper (schezwan sauce / extra garlic for variants; chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT006",
+    "name": "Gobi Manchurian (dry)",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "cauliflower or mixed-veg balls (maida + cornflour batter), onion, garlic, ginger, capsicum, soy sauce, chilli sauce, vinegar, cornflour slurry (gravy version)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT007",
+    "name": "Chilli Mushroom",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "paneer/chicken/mushroom, cornflour+maida coat, capsicum, onion, garlic, green chilli, soy sauce, chilli sauce, vinegar (",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT008",
+    "name": "Veg Manchow Soup",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "mixed veg, garlic, ginger, soy sauce, vinegar, cornflour, pepper; fried noodles topping (manchow); sweet corn (sweet corn soup); egg optional",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT009",
+    "name": "Veg Spring Rolls",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "maida wrappers, cabbage, carrot, noodles, soy sauce, deep-fried",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT010",
+    "name": "Honey Chilli Potato",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "potato fingers / baby corn, cornflour, honey, red chilli sauce, sesame, garlic",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT011",
+    "name": "Schezwan Noodles",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "Hakka/egg noodles, cabbage, carrot, capsicum, spring onion, garlic, soy sauce, vinegar, green chilli sauce, black pepper, oil (chicken shreds for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT012",
+    "name": "Chicken Lollipop",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chicken winglets, maida/cornflour, red chilli, garlic, deep-fried",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT013",
+    "name": "Veg Momos (steamed)",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "maida wrapper, cabbage/carrot/paneer or minced chicken, garlic, ginger, soy; steamed; served with red chilli-garlic chutney",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT014",
+    "name": "Chicken Momos (steamed)",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "maida wrapper, cabbage/carrot/paneer or minced chicken, garlic, ginger, soy; steamed; served with red chilli-garlic chutney",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT015",
+    "name": "Chilli Garlic Fried Rice",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "cooked basmati/long-grain rice, mixed veg, spring onion, garlic, soy sauce, vinegar, pepper (schezwan sauce / extra garlic for variants; chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT016",
+    "name": "Crispy Chilli Baby Corn",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "potato fingers / baby corn, cornflour, honey, red chilli sauce, sesame, garlic",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Indo-Chinese",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT017",
+    "name": "Margherita Pizza",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "pizza base (maida) or wheat base, pizza/tomato sauce, mozzarella, capsicum, onion, corn, olives, oregano, chilli flakes (chicken/paneer topping)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT018",
+    "name": "Veg Loaded Pizza",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "pizza base (maida) or wheat base, pizza/tomato sauce, mozzarella, capsicum, onion, corn, olives, oregano, chilli flakes (chicken/paneer topping)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT019",
+    "name": "Chicken Pizza",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "pizza base (maida) or wheat base, pizza/tomato sauce, mozzarella, capsicum, onion, corn, olives, oregano, chilli flakes (chicken/paneer topping)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT020",
+    "name": "White Sauce (Alfredo) Pasta",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "penne/spaghetti/fusilli; white sauce = butter, maida, milk, cheese; red sauce = tomato, garlic, herbs; pink = both; pesto = basil, garlic, nuts, parmesan, olive oil (chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT021",
+    "name": "Red Sauce (Arrabiata) Pasta",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "penne/spaghetti/fusilli; white sauce = butter, maida, milk, cheese; red sauce = tomato, garlic, herbs; pink = both; pesto = basil, garlic, nuts, parmesan, olive oil (chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT022",
+    "name": "Pink Sauce Pasta",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "penne/spaghetti/fusilli; white sauce = butter, maida, milk, cheese; red sauce = tomato, garlic, herbs; pink = both; pesto = basil, garlic, nuts, parmesan, olive oil (chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT023",
+    "name": "Pesto Pasta",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "penne/spaghetti/fusilli; white sauce = butter, maida, milk, cheese; red sauce = tomato, garlic, herbs; pink = both; pesto = basil, garlic, nuts, parmesan, olive oil (chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT024",
+    "name": "Chicken Alfredo Pasta",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "penne/spaghetti/fusilli; white sauce = butter, maida, milk, cheese; red sauce = tomato, garlic, herbs; pink = both; pesto = basil, garlic, nuts, parmesan, olive oil (chicken for NV)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT025",
+    "name": "Garlic Bread",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "baguette/bread, butter or olive oil, garlic, herbs, cheese (garlic bread); fresh tomato-basil topping (bruschetta)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT026",
+    "name": "Cheese Garlic Bread",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "baguette/bread, butter or olive oil, garlic, herbs, cheese (garlic bread); fresh tomato-basil topping (bruschetta)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT027",
+    "name": "Bruschetta",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "baguette/bread, butter or olive oil, garlic, herbs, cheese (garlic bread); fresh tomato-basil topping (bruschetta)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT028",
+    "name": "Vegetable Lasagna",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "lasagna sheets, veg/white sauce, tomato sauce, cheese",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT029",
+    "name": "Mushroom Risotto",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "arborio rice, mushroom, butter, parmesan, veg stock, white wine (optional)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT030",
+    "name": "Caprese Salad",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Italian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "tomato, mozzarella, basil, olive oil",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Italian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "Y",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT031",
+    "name": "Veg Burger",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "bun, veg/aloo/chicken patty, lettuce, tomato, onion, cheese, mayo, ketchup",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT032",
+    "name": "Chicken Burger",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "bun, veg/aloo/chicken patty, lettuce, tomato, onion, cheese, mayo, ketchup",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT033",
+    "name": "Aloo Tikki Burger",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "bun, veg/aloo/chicken patty, lettuce, tomato, onion, cheese, mayo, ketchup",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT034",
+    "name": "Grilled Cheese Sandwich",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chicken breast, herbs, butter/olive oil, pepper sauce",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT035",
+    "name": "Bombay Grilled Sandwich",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chicken breast, herbs, butter/olive oil, pepper sauce",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT036",
+    "name": "Veg Frankie / Wrap",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "roti/tortilla, paneer or chicken filling, onion, sauces",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT037",
+    "name": "Chicken Wrap",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "roti/tortilla, paneer or chicken filling, onion, sauces",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT038",
+    "name": "French Fries",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Continental",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "potato, salt (peri peri seasoning + garlic)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT039",
+    "name": "Peri Peri Fries",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Continental",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "potato, salt (peri peri seasoning + garlic)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT040",
+    "name": "Mac and Cheese",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "macaroni/veg, white sauce (butter, maida, milk), cheese",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "C",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT041",
+    "name": "Vegetable au Gratin",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "macaroni/veg, white sauce (butter, maida, milk), cheese",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "C",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT042",
+    "name": "Grilled Chicken Steak",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chicken breast, herbs, butter/olive oil, pepper sauce",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "Y",
+    "lactoseFree": "C",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT043",
+    "name": "Fish and Chips",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "fish fillet, batter (maida), fries, tartar sauce",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "C",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT044",
+    "name": "Caesar Salad",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Continental",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "romaine/lettuce, croutons, parmesan, creamy dressing (egg, garlic)",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT045",
+    "name": "French Toast",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "bread, egg, milk, sugar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT046",
+    "name": "Waffles",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "Continental",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "maida, egg, milk, sugar, baking powder",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT047",
+    "name": "Masala Omelette",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Continental",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "egg, onion, tomato, chilli",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Continental",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "Y",
+    "lactoseFree": "C",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT048",
+    "name": "Thai Red Curry (veg)",
+    "hindiName": "",
+    "category": "Sabzi / Curry",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flat rice noodles, tamarind, peanuts, bean sprouts",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Thai",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT049",
+    "name": "Thai Green Curry (veg)",
+    "hindiName": "",
+    "category": "Sabzi / Curry",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flat rice noodles, tamarind, peanuts, bean sprouts",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Thai",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT050",
+    "name": "Thai Green Curry Chicken",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flat rice noodles, tamarind, peanuts, bean sprouts",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Thai",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT051",
+    "name": "Pad Thai Noodles (veg)",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Thai",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flat rice noodles, tamarind, peanuts, bean sprouts",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Thai",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT052",
+    "name": "Thai Jasmine / Sticky Rice",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flat rice noodles, tamarind, peanuts, bean sprouts",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Thai",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT053",
+    "name": "Pad Krapow (Thai Basil Stir Fry)",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Thai",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flat rice noodles, tamarind, peanuts, bean sprouts",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Thai",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT054",
+    "name": "Som Tum (Raw Papaya Salad)",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Thai",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "raw papaya, lime, palm sugar, chilli",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Thai",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT055",
+    "name": "Hummus",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Middle Eastern",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chickpeas, tahini, garlic, lemon, olive oil",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Middle Eastern",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "Y",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT056",
+    "name": "Falafel",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "Middle Eastern",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chickpeas, herbs, spices, deep-fried",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Middle Eastern",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT057",
+    "name": "Chicken Shawarma",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Middle Eastern",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "marinated chicken, pita, garlic-yogurt/tahini sauce",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Middle Eastern",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "C",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT058",
+    "name": "Falafel Wrap",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Middle Eastern",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chickpeas, herbs, spices, deep-fried",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Middle Eastern",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT059",
+    "name": "Baba Ganoush",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Middle Eastern",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "roasted eggplant, tahini, garlic",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Middle Eastern",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "Y",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT060",
+    "name": "Tabbouleh",
+    "hindiName": "",
+    "category": "Accompaniment",
+    "region": "Middle Eastern",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "bulgur, parsley, tomato, onion, mint, lemon",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Middle Eastern",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT061",
+    "name": "Shakshuka",
+    "hindiName": "",
+    "category": "Main",
+    "region": "Middle Eastern",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "eggs poached in tomato-pepper-onion sauce",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Middle Eastern",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "Y",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "egg"
+  },
+  {
+    "recipeId": "INT062",
+    "name": "Baklava",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "Middle Eastern",
+    "serves": 8,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "phyllo, nuts, sugar syrup/honey",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "Middle Eastern",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT063",
+    "name": "Veg Sushi Roll",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "East Asian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "sushi rice, nori, cucumber/avocado/carrot, soy, wasabi",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT064",
+    "name": "Chicken Teriyaki",
+    "hindiName": "",
+    "category": "Main",
+    "region": "East Asian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chicken, soy-based teriyaki/gochujang, sugar, garlic, ginger",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT065",
+    "name": "Veg Ramen",
+    "hindiName": "",
+    "category": "Main",
+    "region": "East Asian",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "wheat ramen noodles, broth, veg, egg",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT066",
+    "name": "Kimchi Fried Rice",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "East Asian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "rice, kimchi, gochujang, egg",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT067",
+    "name": "Bibimbap",
+    "hindiName": "",
+    "category": "Rice Dish",
+    "region": "East Asian",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "rice, assorted veg, gochujang, egg",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT068",
+    "name": "Tteokbokki",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "East Asian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "rice cakes, gochujang, sugar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT069",
+    "name": "Korean Corn Cheese",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "East Asian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "corn, mozzarella, mayo, butter",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "C",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT070",
+    "name": "Vietnamese Fresh Spring Rolls",
+    "hindiName": "",
+    "category": "Snack",
+    "region": "East Asian",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "rice paper, veg/herbs, vermicelli",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "C",
+    "onionGarlicFree": "C",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT071",
+    "name": "Pho (Chicken)",
+    "hindiName": "",
+    "category": "Main",
+    "region": "East Asian",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "rice noodles, broth, herbs",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "East Asian",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "P",
+    "lactoseFree": "Y",
+    "vegan": "N",
+    "onionGarlicFree": "N",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Partial — acceptable in small portions or with a lower-GI swap"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "non_veg"
+  },
+  {
+    "recipeId": "INT072",
+    "name": "Tiramisu",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 6,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "mascarpone/cream, coffee, ladyfingers, cocoa",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT073",
+    "name": "Baked Cheesecake",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 8,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "cream cheese, biscuit base, sugar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT074",
+    "name": "Chocolate Brownie",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 8,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chocolate, butter, eggs, flour, sugar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT075",
+    "name": "Churros",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "maida dough fried, cinnamon-sugar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "C",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT076",
+    "name": "Sweet Crepes",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "flour, milk, egg, sugar, Nutella/fruit",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT077",
+    "name": "Chocolate Lava Cake",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chocolate, butter, eggs, flour, sugar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "C",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT078",
+    "name": "Panna Cotta",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "cream, sugar, gelatin/agar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT079",
+    "name": "Chocolate Mousse",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 4,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "chocolate, cream, egg",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT080",
+    "name": "Banoffee Pie",
+    "hindiName": "",
+    "category": "Dessert",
+    "region": "International Dessert",
+    "serves": 8,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "banana, toffee/condensed milk, biscuit, cream",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Dessert",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "N",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT081",
+    "name": "Chocolate Milkshake",
+    "hindiName": "",
+    "category": "Beverage",
+    "region": "International Beverage",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "milk, cocoa, sugar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Beverage",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT082",
+    "name": "Oreo Milkshake",
+    "hindiName": "",
+    "category": "Beverage",
+    "region": "International Beverage",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "milk, chocolate syrup/cocoa, ice cream",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Beverage",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "N",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT083",
+    "name": "Mango Smoothie",
+    "hindiName": "",
+    "category": "Beverage",
+    "region": "International Beverage",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "mango, yogurt/milk",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Beverage",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "N",
+    "vegan": "C",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No"
+      },
+      "vegan": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT084",
+    "name": "Lemon Iced Tea",
+    "hindiName": "",
+    "category": "Beverage",
+    "region": "International Beverage",
+    "serves": 3,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "black tea, lemon, sugar",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Beverage",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "C",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "conditional",
+        "note": "Conditional — a documented swap achieves this (see cuisine notes)"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
+  },
+  {
+    "recipeId": "INT085",
+    "name": "Virgin Mojito",
+    "hindiName": "",
+    "category": "Beverage",
+    "region": "International Beverage",
+    "serves": 2,
+    "prepTimeMin": null,
+    "cookTimeMin": null,
+    "difficulty": null,
+    "ingredients": "mint, lime, soda/sugar syrup",
+    "preparation": null,
+    "tips": null,
+    "caloriesPerServing": null,
+    "source": "International",
+    "source_sheet": "International Beverage",
+    "ekadashiSafe": "N",
+    "navratriSafe": "N",
+    "jainSafe": "N",
+    "diabeticFriendly": "N",
+    "lactoseFree": "Y",
+    "vegan": "Y",
+    "onionGarlicFree": "Y",
+    "glutenFree": "Y",
+    "hasFullPreparation": false,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "dietKind": "veg"
   }
 ]

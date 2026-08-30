@@ -26,7 +26,12 @@ const MEAL_TYPES = ['breakfast', 'lunch', 'dinner']
 
 // Shape of the meal differs sharply by type; without this the model returns
 // the same dal-sabzi-rice-roti combination three times.
-const MEAL_BRIEF = {
+// Two sets of briefs. On a day when someone is fasting the meal stays
+// traditional and Indian, because the fasting rules are the whole point. On an
+// ordinary day the family's real repertoire is wider than that — Indo-Chinese
+// is the most-ordered non-Indian cuisine in India — so the brief says so, or
+// the model returns dal-sabzi-roti forever and the imported dishes never win.
+const MEAL_BRIEF_FASTING = {
   breakfast:
     'Suggest a light, quick Indian breakfast — typically 1 main + 1 side ' +
     '(like chutney/pickle) + 1 beverage. Keep it to 2-3 dishes. Do NOT ' +
@@ -42,9 +47,33 @@ const MEAL_BRIEF = {
     'than lunch: go easier on fried and heavy dishes. Aim for 3-4 dishes.',
 }
 
+const MEAL_BRIEF_OPEN = {
+  breakfast:
+    'Suggest a light, quick breakfast — Indian, or another cuisine the family ' +
+    'enjoys. Typically 1 main + 1 side (like chutney/pickle) + 1 beverage. ' +
+    'Keep it to 2-3 dishes. Do NOT return a dal-rice-roti thali; this is breakfast.',
+  lunch:
+    'Suggest a complete lunch — the heaviest meal of the day. An Indian thali ' +
+    'is the usual choice: 1 dal, 1 rice OR roti (or both), 1-2 sabzis, ' +
+    '1 raita/salad, optional pickle. But the family also enjoys Indo-Chinese, ' +
+    'Italian and other cuisines, so a coherent non-Indian lunch is welcome ' +
+    'when the candidates suit it — do not mix cuisines incoherently in one ' +
+    'meal. Lunch is where the family eats together, so make it complete. ' +
+    'Aim for 4-5 dishes.',
+  dinner:
+    'Suggest a lighter dinner — Indian, Indo-Chinese, Italian, or another ' +
+    'cuisine the family enjoys. An Indian dinner is typically 1 dal, 1 sabzi, ' +
+    '1 roti/paratha and optional rice; a non-Indian dinner should be equally ' +
+    'coherent (for example noodles with a starter, or pasta with garlic bread ' +
+    'and a salad) rather than a mixture of unrelated dishes. Dinner should be ' +
+    'easier to digest than lunch: go easier on fried and heavy dishes. ' +
+    'Aim for 3-4 dishes.',
+}
+
 function buildPrompt({
   family, constraints, mealType, dateLabel, calendarNotes, foodRules, candidates,
   recentRecipeIds, guestSummary = [], guestCount = 0, guestNotes = [], headcount,
+  anyFasting = false,
 }) {
   const members = constraints.map((c) => ({
     memberId: c.id,
@@ -74,7 +103,7 @@ ${guestNotes.map((n) => `- ${n.message}`).join('\n')}\n`
   return `You are the kitchen planner for an Indian joint family. Plan ONE ${mealType} for ${dateLabel} that the whole family can eat from a single kitchen.
 
 MEAL BRIEF — ${mealType.toUpperCase()}:
-${MEAL_BRIEF[mealType]}
+${(anyFasting ? MEAL_BRIEF_FASTING : MEAL_BRIEF_OPEN)[mealType]}${anyFasting ? '\nSomeone is fasting today, so keep the whole meal traditional and Indian.' : ''}
 
 EATING THIS MEAL — ${family.length} ${family.length === 1 ? 'person' : 'people'}:
 ${JSON.stringify(members, null, 2)}
@@ -287,6 +316,7 @@ export default async function handler(req, res) {
   const prompt = buildPrompt({
     family: diners, constraints, mealType, dateLabel, recentRecipeIds,
     guestSummary, guestCount, guestNotes, headcount,
+    anyFasting: constraints.some((c) => c.activeFasts.length > 0),
     calendarNotes: calendarNotesOn(date),
     foodRules: foodRulesFor(activeLabels),
     candidates,

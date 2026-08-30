@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Pre-import snapshot of the recipe database, kept locally for rollback
+src/data/recipes.backup.json
