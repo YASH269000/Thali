@@ -139,6 +139,7 @@ export function memberConstraints(member, activeFastIds) {
  */
 export function evaluateRecipe(recipe, constraints) {
   const reasons = []
+  const caveats = []
   let conditional = false
 
   if (!constraints.allowedKinds.includes(dietKind(recipe))) {
@@ -160,8 +161,20 @@ export function evaluateRecipe(recipe, constraints) {
       return { verdict: 'excluded', reasons: [`${flag}: ${f.note}`] }
     }
     if (f.status === 'partial') {
+      // A `partial` dish is edible for a strict member with a stated caution —
+      // "Moderate GI: small portions", "lower GI than white rice". Excluding
+      // them outright left a diabetic family with almost no non-Indian food at
+      // all. They are included now, but the caution travels with the dish and
+      // must be shown wherever it appears: a partial dish is never presented
+      // as unconditionally safe.
       if (constraints.strictFlags.includes(flag)) {
-        return { verdict: 'excluded', reasons: [`${flag} only partial: ${f.note}`] }
+        const note = String(f.note || '').trim()
+        caveats.push({
+          member: constraints.name,
+          memberId: constraints.id,
+          flag,
+          note: note || 'Moderate GI — serve a smaller portion',
+        })
       }
       continue
     }
@@ -172,8 +185,8 @@ export function evaluateRecipe(recipe, constraints) {
   }
 
   return conditional
-    ? { verdict: 'conditional', reasons }
-    : { verdict: 'ok', reasons: [] }
+    ? { verdict: 'conditional', reasons, caveats }
+    : { verdict: 'ok', reasons: [], caveats }
 }
 
 /**
@@ -187,15 +200,20 @@ export function filterRecipes(recipes, family, activeFastIds) {
 
   const mains = []
   const swaps = []
+  // recipeId -> [{ member, flag, note }]. Cautions that must be displayed
+  // alongside the dish, never dropped.
+  const caveats = new Map()
 
   for (const recipe of recipes) {
     let excluded = false
     let anyConditional = false
     const modifications = []
+    const recipeCaveats = []
 
     for (const c of constraints) {
-      const { verdict, reasons } = evaluateRecipe(recipe, c)
+      const { verdict, reasons, caveats: cv } = evaluateRecipe(recipe, c)
       if (verdict === 'excluded') { excluded = true; break }
+      if (cv?.length) recipeCaveats.push(...cv)
       if (verdict === 'conditional') {
         anyConditional = true
         modifications.push({ member: c.name, changes: reasons })
@@ -203,6 +221,7 @@ export function filterRecipes(recipes, family, activeFastIds) {
     }
 
     if (excluded) continue
+    if (recipeCaveats.length) caveats.set(recipe.recipeId, recipeCaveats)
     if (anyConditional) swaps.push({ recipe, modifications })
     else mains.push(recipe)
   }
@@ -211,6 +230,7 @@ export function filterRecipes(recipes, family, activeFastIds) {
     mains,
     swaps,
     constraints,
+    caveats,
     stats: {
       catalogue: recipes.length,
       mains: mains.length,
@@ -456,17 +476,28 @@ export function selectCandidatesForMeal(
     // Sorting steps-first and taking the top N starved whole roles of
     // everything else: `main` had 318 ingredients-only recipes available and
     // sent zero.
-    const targetFull = Math.round(domesticQuota * FULL_PREP_SHARE)
-    const chosenFull = withSteps.slice(0, targetFull)
+    // Reserve 60% of the quota for recipes with preparation steps, or however
+    // many exist in this role, whichever is smaller. A constrained family can
+    // leave a role with far fewer Originals than its share — a diabetic family
+    // has 3 breads against a quota of 14 — and slicing the top of the list
+    // meant the same three appeared in every single pool.
+    const targetFull = Math.min(
+      Math.round(domesticQuota * FULL_PREP_SHARE),
+      withSteps.length,
+    )
+    // Sampled, not sliced: where a role has more Originals than its share,
+    // a different subset appears each time instead of always the first few.
+    const chosenFull = sampleFrom(withSteps, targetFull, random)
 
-    // The remainder is sampled rather than sliced, so it is not always the
-    // same handful sitting at the top of the file.
+    // The rest of the quota is sampled from everything else in the role.
     const chosenRest = sampleFrom(rest, domesticQuota - chosenFull.length, random)
 
     // A role short on any kind fills up from the others rather than leaving
     // the quota unmet.
     const shortfall = domesticQuota - chosenFull.length - chosenRest.length
-    const topUp = shortfall > 0 ? withSteps.slice(targetFull, targetFull + shortfall) : []
+    const topUp = shortfall > 0
+      ? sampleFrom(withSteps.filter((r) => !chosenFull.includes(r)), shortfall, random)
+      : []
 
     picked.push(...chosenIntl, ...chosenFull, ...chosenRest, ...topUp)
   }

@@ -301,7 +301,7 @@ export default async function handler(req, res) {
 
   // ---- constraints and filtering (deterministic, before any model call) ----
   const activeFastIds = activeFastIdsOn(date)
-  const { mains, swaps, constraints, stats } = filterRecipes(
+  const { mains, swaps, constraints, stats, caveats } = filterRecipes(
     RECIPES, [...diners, ...guestMembers], activeFastIds,
   )
 
@@ -433,6 +433,9 @@ export default async function handler(req, res) {
       hasFullPreparation: Boolean(full?.hasFullPreparation),
       source: full?.source || null,
       flags: full?.flags || null,
+      // Cautions that must be displayed with the dish — a `partial` dish is
+      // never presented to a diabetic as unconditionally safe.
+      caveats: caveats.get(d.recipeId) || [],
     }
   })
 
@@ -466,6 +469,7 @@ export default async function handler(req, res) {
         flags: r.flags || null,
         known: true,
         why: '',
+        caveats: caveats.get(r.recipeId) || [],
       }))
   }
 

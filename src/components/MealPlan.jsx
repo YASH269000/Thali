@@ -215,6 +215,20 @@ function DishCard({ dish, onStartCooking, alternates, onSwap, recentIds }) {
 
       <PerMemberDisplay dish={dish} />
 
+      {(dish.caveats || []).length > 0 && (
+        <div className="dish-caveats">
+          {Object.entries((dish.caveats || []).reduce((acc, c) => {
+            (acc[c.note] = acc[c.note] || []).push(displayName(c.member))
+            return acc
+          }, {})).map(([note, names]) => (
+            <p key={note} className="dish-caveat">
+              <span className="chip chip-health">{names.join(', ')}</span>
+              {note}
+            </p>
+          ))}
+        </div>
+      )}
+
       <div className="chips">
         {BADGES.filter(([key]) => dish.flags?.[key]?.status === 'yes')
           .map(([key, label, cls]) => (
@@ -574,6 +588,16 @@ export default function MealPlan() {
                     )
                   })}
                 </div>
+
+                {(cuisineInfo.unavailable || []).length > 0 && (
+                  <div className="cuisine-unavailable">
+                    {cuisineInfo.unavailable.map((u) => (
+                      <p key={u.cuisine}>
+                        <strong>{u.cuisine}</strong> &mdash; {u.reason}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

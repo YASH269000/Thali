@@ -596,3 +596,33 @@
 }
 
 .shopping-empty { color: var(--muted); font-style: italic; }
+
+/* A `partial` dish is never shown to a diabetic without its caution. */
+.dish-caveats { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+
+.dish-caveat {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--health-ink);
+}
+
+.cuisine-unavailable {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: var(--rule);
+  text-align: left;
+}
+
+.cuisine-unavailable p {
+  margin: 0 0 5px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.cuisine-unavailable strong { color: var(--ink); font-weight: 500; }
