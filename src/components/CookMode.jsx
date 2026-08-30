@@ -427,10 +427,21 @@ export default function CookMode({ dish, onClose }) {
         )}
 
         {handsFree && total > 0 && (
-          <p className="ck-voice-hint">
-            Say &ldquo;next&rdquo; for the next step, &ldquo;repeat&rdquo; to hear it again,
-            &ldquo;timer&rdquo;, &ldquo;ingredients&rdquo;, or &ldquo;stop&rdquo;.
-          </p>
+          language === 'en-IN' ? (
+            <p className="ck-voice-hint">
+              Say &ldquo;next&rdquo; for the next step, &ldquo;repeat&rdquo; to hear it again,
+              &ldquo;timer&rdquo;, &ldquo;ingredients&rdquo;, or &ldquo;stop&rdquo;.
+            </p>
+          ) : (
+            /* Recognition in Indian languages is unreliable on most devices,
+               so this is stated as a design choice rather than left to look
+               like a fault. The step text stays in the chosen language. */
+            <p className="ck-voice-hint">
+              Voice commands work best in English &mdash; say &ldquo;next&rdquo;,
+              &ldquo;repeat&rdquo;, &ldquo;timer&rdquo;, &ldquo;ingredients&rdquo;,
+              or &ldquo;stop&rdquo;. Your steps stay in {languageByCode(language).label}.
+            </p>
+          )
         )}
 
         {notice && <p className="ck-notice" role="status">{notice}</p>}
