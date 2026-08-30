@@ -6,14 +6,16 @@
 // same default export is driven by a Vite middleware (see vite.config.js), so
 // `npm run dev` serves this route without the Vercel CLI.
 
-import { readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { activeFastIdsOn, calendarNotesOn, foodRulesFor } from '../src/lib/fastingRules.js'
 import { compactForPrompt, filterRecipes, roleOf, selectCandidatesForMeal } from '../src/lib/mealPlanRules.js'
 import { buildShoppingList } from '../src/lib/shoppingList.js'
 import { FAST_LABEL } from '../src/data/memberOptions.js'
+// Statically imported, never read from disk. A runtime readFileSync is not
+// traceable by the Vercel bundler, so recipes.json was omitted from the
+// deployed function and the module threw on load. A static import is
+// inlined into the bundle, exactly like the JSON the src/lib modules import.
+import RECIPES from '../src/data/recipes.json'
 import {
   describeGuests, guestHeadcount, guestWholeMealConstraints, guestsAsMembers, normaliseGuests,
 } from '../src/lib/guests.js'
@@ -39,13 +41,6 @@ const MEAL_BRIEF = {
     'optional rice for those who want it. Dinner should be easier to digest ' +
     'than lunch: go easier on fried and heavy dishes. Aim for 3-4 dishes.',
 }
-
-// Read once per cold start rather than static-importing 1.8 MB into the bundle.
-// Resolved from import.meta.url because cwd differs between `vercel dev`, the
-// Vite middleware and the deployed lambda.
-const RECIPES = JSON.parse(
-  readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../src/data/recipes.json'), 'utf8'),
-)
 
 function buildPrompt({
   family, constraints, mealType, dateLabel, calendarNotes, foodRules, candidates,
