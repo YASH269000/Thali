@@ -1,4 +1,4 @@
-/* Fasting calendar — month at a glance. Palette tokens come from .thali. */
+/* Fasting calendar — the year at a glance. Palette tokens come from .thali. */
 
 .fc { margin-top: 8px; }
 
@@ -9,52 +9,105 @@
   background: var(--surface);
 }
 
-.fc-grid {
+/* ------------------------------------------------------- year of months */
+
+.fc-year {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px 14px;
+}
+
+.fc-month-name {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  color: var(--ink);
+}
+
+.fc-month-tag {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Months already gone are dimmed rather than dropped — the year is for
+   planning forward, but what has passed is still context. The dots keep their
+   full strength so the pattern of the year still reads, which is why the
+   numerals are dimmed with colour and not opacity: opacity composites down the
+   tree, so an `opacity: 1` dot inside a faded cell still paints at 0.45. */
+.fc-month.is-past .fc-month-name,
+.fc-month.is-past .fc-weekday { opacity: 0.55; }
+.fc-month.is-past .fc-day { color: #a8a8a1; }
+.fc-month.is-past .fc-day.is-fasting { color: #b0a07c; }
+
+.fc-month.is-current .fc-mini {
+  border-radius: 8px;
+  outline: 0.5px solid var(--line);
+  outline-offset: 5px;
+}
+
+.fc-mini {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-  max-width: 340px;
-  margin: 0 auto;
+  gap: 1px;
 }
 
 .fc-weekday {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 22px;
-  font-size: 11px;
+  height: 14px;
+  font-size: 9px;
   font-weight: 500;
   color: var(--muted);
 }
 
 .fc-blank { aspect-ratio: 1; }
-.fc-cell { position: relative; aspect-ratio: 1; }
 
 .fc-day {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  min-height: 40px;
+  aspect-ratio: 1;
+  min-height: 20px;
+  padding: 0;
   font: inherit;
-  font-size: 13px;
+  font-size: 10px;
+  line-height: 1;
   border: 0.5px solid transparent;
-  border-radius: 8px;
+  border-radius: 5px;
   background: transparent;
   color: var(--ink);
 }
 
 button.fc-day { cursor: pointer; }
 
-.fc-day.is-fasting {
-  background: var(--fast-bg);
-  border-color: var(--fast-line);
-  color: var(--fast-ink);
-  font-weight: 600;
+/* A dot, not a filled cell. Twelve months of filled cells is noise; the dot
+   carries the same information and leaves the numerals readable. */
+.fc-dot {
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--fast-line);
 }
 
-button.fc-day.is-fasting:hover { background: #fbeed2; }
+.fc-day.is-fasting { font-weight: 600; color: var(--fast-ink); }
+
+button.fc-day.is-fasting:hover,
+button.fc-day.is-fasting:focus-visible,
+.fc-day.is-pinned {
+  background: var(--fast-bg);
+  border-color: var(--fast-line);
+}
 
 .fc-day.is-today {
   border: 1px solid var(--ink);
@@ -63,33 +116,31 @@ button.fc-day.is-fasting:hover { background: #fbeed2; }
 
 .fc-day:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
 
-/* ------------------------------------------------------------ popover */
+/* -------------------------------------------------------- detail strip */
 
-.fc-pop {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 30;
+/* One strip for the whole year rather than a popover per day: a 20px hover
+   target is unusable on a phone, and 300-odd absolutely positioned tooltips
+   clip at every edge of a four-column grid. min-height holds the row so the
+   grid does not jump as the strip fills and empties. */
+.fc-detail {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  width: max-content;
-  max-width: 220px;
-  padding: 10px 12px;
-  text-align: left;
-  font-size: 12px;
-  line-height: 1.45;
-  font-weight: 400;
-  color: var(--ink);
-  background: #ffffff;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-height: 38px;
+  margin-top: 18px;
+  padding: 9px 12px;
   border: var(--rule);
-  border-radius: 12px;
+  border-radius: 8px;
+  background: #fbfbf8;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
-.fc-pop-date { font-weight: 600; font-size: 13px; }
-.fc-pop-fast { color: var(--fast-ink); }
-.fc-pop-who { color: var(--muted); }
+.fc-detail-date { font-weight: 600; color: var(--ink); }
+.fc-detail-who { color: var(--muted); }
+.fc-detail-fasts { display: inline-flex; flex-wrap: wrap; gap: 5px; }
+.fc-detail-empty { color: var(--muted); font-size: 12px; }
 
 /* ------------------------------------------------------------- legend */
 
@@ -115,7 +166,24 @@ button.fc-day.is-fasting:hover { background: #fbeed2; }
   border: 0.5px solid transparent;
 }
 
-.fc-swatch.is-fasting { background: var(--fast-bg); border-color: var(--fast-line); }
+.fc-swatch.is-fasting {
+  position: relative;
+  background: var(--fast-bg);
+  border-color: var(--fast-line);
+}
+
+.fc-swatch.is-fasting::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--fast-line);
+}
+
 .fc-swatch.is-today { background: transparent; border: 1px solid var(--ink); }
 
 /* ------------------------------------------------------------ summary */
@@ -137,8 +205,35 @@ button.fc-day.is-fasting:hover { background: #fbeed2; }
 .fc-summary-name { color: var(--ink); font-weight: 500; }
 .fc-summary-detail { font-size: 13px; color: var(--muted); }
 
+.fc-coverage {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: var(--rule);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* Nothing disappears at a breakpoint — only the arrangement changes. */
+@media (max-width: 820px) {
+  .fc-year { grid-template-columns: repeat(3, 1fr); }
+}
+
 @media (max-width: 620px) {
-  .fc-grid { max-width: none; gap: 4px; }
-  .fc-day { min-height: 38px; font-size: 12px; }
+  .fc-year { grid-template-columns: repeat(2, 1fr); gap: 16px 12px; }
+  /* min-height must stay under the width the column actually affords, or
+     aspect-ratio squares the cell to the taller value and the row pushes the
+     page sideways — 24px here overflowed a 390px phone by 7px. */
+  .fc-day { min-height: 20px; font-size: 11px; }
   .fc-legend { justify-content: flex-start; }
+}
+
+/* One column on a phone. Two columns of 20px cells technically fit, but the
+   cell is the tap target for the detail strip and 20px is not a tap target. */
+@media (max-width: 480px) {
+  .fc-year { grid-template-columns: 1fr; gap: 18px; }
+  .fc-mini { gap: 2px; }
+  .fc-day { min-height: 34px; font-size: 13px; }
+  .fc-dot { bottom: 3px; width: 5px; height: 5px; }
+  .fc-weekday { height: 18px; font-size: 10px; }
 }
