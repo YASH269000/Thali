@@ -1,0 +1,721 @@
+/* ==================================================================
+   Thali — Family Profile
+   Style guide (CLAUDE.md): system fonts, warm off-white ground,
+   0.5px borders, 8px buttons / 12px cards, no emoji, no gradients,
+   no drop shadows.
+   ================================================================== */
+
+.thali {
+  --bg: #fafaf7;
+  --surface: #ffffff;
+  --ink: #1a1a1a;
+  --muted: #6b6b66;
+  --line: #e5e5e0;
+  --rule: 0.5px solid var(--line);
+
+  --diet-bg: #edf5ee;
+  --diet-ink: #2f6b3a;
+  --diet-line: #cfe3d2;
+
+  --health-bg: #fdeef2;
+  --health-ink: #8c3550;
+  --health-line: #f3d4dd;
+
+  --fast-bg: #fdf4e3;
+  --fast-ink: #8a6116;
+  --fast-line: #f0e0bd;
+
+  --stage-bg: #f2eefb;
+  --stage-ink: #59409b;
+  --stage-line: #ddd3f2;
+
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+
+.thali *,
+.thali *::before,
+.thali *::after {
+  box-sizing: border-box;
+}
+
+/* ---------------------------------------------------------- header */
+
+.app-header {
+  border-bottom: var(--rule);
+  padding: 28px 20px 20px;
+}
+
+.brand,
+.content,
+.app-header .today {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.logo {
+  display: block;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  color: var(--ink);
+}
+
+.tagline {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.app-header .today {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------- content */
+
+.content {
+  padding: 24px 20px 64px;
+}
+
+.section-heading {
+  margin: 32px 0 12px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--ink);
+}
+
+/* ----------------------------------------------------------- stats */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px;
+  background: var(--surface);
+  border: var(--rule);
+  border-radius: 12px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.6px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.stat-note {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------- member cards */
+
+.member-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.member-card {
+  background: var(--surface);
+  border: var(--rule);
+  border-radius: 12px;
+}
+
+.member-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+}
+
+.avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.tone-0 { background: #e4ecdf; color: #3c5734; }
+.tone-1 { background: #e8e3f3; color: #4c3f77; }
+.tone-2 { background: #f6e5dc; color: #7a4a30; }
+.tone-3 { background: #dde8ec; color: #315460; }
+.tone-4 { background: #f2e6ea; color: #74374b; }
+.tone-5 { background: #eeead9; color: #5e5326; }
+
+.member-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.member-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.member-meta {
+  margin: 1px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.member-dislikes {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.member-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 2px;
+}
+
+/* ----------------------------------------------------------- chips */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.chip {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  border: 0.5px solid transparent;
+}
+
+.chip-diet   { background: var(--diet-bg);   color: var(--diet-ink);   border-color: var(--diet-line); }
+.chip-health { background: var(--health-bg); color: var(--health-ink); border-color: var(--health-line); }
+.chip-fast   { background: var(--fast-bg);   color: var(--fast-ink);   border-color: var(--fast-line); }
+.chip-stage  { background: var(--stage-bg);  color: var(--stage-ink);  border-color: var(--stage-line); }
+
+/* -------------------------------------------------- confirm delete */
+
+.confirm-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: var(--rule);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ----------------------------------------------------- empty state */
+
+.empty-state {
+  padding: 32px 24px;
+  background: var(--surface);
+  border: var(--rule);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.empty-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.empty-body {
+  margin: 6px auto 18px;
+  max-width: 42ch;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------- buttons */
+
+.btn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 0.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.btn:hover { background: #f4f4ef; }
+
+.btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.btn-solid {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+
+.btn-solid:hover { background: #000000; }
+
+.btn-solid:disabled {
+  background: #d8d8d2;
+  border-color: #d8d8d2;
+  color: #8f8f89;
+  cursor: not-allowed;
+}
+
+.btn-ghost { color: var(--muted); }
+
+.btn-danger {
+  background: var(--health-bg);
+  border-color: var(--health-line);
+  color: var(--health-ink);
+}
+
+.btn-danger:hover { background: #fbe3ea; }
+
+.btn-small { padding: 6px 12px; font-size: 13px; }
+
+.btn-block { width: 100%; }
+
+.btn-dashed {
+  width: 100%;
+  border: 0.5px dashed #cfcfc7;
+  background: transparent;
+  color: var(--muted);
+}
+
+.btn-dashed:hover {
+  background: var(--surface);
+  border-color: var(--muted);
+  color: var(--ink);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.actions-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0.5px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: #f4f4ef;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.icon-btn svg { width: 18px; height: 18px; display: block; }
+
+/* =================================================================
+   Modal
+   ================================================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(26, 26, 26, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid #e5e5e0;
+  border-radius: 12px;
+  overflow: hidden;
+  color: #1a1a1a;
+}
+
+.modal-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 0.5px solid #e5e5e0;
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+/* The form scrolls, the header and footer stay put — five sections
+   overflow a phone viewport. */
+.modal-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 20px 20px;
+}
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 18px;
+  margin-top: 20px;
+  border-top: 0.5px solid #e5e5e0;
+}
+
+/* ----------------------------------------------------- form pieces */
+
+.form-section {
+  padding: 20px 0 0;
+}
+
+.form-section + .form-section {
+  margin-top: 20px;
+  border-top: 0.5px solid #e5e5e0;
+}
+
+.section-label {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: #6b6b66;
+}
+
+.section-help {
+  margin: -4px 0 10px;
+  font-size: 12px;
+  color: #6b6b66;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.field label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.thali-input,
+.field input[type='text'],
+.field input[type='number'],
+.field select {
+  font: inherit;
+  font-size: 14px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 0.5px solid #e5e5e0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1a1a1a;
+  appearance: none;
+}
+
+.field select {
+  /* Flat caret drawn as a single SVG — no gradient, no shadow. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%236b6b66' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  padding-right: 32px;
+}
+
+.field input::placeholder { color: #a8a8a1; }
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: #1a1a1a;
+}
+
+/* ------------------------------------------------------- hint card */
+
+.hint-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 0.5px solid var(--stage-line, #ddd3f2);
+  border-radius: 8px;
+  background: var(--stage-bg, #f2eefb);
+}
+
+.hint-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #514a63;
+}
+
+/* --------------------------------------------- radio / check cards */
+
+.radio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.choice-card,
+.check-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 12px;
+  border: 0.5px solid #e5e5e0;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.choice-card:hover,
+.check-card:hover { border-color: #c9c9c1; }
+
+.choice-card.is-selected,
+.check-card.is-selected {
+  border-color: #1a1a1a;
+  background: #f7f7f3;
+}
+
+/* Real inputs, kept accessible and focusable — only restyled. */
+.choice-card input,
+.check-card input {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  margin: 1px 0 0;
+  accent-color: #1a1a1a;
+}
+
+.choice-card:focus-within,
+.check-card:focus-within {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 1px;
+}
+
+.choice-body { display: flex; flex-direction: column; gap: 2px; }
+.choice-title { font-weight: 500; }
+.choice-desc { font-size: 12px; line-height: 1.4; color: #6b6b66; }
+
+.check-meta {
+  display: block;
+  margin-top: 1px;
+  font-size: 11px;
+  color: #6b6b66;
+}
+
+/* ---------------------------------------------------------- slider */
+
+.slider-value {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b6b66;
+}
+
+.field input[type='range'] {
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+}
+
+.field input[type='range']::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 999px;
+  background: #e5e5e0;
+}
+
+.field input[type='range']::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: #e5e5e0;
+}
+
+.field input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6.5px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  border: 0.5px solid #1a1a1a;
+}
+
+.field input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  border: 0.5px solid #1a1a1a;
+}
+
+.field input[type='range']:focus-visible {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 4px;
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b6b66;
+}
+
+/* ----------------------------------------------------------- error */
+
+.form-error {
+  margin-top: 18px;
+  padding: 11px 13px;
+  border: 0.5px solid var(--health-line, #f3d4dd);
+  border-radius: 8px;
+  background: var(--health-bg, #fdeef2);
+}
+
+.form-error p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--health-ink, #8c3550);
+}
+
+.form-error p + p { margin-top: 3px; }
+
+/* =================================================================
+   Mobile — nothing is removed, only the arrangement changes.
+   ================================================================= */
+
+@media (max-width: 620px) {
+  .stats { grid-template-columns: 1fr; }
+
+  .stat-card {
+    flex-direction: row;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .stat-value { font-size: 22px; }
+  .stat-note { width: 100%; margin-top: 0; }
+
+  .radio-grid,
+  .check-grid,
+  .field-row { grid-template-columns: 1fr; }
+
+  .modal-overlay { padding: 0; }
+
+  .modal-card {
+    max-width: none;
+    max-height: 100vh;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+  }
+
+  .member-actions { flex-direction: column; }
+
+  .modal-foot {
+    position: sticky;
+    bottom: 0;
+    background: #ffffff;
+  }
+
+  .modal-foot .btn { flex: 1 1 0; }
+}

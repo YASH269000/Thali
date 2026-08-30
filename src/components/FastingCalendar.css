@@ -1,0 +1,144 @@
+/* Fasting calendar — month at a glance. Palette tokens come from .thali. */
+
+.fc { margin-top: 8px; }
+
+.fc-card {
+  padding: 16px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.fc-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.fc-weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.fc-blank { aspect-ratio: 1; }
+.fc-cell { position: relative; aspect-ratio: 1; }
+
+.fc-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 40px;
+  font: inherit;
+  font-size: 13px;
+  border: 0.5px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+}
+
+button.fc-day { cursor: pointer; }
+
+.fc-day.is-fasting {
+  background: var(--fast-bg);
+  border-color: var(--fast-line);
+  color: var(--fast-ink);
+  font-weight: 600;
+}
+
+button.fc-day.is-fasting:hover { background: #fbeed2; }
+
+.fc-day.is-today {
+  border: 1px solid var(--ink);
+  font-weight: 600;
+}
+
+.fc-day:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+/* ------------------------------------------------------------ popover */
+
+.fc-pop {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: max-content;
+  max-width: 220px;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: var(--ink);
+  background: #ffffff;
+  border: var(--rule);
+  border-radius: 12px;
+}
+
+.fc-pop-date { font-weight: 600; font-size: 13px; }
+.fc-pop-fast { color: var(--fast-ink); }
+.fc-pop-who { color: var(--muted); }
+
+/* ------------------------------------------------------------- legend */
+
+.fc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  justify-content: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: var(--rule);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fc-legend > span { display: inline-flex; align-items: center; gap: 7px; }
+
+.fc-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 0.5px solid transparent;
+}
+
+.fc-swatch.is-fasting { background: var(--fast-bg); border-color: var(--fast-line); }
+.fc-swatch.is-today { background: transparent; border: 1px solid var(--ink); }
+
+/* ------------------------------------------------------------ summary */
+
+.fc-summary { margin-top: 14px; }
+
+.fc-summary-head { margin: 0 0 8px; font-size: 14px; }
+.fc-summary-head strong { font-weight: 600; }
+
+.fc-summary-list { margin: 0; padding: 0; list-style: none; }
+
+.fc-summary-list li {
+  padding: 5px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.fc-summary-name { color: var(--ink); font-weight: 500; }
+.fc-summary-detail { font-size: 13px; color: var(--muted); }
+
+@media (max-width: 620px) {
+  .fc-grid { max-width: none; gap: 4px; }
+  .fc-day { min-height: 38px; font-size: 12px; }
+  .fc-legend { justify-content: flex-start; }
+}

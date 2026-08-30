@@ -1,0 +1,529 @@
+/* Cook Mode — full screen, one thing at a time.
+   Large type and tap targets for hands that are wet or floury.
+   Style guide: #fafaf7 ground, 0.5px borders, 8px buttons, 12px cards,
+   no emoji, no gradients, no drop shadows. */
+
+.cook-mode {
+  --bg: #fafaf7;
+  --surface: #ffffff;
+  --ink: #1a1a1a;
+  --muted: #6b6b66;
+  --line: #e5e5e0;
+  --rule: 0.5px solid var(--line);
+  --amber-bg: #fdf4e3;
+  --amber-ink: #8a6116;
+  --amber-line: #f0e0bd;
+
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+}
+
+.cook-mode *, .cook-mode *::before, .cook-mode *::after { box-sizing: border-box; }
+
+/* ----------------------------------------------------------- header */
+
+.ck-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 16px;
+  border-bottom: var(--rule);
+  background: var(--surface);
+}
+
+.ck-title h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.ck-hindi { margin: 3px 0 0; font-size: 15px; color: var(--muted); }
+
+.ck-head-actions { display: flex; align-items: center; gap: 12px; }
+
+.ck-lang { display: flex; flex-direction: column; gap: 3px; }
+
+.ck-lang-label {
+  font-size: 10px;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ck-lang select {
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 32px 8px 11px;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%236b6b66' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+}
+
+.ck-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.ck-icon-btn:hover { background: #f4f4ef; color: var(--ink); }
+.ck-icon-btn svg { width: 22px; height: 22px; }
+
+/* --------------------------------------------------------- progress */
+
+.ck-progress {
+  flex: 0 0 auto;
+  padding: 14px 24px;
+  background: var(--surface);
+  border-bottom: var(--rule);
+}
+
+.ck-counter {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.ck-bar {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.ck-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+/* ---------------------------------------------------------- content */
+
+.ck-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.ck-step {
+  max-width: 600px;
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.6;
+  letter-spacing: -0.2px;
+}
+
+.ck-translating { color: var(--muted); font-size: 20px; }
+
+.ck-ai-note {
+  max-width: 600px;
+  margin: 0 0 20px;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Inline timer button, sitting in the flow of the sentence. */
+.ck-timer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 4px;
+  padding: 6px 13px;
+  vertical-align: middle;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  border: 0.5px solid var(--amber-line);
+  border-radius: 999px;
+  background: var(--amber-bg);
+  color: var(--amber-ink);
+  cursor: pointer;
+}
+
+.ck-timer-btn:hover { background: #fbeed2; }
+.ck-timer-btn svg { width: 13px; height: 13px; }
+
+.ck-notice {
+  max-width: 560px;
+  margin: 28px 0 0;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 0.5px solid var(--amber-line);
+  border-radius: 8px;
+  background: var(--amber-bg);
+  color: var(--amber-ink);
+}
+
+/* ------------------------------------------------ generate (INDB) */
+
+.ck-generate { max-width: 560px; }
+
+.ck-generate-title { margin: 0; font-size: 21px; line-height: 1.5; font-weight: 600; }
+.ck-generate-body { margin: 12px 0 24px; font-size: 15px; line-height: 1.6; color: var(--muted); }
+
+.ck-generate-ings {
+  margin: 28px 0 0;
+  padding: 14px 20px;
+  list-style: none;
+  text-align: left;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.ck-generate-ings li { padding: 7px 0; font-size: 14px; border-bottom: var(--rule); }
+.ck-generate-ings li:last-child { border-bottom: none; }
+
+/* --------------------------------------------------------- controls */
+
+.ck-controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: var(--rule);
+  background: var(--surface);
+}
+
+.ck-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 16px 22px;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  min-height: 56px; /* comfortable for wet fingers */
+}
+
+.ck-btn:hover:not(:disabled) { background: #f4f4ef; }
+.ck-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.ck-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ck-btn svg { width: 20px; height: 20px; }
+
+.ck-btn-nav { flex: 1 1 0; }
+.ck-btn-next { font-weight: 600; }
+
+/* The primary action, deliberately larger than the two beside it. */
+.ck-btn-read {
+  flex: 1.6 1 0;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  min-height: 64px;
+}
+
+.ck-btn-read:hover:not(:disabled) { background: #000000; }
+.ck-btn-read svg { width: 24px; height: 24px; }
+
+.ck-btn-solid { background: var(--ink); border-color: var(--ink); color: #ffffff; }
+.ck-btn-solid:hover:not(:disabled) { background: #000000; }
+.ck-btn-lg { font-size: 17px; padding: 18px 28px; }
+
+/* ----------------------------------------------------------- drawer */
+
+.ck-drawer {
+  flex: 0 0 auto;
+  border-top: var(--rule);
+  background: var(--surface);
+  max-height: 45vh;
+  overflow-y: auto;
+}
+
+.ck-drawer-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.ck-drawer-toggle:hover { color: var(--ink); }
+.ck-chev { display: inline-flex; transition: transform 0.2s ease; }
+.ck-chev svg { width: 16px; height: 16px; }
+.ck-chev.is-open { transform: rotate(180deg); }
+
+.ck-ing-list { margin: 0; padding: 0 24px 20px; list-style: none; }
+
+.ck-ing-list label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 15px;
+  line-height: 1.45;
+  border-bottom: var(--rule);
+  cursor: pointer;
+}
+
+.ck-ing-list li:last-child label { border-bottom: none; }
+.ck-ing-list label.is-checked { color: var(--muted); text-decoration: line-through; }
+
+.ck-ing-list input {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--ink);
+}
+
+/* ------------------------------------------------------ timer overlay */
+
+.timer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(26, 26, 26, 0.55);
+}
+
+.timer-box {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 28px 28px;
+  text-align: center;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.timer-caption {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.timer-clock {
+  margin: 12px 0 22px;
+  font-size: 62px;
+  font-weight: 600;
+  letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.timer-clock.is-done { font-size: 42px; letter-spacing: -1px; }
+
+.timer-bar {
+  height: 3px;
+  margin-bottom: 24px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.timer-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  border-radius: 999px;
+}
+
+.timer-hint { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+.timer-box .ck-btn { width: 100%; }
+
+/* ------------------------------------------------------------ mobile */
+
+@media (max-width: 620px) {
+  .ck-head { flex-direction: column; gap: 12px; padding: 16px 18px 14px; }
+  .ck-head-actions { width: 100%; justify-content: space-between; }
+  .ck-title h1 { font-size: 22px; }
+  .ck-content { padding: 28px 18px; }
+  .ck-step { font-size: 22px; }
+  .ck-controls { flex-wrap: wrap; padding: 14px 18px; gap: 10px; }
+  .ck-btn-read { order: -1; flex: 1 0 100%; }
+  .ck-btn-nav { flex: 1 1 0; font-size: 15px; padding: 14px 12px; }
+  .timer-clock { font-size: 52px; }
+}
+
+/* =================================================================
+   Multi-dish timeline
+   ================================================================= */
+
+.ck-content-top { justify-content: flex-start; }
+
+.ck-seq-loading { max-width: 520px; margin: 48px auto; }
+
+.ck-timeline-wrap { width: 100%; max-width: 680px; text-align: left; }
+
+.ck-total {
+  margin: 0 0 22px;
+  font-size: 15px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.ck-total strong { font-size: 20px; color: var(--ink); font-weight: 600; }
+
+.ck-timeline { margin: 0; padding: 0; list-style: none; }
+
+.ck-block {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 18px;
+}
+
+/* Continuous rail joining the blocks. */
+.ck-block::before {
+  content: '';
+  position: absolute;
+  left: 61px;
+  top: 26px;
+  bottom: 0;
+  width: 0.5px;
+  background: var(--line);
+}
+
+.ck-block:last-child::before { display: none; }
+
+.ck-block-time {
+  flex: 0 0 74px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding-top: 14px;
+}
+
+.ck-block-at { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.ck-block-dur { font-size: 12px; color: var(--muted); }
+
+.ck-block-body {
+  flex: 1 1 auto;
+  padding: 14px 16px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.ck-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ck-block-dish { margin: 0; font-size: 16px; font-weight: 600; }
+
+.ck-block-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding: 8px 15px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.ck-block-start:hover { background: #f4f4ef; }
+.ck-block-start svg { width: 11px; height: 11px; }
+
+.ck-parallel {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--amber-ink);
+}
+
+.ck-block-steps { margin: 10px 0 0; padding-left: 18px; }
+.ck-block-steps li { font-size: 14px; line-height: 1.55; margin-bottom: 5px; }
+
+.ck-tips {
+  margin-top: 26px;
+  padding: 18px 20px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.ck-tips h2 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ck-tips ul { margin: 0; padding-left: 18px; }
+.ck-tips li { font-size: 14px; line-height: 1.6; margin-bottom: 7px; }
+
+@media (max-width: 620px) {
+  .ck-block { gap: 10px; }
+  .ck-block::before { left: 47px; }
+  .ck-block-time { flex-basis: 60px; }
+  .ck-timeline-wrap { max-width: none; }
+}
+
+.ck-cache-note {
+  margin: 0 0 14px;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}

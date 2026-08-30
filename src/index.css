@@ -1,0 +1,25 @@
+/* Global base for Thali.
+   Deliberately minimal — the screen owns its own styling in
+   src/components/FamilyProfile.css. `color-scheme: light` is explicit:
+   without it, selects, number inputs and the range slider render dark
+   chrome on a machine set to dark mode, against the light ground the
+   style guide specifies. */
+
+:root {
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #fafaf7;
+  color: #1a1a1a;
+}

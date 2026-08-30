@@ -1,0 +1,432 @@
+// POST /api/generate-plan
+//
+// Body: { family: Member[], date?: ISO string, mealType?: 'breakfast'|'lunch'|'dinner' }
+//
+// Deploys unchanged as a Vercel serverless function. In local development the
+// same default export is driven by a Vite middleware (see vite.config.js), so
+// `npm run dev` serves this route without the Vercel CLI.
+
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+import { activeFastIdsOn, calendarNotesOn, foodRulesFor } from '../src/lib/fastingRules.js'
+import { compactForPrompt, filterRecipes, roleOf, selectCandidatesForMeal } from '../src/lib/mealPlanRules.js'
+import { buildShoppingList } from '../src/lib/shoppingList.js'
+import { FAST_LABEL } from '../src/data/memberOptions.js'
+import {
+  describeGuests, guestHeadcount, guestWholeMealConstraints, guestsAsMembers, normaliseGuests,
+} from '../src/lib/guests.js'
+
+const MODEL = 'gemini-3.6-flash'
+const MAX_CANDIDATES = 80
+const MEAL_TYPES = ['breakfast', 'lunch', 'dinner']
+
+// Shape of the meal differs sharply by type; without this the model returns
+// the same dal-sabzi-rice-roti combination three times.
+const MEAL_BRIEF = {
+  breakfast:
+    'Suggest a light, quick Indian breakfast — typically 1 main + 1 side ' +
+    '(like chutney/pickle) + 1 beverage. Keep it to 2-3 dishes. Do NOT ' +
+    'return a dal-rice-roti thali; this is breakfast.',
+  lunch:
+    'Suggest a complete traditional Indian lunch thali — the heaviest meal ' +
+    'of the day. Include: 1 dal, 1 rice OR roti (or both), 1-2 sabzis, ' +
+    '1 raita/salad, and optional pickle. Lunch is where the family eats ' +
+    'together, so make it complete. Aim for 4-5 dishes.',
+  dinner:
+    'Suggest a lighter Indian dinner — typically 1 dal, 1 sabzi, 1 roti/paratha, ' +
+    'optional rice for those who want it. Dinner should be easier to digest ' +
+    'than lunch: go easier on fried and heavy dishes. Aim for 3-4 dishes.',
+}
+
+// Read once per cold start rather than static-importing 1.8 MB into the bundle.
+// Resolved from import.meta.url because cwd differs between `vercel dev`, the
+// Vite middleware and the deployed lambda.
+const RECIPES = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../src/data/recipes.json'), 'utf8'),
+)
+
+function buildPrompt({
+  family, constraints, mealType, dateLabel, calendarNotes, foodRules, candidates,
+  recentRecipeIds, guestSummary = [], guestCount = 0, guestNotes = [], headcount,
+}) {
+  const members = constraints.map((c) => ({
+    memberId: c.id,
+    name: c.name,
+    age: c.age,
+    relationship: c.relationship,
+    diet: c.diet,
+    lifeStage: c.lifeStage,
+    spiceLevel: c.spiceLevel,
+    health: c.health,
+    dislikes: c.dislikes,
+    fastsActiveToday: c.activeFasts.map((id) => FAST_LABEL[id] || id),
+    mustSatisfyFlags: c.requiredFlags,
+  }))
+
+  const guestBlock = guestCount > 0
+    ? `\nGUESTS — ${guestCount} joining this meal:\n${guestSummary.map((g) => `- ${g}`).join('\n')}\n
+Their dietary constraints must ALSO be respected. The meal must satisfy family
+and guests together, cooked once. You cannot make a separate dish for a guest.
+${guestNotes.map((n) => `- ${n.message}`).join('\n')}\n`
+    : ''
+
+  const recentBlock = recentRecipeIds.length
+    ? `\nRECENTLY SERVED — DO NOT REPEAT:\nThe family has already eaten these in the last 5 meals: ${recentRecipeIds.join(', ')}.\nDo not suggest any of them. Choose different dishes from the candidates below.\n`
+    : ''
+
+  return `You are the kitchen planner for an Indian joint family. Plan ONE ${mealType} for ${dateLabel} that the whole family can eat from a single kitchen.
+
+MEAL BRIEF — ${mealType.toUpperCase()}:
+${MEAL_BRIEF[mealType]}
+
+EATING THIS MEAL — ${family.length} ${family.length === 1 ? 'person' : 'people'}:
+${JSON.stringify(members, null, 2)}
+
+Plan for THESE specific family members only. Anyone not in this list is absent
+today: ignore them entirely. Do not cook for them, do not mention them, and do
+not let their diets, health conditions or fasts constrain this meal.
+
+There are ${headcount} ${headcount === 1 ? 'person' : 'people'} eating${guestCount > 0 ? ` (${family.length} family + ${guestCount} guests)` : ''}. Choose the
+dish count and portions with that in mind. Do NOT produce a shopping list —
+quantities are calculated separately from the recipe data.
+
+${guestBlock}${recentBlock}
+${calendarNotes.length ? `TODAY'S CALENDAR CONTEXT:\n${JSON.stringify(calendarNotes, null, 2)}\n` : ''}
+${foodRules.length ? `FASTING FOOD RULES IN FORCE:\n${JSON.stringify(foodRules, null, 2)}\n` : ''}
+CANDIDATE RECIPES — every one of these has ALREADY been verified as safe for
+every member today. Choose ONLY from this list. Never invent a recipe and never
+use a recipeId that does not appear here.
+${JSON.stringify(candidates, null, 2)}
+
+Each candidate carries a "role" (dal, rice, bread, sabzi, accompaniment,
+beverage, snack, dessert, main) — use it to build the shape the brief asks for.
+
+PER-MEMBER ATTRIBUTION — READ CAREFULLY
+For each dish, list which family members can eat it as-is (servesMembers, by
+memberId), which cannot (excludedMembers, each with a specific health or dietary
+reason), and suggest a substitute dish from the available candidates for any
+excluded members. Do NOT put everyone in servesMembers by default — actually
+reason about each member's constraints: their diet, their health conditions,
+their active fasts, their dislikes, and their life stage. A rich dessert is not
+automatically fine for a diabetic; a heavily spiced dish is not automatically
+fine for a toddler. If a dish genuinely is safe for everyone, put all members in
+servesMembers and leave excludedMembers empty. Every member must appear in
+exactly one of servesMembers or excludedMembers for every dish.
+
+TASK
+Follow the MEAL BRIEF above for how many dishes and which roles. Prefer
+dishes with hasSteps=true, since those carry full preparation instructions.
+Cover the whole family from one cooking session; where one member is fasting
+and others are not, say plainly in perMemberNotes which dish serves whom.
+
+Return ONLY a JSON object, no markdown fence, in exactly this shape:
+{
+  "dishes": [
+    { "recipeId": "<from the candidate list>",
+      "name": "<recipe name>",
+      "role": "<e.g. main, bread, dal, side, sweet>",
+      "servesMembers": ["<memberId>", ...],
+      "excludedMembers": [ { "memberId": "<memberId>", "reason": "<specific health or dietary reason>" } ],
+      "substitutes": [ { "forMemberId": "<memberId>", "substituteDish": "<another dish from THIS plan or the candidates>", "note": "<why it suits them>" } ],
+      "why": "<one sentence on why this dish fits today>" }
+  ],
+  "perMemberNotes": { "<member name>": "<what this member eats and any caution>" },
+  "prepTimeTotalMin": <integer, realistic for cooking these together>,
+  "planSummary": "<two sentences describing the thali as a whole>"
+}`
+}
+
+// Models sometimes wrap JSON in a fence or add prose despite the mime type.
+function parseModelJson(text) {
+  const cleaned = String(text).trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/```\s*$/, '')
+    .trim()
+  return JSON.parse(cleaned)
+}
+
+/**
+ * Normalise one dish's per-member attribution.
+ * Anything the model returns that cannot be resolved to a real family member
+ * is dropped rather than shown, and every member is forced into exactly one
+ * of serves/excluded so the UI can never render a contradiction.
+ */
+function buildAttribution(dish, family, resolveMember) {
+  const serves = []
+  const excluded = []
+  const seen = new Set()
+
+  for (const ref of Array.isArray(dish.servesMembers) ? dish.servesMembers : []) {
+    const m = resolveMember(ref)
+    if (m && !seen.has(m.memberId)) { serves.push(m); seen.add(m.memberId) }
+  }
+
+  for (const e of Array.isArray(dish.excludedMembers) ? dish.excludedMembers : []) {
+    const m = resolveMember(e?.memberId ?? e?.name ?? e)
+    if (!m || seen.has(m.memberId)) continue
+    excluded.push({ ...m, reason: String(e?.reason || 'not suitable for this member').trim() })
+    seen.add(m.memberId)
+  }
+
+  // A member the model forgot is assumed served, matching the old behaviour
+  // rather than silently vanishing from the card.
+  for (const m of family) {
+    if (!seen.has(m.id)) { serves.push({ memberId: m.id, name: m.name }); seen.add(m.id) }
+  }
+
+  const excludedIds = new Set(excluded.map((e) => e.memberId))
+  const substitutes = (Array.isArray(dish.substitutes) ? dish.substitutes : [])
+    .map((s) => {
+      const m = resolveMember(s?.forMemberId ?? s?.memberId)
+      if (!m || !s?.substituteDish) return null
+      return {
+        ...m,
+        substituteDish: String(s.substituteDish).trim(),
+        note: String(s.note || '').trim(),
+      }
+    })
+    // Only offer a substitute to someone actually excluded.
+    .filter((s) => s && excludedIds.has(s.memberId))
+
+  return { servesMembers: serves, excludedMembers: excluded, substitutes }
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    return res.status(405).json({ error: 'Method not allowed. Use POST.' })
+  }
+
+  // Key-format agnostic on purpose. Google has used at least two shapes
+  // (legacy AIza..., current AQ....), so validating a prefix would reject
+  // valid keys the next time the format moves. Only reject what is provably
+  // not a key: absent, too short, or the placeholder we ship in .env.local.
+  const apiKey = (process.env.GEMINI_API_KEY || '').trim()
+  const isUnset = apiKey.length <= 30 ||
+    /^(your-|<|changeme|placeholder)/i.test(apiKey)
+  if (isUnset) {
+    return res.status(500).json({
+      error: 'GEMINI_API_KEY is not set.',
+      hint: 'Put your real key in .env.local (local) or the Vercel project environment variables (deployed), then restart the dev server. Get a key at https://aistudio.google.com/apikey',
+    })
+  }
+
+  const body = req.body || {}
+  const family = Array.isArray(body.family) ? body.family : null
+  if (!family || family.length === 0) {
+    return res.status(400).json({ error: 'Body must include a non-empty "family" array.' })
+  }
+
+  // Who is actually home for this meal. Absent members are dropped entirely:
+  // their diets, health conditions and fasts must not constrain the cooking,
+  // and their portions must not be bought or cooked.
+  const presentIds = Array.isArray(body.presentMembers) ? body.presentMembers : null
+  const diners = presentIds
+    ? family.filter((m) => presentIds.includes(m.id))
+    : family
+  if (diners.length === 0) {
+    return res.status(400).json({
+      error: 'No present members. "presentMembers" matched nobody in "family".',
+      presentMembers: presentIds,
+    })
+  }
+  const absent = family.filter((m) => !diners.includes(m))
+
+  // Guests join as pseudo-members so their constraints run through the same
+  // deterministic filter. You cannot cook two versions of one pot: a Jain
+  // guest makes the whole meal Jain, an allergy binds every dish.
+  const guests = normaliseGuests(Array.isArray(body.guests) ? body.guests : [])
+  const guestMembers = guestsAsMembers(guests)
+  const guestCount = guestHeadcount(guests)
+  const guestNotes = guestWholeMealConstraints(guests)
+  const guestSummary = describeGuests(guests)
+  const headcount = diners.length + guestCount
+
+  const mealType = MEAL_TYPES.includes(body.mealType) ? body.mealType : 'dinner'
+  const recentRecipeIds = Array.isArray(body.recentRecipeIds)
+    ? body.recentRecipeIds.filter((x) => typeof x === 'string').slice(0, 60)
+    : []
+  const date = body.date ? new Date(body.date) : new Date()
+  if (Number.isNaN(date.getTime())) {
+    return res.status(400).json({ error: `Invalid date: ${body.date}` })
+  }
+
+  // ---- constraints and filtering (deterministic, before any model call) ----
+  const activeFastIds = activeFastIdsOn(date)
+  const { mains, swaps, constraints, stats } = filterRecipes(
+    RECIPES, [...diners, ...guestMembers], activeFastIds,
+  )
+
+  if (mains.length === 0 && swaps.length === 0) {
+    return res.status(422).json({
+      error: 'No recipe in the database satisfies every member today.',
+      stats,
+      constraints: constraints.map((c) => ({ name: c.name, requiredFlags: c.requiredFlags })),
+    })
+  }
+
+  const selection = selectCandidatesForMeal(mains, mealType, {
+    limit: MAX_CANDIDATES,
+    excludeIds: recentRecipeIds,
+  })
+
+  if (selection.candidates.length === 0) {
+    return res.status(422).json({
+      error: `No ${mealType} recipe in the database satisfies every member today.`,
+      stats, mealType,
+    })
+  }
+
+  const candidates = selection.candidates.map((r) => ({
+    ...compactForPrompt(r),
+    role: roleOf(r),
+  }))
+  const dateLabel = date.toLocaleDateString('en-IN', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  })
+  const activeLabels = [...new Set(constraints.flatMap((c) => c.activeFasts))]
+    .map((id) => FAST_LABEL[id] || id)
+
+  const prompt = buildPrompt({
+    family: diners, constraints, mealType, dateLabel, recentRecipeIds,
+    guestSummary, guestCount, guestNotes, headcount,
+    calendarNotes: calendarNotesOn(date),
+    foodRules: foodRulesFor(activeLabels),
+    candidates,
+  })
+
+  // ---- model call ----
+  let raw
+  try {
+    const model = new GoogleGenerativeAI(apiKey).getGenerativeModel({
+      model: MODEL,
+      generationConfig: {
+        responseMimeType: 'application/json',
+        // Generous, because 2.5 Flash thinks by default and thinking tokens
+        // count here — a tight cap truncates the JSON mid-object.
+        maxOutputTokens: 8192,
+        temperature: 0.7,
+      },
+    })
+    const result = await model.generateContent(prompt)
+    raw = result.response.text()
+  } catch (err) {
+    return res.status(502).json({
+      error: 'Gemini request failed.',
+      detail: err?.message || String(err),
+      model: MODEL,
+    })
+  }
+
+  let plan
+  try {
+    plan = parseModelJson(raw)
+  } catch (err) {
+    return res.status(502).json({
+      error: 'Gemini returned text that is not valid JSON.',
+      detail: err?.message || String(err),
+      raw: String(raw).slice(0, 2000),
+    })
+  }
+
+  if (!Array.isArray(plan.dishes) || plan.dishes.length === 0) {
+    return res.status(502).json({ error: 'Gemini response had no dishes array.', raw: plan })
+  }
+
+  // ---- rehydrate: the model only ever saw compact records ----
+  const byId = new Map(RECIPES.map((r) => [r.recipeId, r]))
+
+  // The model is asked for memberIds but sometimes answers with names.
+  // Accept either, and hand the client resolved {memberId, name} pairs so the
+  // UI never has to guess.
+  const memberIndex = new Map()
+  for (const m of diners) {
+    if (m.id) memberIndex.set(String(m.id).toLowerCase(), m)
+    if (m.name) memberIndex.set(String(m.name).trim().toLowerCase(), m)
+  }
+  const resolveMember = (ref) => {
+    const key = String(ref ?? '').trim().toLowerCase()
+    const m = memberIndex.get(key)
+    return m ? { memberId: m.id, name: m.name } : null
+  }
+  const attribution = (d) => buildAttribution(d, diners, resolveMember)
+
+  const dishes = plan.dishes.map((d) => {
+    const full = byId.get(d.recipeId)
+    return {
+      recipeId: d.recipeId,
+      name: full?.name || d.name,
+      role: d.role || '',
+      why: d.why || '',
+      ...attribution(d),
+      known: Boolean(full),
+      hindiName: full?.hindiName || '',
+      category: full?.category || '',
+      region: full?.region || '',
+      serves: full?.serves ?? null,
+      prepTimeMin: full?.prepTimeMin ?? null,
+      cookTimeMin: full?.cookTimeMin ?? null,
+      difficulty: full?.difficulty || null,
+      caloriesPerServing: full?.caloriesPerServing ?? null,
+      ingredients: full?.ingredients || '',
+      preparation: full?.preparation || null,
+      tips: full?.tips || null,
+      hasFullPreparation: Boolean(full?.hasFullPreparation),
+      source: full?.source || null,
+      flags: full?.flags || null,
+    }
+  })
+
+  const possibleSwaps = swaps.slice(0, 12).map(({ recipe, modifications }) => ({
+    recipeId: recipe.recipeId,
+    name: recipe.name,
+    category: recipe.category,
+    prepTimeMin: recipe.prepTimeMin,
+    hasFullPreparation: recipe.hasFullPreparation,
+    modifications,
+  }))
+
+  return res.status(200).json({
+    mealType,
+    presentMembers: diners.map((m) => ({ memberId: m.id, name: m.name })),
+    absentMembers: absent.map((m) => ({ memberId: m.id, name: m.name })),
+    headcount,
+    guestCount,
+    guestSummary,
+    guestNotes,
+    date: date.toISOString(),
+    dateLabel,
+    activeFasts: activeLabels,
+    dishes,
+    perMemberNotes: plan.perMemberNotes || {},
+    prepTimeTotalMin: Number(plan.prepTimeTotalMin) || null,
+    // Computed from the recipes, not taken from the model: scaling by
+    // totalDiners / recipe.serves is arithmetic, and the model scaled down
+    // reliably but not up.
+    ingredientsAggregated: buildShoppingList(
+      dishes.map((d) => byId.get(d.recipeId)).filter(Boolean),
+      headcount,
+    ),
+    planSummary: plan.planSummary || '',
+    possibleSwaps,
+    meta: {
+      model: MODEL,
+      candidatesSent: candidates.length,
+      headcount,
+    guestCount,
+    guestSummary,
+    guestNotes,
+      familySize: family.length,
+      eligibleForMealType: selection.eligible,
+      recentExclusionApplied: selection.excludedApplied,
+      recentExcludedCount: recentRecipeIds.length,
+      candidateRoles: candidates.reduce((a, c) => {
+        a[c.role] = (a[c.role] || 0) + 1
+        return a
+      }, {}),
+      ...stats,
+    },
+  })
+}

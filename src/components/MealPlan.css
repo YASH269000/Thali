@@ -1,0 +1,497 @@
+/* Meal plan screen. Inherits the palette tokens from .thali in
+   FamilyProfile.css — same style guide: 0.5px borders, 12px cards,
+   8px buttons, no emoji, no gradients, no drop shadows. */
+
+.section-sub {
+  margin: -6px 0 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------- controls */
+
+.plan-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.meal-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.toggle-btn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 18px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.toggle-btn.is-active { background: var(--ink); color: #ffffff; }
+.toggle-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* -------------------------------------------------------- states */
+
+.loading-state,
+.error-state {
+  padding: 32px 24px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.error-state { border-color: var(--health-line); background: var(--health-bg); }
+
+.loading-title { margin: 0; font-size: 15px; font-weight: 600; }
+.loading-body,
+.error-body {
+  margin: 6px auto 0;
+  max-width: 46ch;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.error-title { margin: 0; font-size: 15px; font-weight: 600; color: var(--health-ink); }
+.error-detail {
+  margin: 10px auto 16px;
+  max-width: 60ch;
+  font-size: 12px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  color: var(--health-ink);
+  word-break: break-word;
+}
+
+/* --------------------------------------------------- fast banner */
+
+.fast-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  border: 0.5px solid var(--fast-line);
+  border-radius: 12px;
+  background: var(--fast-bg);
+}
+
+.fast-banner p { margin: 0; font-size: 13px; color: var(--fast-ink); }
+
+/* ------------------------------------------------- thali visual */
+
+.thali-visual { display: flex; justify-content: center; margin: 4px 0 20px; }
+
+.plate {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  border: 0.5px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.plate::after {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border: 0.5px solid var(--line);
+  border-radius: 50%;
+}
+
+.plate-centre {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.katori {
+  position: absolute;
+  width: 74px;
+  height: 74px;
+  margin: -37px 0 0 -37px;
+  border: 0.5px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  text-align: center;
+}
+
+.katori-label {
+  font-size: 10px;
+  line-height: 1.25;
+  color: var(--ink);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Positions per dish count — kept in CSS rather than inline styles. */
+.count-1 .katori:nth-child(1) { top: 50%; left: 50%; }
+
+.count-2 .katori:nth-child(1) { top: 50%; left: 28%; }
+.count-2 .katori:nth-child(2) { top: 50%; left: 72%; }
+
+.count-3 .katori:nth-child(1) { top: 27%; left: 50%; }
+.count-3 .katori:nth-child(2) { top: 66%; left: 29%; }
+.count-3 .katori:nth-child(3) { top: 66%; left: 71%; }
+
+.count-4 .katori:nth-child(1) { top: 26%; left: 38%; }
+.count-4 .katori:nth-child(2) { top: 26%; left: 68%; }
+.count-4 .katori:nth-child(3) { top: 70%; left: 32%; }
+.count-4 .katori:nth-child(4) { top: 70%; left: 62%; }
+
+.count-5 .katori:nth-child(1) { top: 22%; left: 50%; }
+.count-5 .katori:nth-child(2) { top: 44%; left: 24%; }
+.count-5 .katori:nth-child(3) { top: 44%; left: 76%; }
+.count-5 .katori:nth-child(4) { top: 76%; left: 35%; }
+.count-5 .katori:nth-child(5) { top: 76%; left: 65%; }
+
+/* ---------------------------------------------- summary + stats */
+
+.plan-summary {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  text-align: center;
+}
+
+.plan-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 12px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.plan-stats strong { color: var(--ink); font-weight: 600; }
+
+/* --------------------------------------------------- dish cards */
+
+.dish-list,
+.notes-list,
+.swap-list,
+.shopping-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dish-card,
+.note-card,
+.swap-card {
+  padding: 16px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.dish-head,
+.swap-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dish-name { margin: 0; font-size: 15px; font-weight: 600; }
+.dish-hindi { margin: 1px 0 0; font-size: 13px; color: var(--muted); }
+
+.dish-role {
+  flex: 0 0 auto;
+  padding: 3px 9px;
+  border: var(--rule);
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dish-meta { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+.dish-why { margin: 8px 0 0; font-size: 13px; line-height: 1.5; }
+
+.dish-serves { margin: 8px 0 0; font-size: 13px; }
+.dish-serves-label { color: var(--muted); }
+
+.link-btn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.link-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.dish-detail {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: var(--rule);
+}
+
+.dish-detail h4 {
+  margin: 14px 0 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dish-detail h4:first-child { margin-top: 0; }
+.dish-detail p { margin: 0; font-size: 13px; line-height: 1.55; }
+
+.steps { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; }
+.steps li { margin-bottom: 7px; }
+
+.detail-note { color: var(--muted); }
+.detail-source { margin-top: 12px; font-size: 12px; color: var(--muted); }
+
+/* --------------------------------------------- notes / shopping */
+
+.note-name { margin: 0; font-size: 14px; font-weight: 600; }
+.note-body { margin: 3px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+.shopping-list {
+  gap: 0;
+  padding: 8px 16px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.shopping-list li {
+  padding: 7px 0;
+  font-size: 13px;
+  border-bottom: var(--rule);
+}
+
+.shopping-list li:last-child { border-bottom: none; }
+
+/* ---------------------------------------------------- swap cards */
+
+.swap-card { border-style: dashed; }
+
+.swap-mod {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------- mobile */
+
+@media (max-width: 620px) {
+  .plate { width: 220px; height: 220px; }
+  .katori { width: 64px; height: 64px; margin: -32px 0 0 -32px; }
+  .katori-label { font-size: 9px; }
+  .meal-toggle { width: 100%; }
+  .toggle-btn { flex: 1 1 0; padding: 8px 6px; }
+  .plan-stats { gap: 6px 14px; }
+}
+
+/* ------------------------------------------------- cook mode entry */
+
+.dish-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.dish-actions .link-btn { margin-top: 0; }
+
+.cook-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: 0.5px solid var(--ink);
+  border-radius: 8px;
+  background: var(--ink);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.cook-btn:hover { background: #000000; }
+.cook-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.cook-btn svg { width: 12px; height: 12px; }
+
+.btn-cook {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: var(--surface);
+  border-color: var(--ink);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.btn-cook:hover { background: #f4f4ef; }
+.btn-cook svg { width: 13px; height: 13px; }
+
+/* ------------------------------------------------ meal chooser */
+
+.plan-controls {
+  flex-direction: column;
+  gap: 10px;
+}
+
+.change-meal { margin-top: 0; font-size: 13px; color: var(--muted); }
+.change-meal:hover { color: var(--ink); }
+
+.meal-chooser {
+  padding: 36px 24px 32px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.chooser-title {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.chooser-sub {
+  margin: 8px auto 26px;
+  max-width: 44ch;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.chooser-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.chooser-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 104px;
+  padding: 20px 14px;
+  font: inherit;
+  border: 0.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.chooser-card:hover { background: var(--surface); border-color: var(--ink); }
+.chooser-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.chooser-card.is-current { border-color: var(--ink); background: var(--surface); }
+
+.chooser-card-name { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+.chooser-card-hint { font-size: 12px; line-height: 1.4; color: var(--muted); }
+
+.chooser-card-tag {
+  margin-top: 3px;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: 999px;
+  background: var(--diet-bg);
+  color: var(--diet-ink);
+  border: 0.5px solid var(--diet-line);
+}
+
+.chooser-back { margin-top: 22px; color: var(--muted); }
+.chooser-back:hover { color: var(--ink); }
+
+@media (max-width: 620px) {
+  .chooser-grid { grid-template-columns: 1fr; }
+  .chooser-card { min-height: 0; flex-direction: row; justify-content: space-between; padding: 16px 18px; }
+  .chooser-card-hint { text-align: right; }
+  .meal-chooser { padding: 26px 18px 24px; }
+}
+
+.plan-links { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+
+.attendance {
+  margin: 0 0 16px;
+  padding: 9px 14px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--muted);
+  border: var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.guest-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 0.5px solid var(--stage-line);
+  border-radius: 12px;
+  background: var(--stage-bg);
+}
+
+.guest-note p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--stage-ink); }
+
+.note-card.is-guest { border-style: dashed; }
+.note-guest-detail { font-weight: 400; color: var(--muted); }
+
+.pantry-note {
+  margin: -6px 0 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}

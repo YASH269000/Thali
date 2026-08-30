@@ -1,0 +1,35 @@
+/* Per-member dish attribution. Inherits palette tokens from .thali. */
+
+.pmd { margin-top: 8px; }
+
+.pmd-line {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pmd-label { color: var(--muted); }
+.pmd-names { color: var(--ink); }
+
+.pmd-sep { color: var(--line); }
+
+/* Exclusions read as secondary information, not as an error. */
+.pmd-excluded { color: var(--muted); }
+.pmd-reason { color: var(--muted); font-style: italic; }
+
+.pmd-substitute {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 8px 11px;
+  font-size: 13px;
+  line-height: 1.45;
+  border: 0.5px solid var(--fast-line);
+  border-radius: 8px;
+  background: var(--fast-bg);
+  color: var(--fast-ink);
+}
+
+.pmd-substitute strong { font-weight: 600; }
+.pmd-arrow { flex: 0 0 auto; }

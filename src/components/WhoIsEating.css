@@ -1,0 +1,200 @@
+/* "Who is eating" — attendance for one meal. Tokens come from .thali. */
+
+.who {
+  padding: 26px 22px 22px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.who-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.who-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  text-transform: capitalize;
+}
+
+.who-sub { margin: 5px 0 0; font-size: 13px; color: var(--muted); }
+
+.who-quick { display: flex; gap: 8px; flex: 0 0 auto; }
+
+.who-quick-btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.who-quick-btn:hover:not(:disabled) { background: #f4f4ef; border-color: var(--muted); }
+.who-quick-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.who-list { list-style: none; margin: 0; padding: 0; }
+
+.who-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 12px;
+  border: 0.5px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.who-row:hover { background: var(--bg); }
+
+/* Unselected people fade rather than disappear — you can still see who is out. */
+.who-row:not(.is-on) { opacity: 0.45; }
+.who-row.is-on { background: var(--bg); border-color: var(--line); }
+
+.who-row input {
+  flex: 0 0 auto;
+  width: 19px;
+  height: 19px;
+  margin: 9px 0 0;
+  accent-color: var(--ink);
+}
+
+.who-row .avatar { flex: 0 0 auto; }
+
+.who-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.who-name { font-size: 15px; font-weight: 600; }
+.who-meta { font-size: 12px; color: var(--muted); }
+
+.who-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+
+.who-actions { margin-top: 18px; }
+.who-hint { margin: 8px 0 0; font-size: 12px; color: var(--muted); text-align: center; }
+
+.who-back {
+  display: block;
+  margin: 14px auto 0;
+  color: var(--muted);
+}
+
+.who-back:hover { color: var(--ink); }
+
+@media (max-width: 620px) {
+  .who { padding: 20px 16px 18px; }
+  .who-head { flex-direction: column; gap: 12px; }
+  .who-quick { width: 100%; }
+  .who-quick-btn { flex: 1 1 0; }
+}
+
+/* ---------------------------------------------------------- guests */
+
+.guests {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: var(--rule);
+}
+
+.guests-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.guests-title { margin: 0; font-size: 15px; font-weight: 600; }
+.guests-sub { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+.guests-empty { margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+
+.guest-rows { list-style: none; margin: 14px 0 0; padding: 0; }
+
+.guest-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 0;
+  border-bottom: var(--rule);
+}
+
+.guest-row:last-child { border-bottom: none; }
+
+.guest-name,
+.guest-diet {
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  min-width: 0;
+}
+
+.guest-name { flex: 1 1 40%; }
+.guest-diet { flex: 1 1 44%; appearance: none; cursor: pointer; }
+.guest-name:focus, .guest-diet:focus { outline: none; border-color: var(--ink); }
+
+.guest-count {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  border: var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.guest-count button {
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  width: 30px;
+  height: 34px;
+  border: none;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.guest-count button:hover { background: #f4f4ef; }
+
+.guest-n {
+  min-width: 22px;
+  text-align: center;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.guest-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.guest-remove:hover { background: var(--health-bg); color: var(--health-ink); }
+.guest-remove svg { width: 17px; height: 17px; }
+
+.guest-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+@media (max-width: 620px) {
+  .guest-row { flex-wrap: wrap; }
+  .guest-name { flex: 1 1 100%; }
+  .guest-diet { flex: 1 1 auto; }
+}
