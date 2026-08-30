@@ -34112,58 +34112,6 @@
     }
   },
   {
-    "recipeId": "BFP143",
-    "name": "Mexican rice",
-    "hindiName": "",
-    "category": "Rice Dish",
-    "region": "Pan-Indian",
-    "serves": 4,
-    "prepTimeMin": null,
-    "cookTimeMin": null,
-    "difficulty": null,
-    "ingredients": "Rice, parboiled, milled (Oryza sativa ): 80g; Tomato, ripe, hybrid (Solanum lycopersicum): 150g; Onion, big (Allium cepa): 20g; Onion, big (Allium cepa): 50g; Cardamom, black (Elettaria cardamomum): 0.25tsp; Cumin seeds (Cuminum cyminum): 0.25tsp; Chilli powder: 0.13tsp; Cinnamon, ground: 2g; Oil, sunflower: 1tbsp; Salt: 0.5tsp; Water, distilled: 120ml; Lamb, mince, raw: 80g",
-    "preparation": null,
-    "tips": null,
-    "caloriesPerServing": 42,
-    "source": "INDB (ICMR-NIN)",
-    "source_sheet": "INDB Import",
-    "hasFullPreparation": false,
-    "flags": {
-      "ekadashiSafe": {
-        "status": "no",
-        "note": "No (Onion, big (Allium cepa), Rice, parboiled, milled (Oryza sativa ))"
-      },
-      "navratriSafe": {
-        "status": "no",
-        "note": "No (Onion, big (Allium cepa), Rice, parboiled, milled (Oryza sativa ))"
-      },
-      "jainSafe": {
-        "status": "no",
-        "note": "No (Onion, big (Allium cepa))"
-      },
-      "diabeticFriendly": {
-        "status": "no",
-        "note": "High GI: white rice"
-      },
-      "lactoseFree": {
-        "status": "yes",
-        "note": "Yes"
-      },
-      "vegan": {
-        "status": "no",
-        "note": "Contains: lamb"
-      },
-      "onionGarlicFree": {
-        "status": "no",
-        "note": "No (Onion, big (Allium cepa))"
-      },
-      "glutenFree": {
-        "status": "yes",
-        "note": "Yes"
-      }
-    }
-  },
-  {
     "recipeId": "BFP144",
     "name": "Plain khitchdi (Plain khichri/khichdi)",
     "hindiName": "",
