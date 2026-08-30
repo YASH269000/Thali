@@ -24,13 +24,37 @@ const CUISINE_KEY = 'thali_cuisine'
 const RECENT_LIMIT = 5
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner']
 
-const CUISINE_CHOICES = [
-  { id: 'indian', label: 'Indian', hint: 'The usual thali' },
-  { id: 'Indo-Chinese', label: 'Indo-Chinese', hint: 'Noodles, fried rice, manchurian' },
-  { id: 'Italian', label: 'Italian', hint: 'Pasta, pizza, garlic bread' },
-  { id: 'Continental', label: 'Continental', hint: 'Burgers, wraps, grills' },
-  { id: 'surprise', label: 'Surprise me', hint: 'Pick a cuisine for us' },
+// Labels and hints for the cuisines the database can produce. Which of them
+// are actually offered comes from the API, not from this list — hardcoding a
+// subset here previously hid Mexican, Thai and Middle Eastern from families
+// who could eat them.
+const CUISINE_META = {
+  'Indo-Chinese': { label: 'Indo-Chinese', hint: 'Noodles, fried rice, manchurian' },
+  Italian: { label: 'Italian', hint: 'Pasta, pizza, garlic bread' },
+  Continental: { label: 'Continental', hint: 'Burgers, wraps, grills' },
+  Mexican: { label: 'Mexican', hint: 'Tacos, burritos, nachos' },
+  Thai: { label: 'Thai', hint: 'Curries, pad thai, jasmine rice' },
+  'Middle Eastern': { label: 'Middle Eastern', hint: 'Hummus, falafel, shawarma' },
+  'East Asian': { label: 'East Asian', hint: 'Sushi, ramen, bibimbap' },
+}
+
+// Display order, heaviest-ordered cuisine first.
+const CUISINE_ORDER = [
+  'Indo-Chinese', 'Italian', 'Continental', 'Mexican', 'Thai', 'Middle Eastern', 'East Asian',
 ]
+
+const CUISINE_INDIAN = { id: 'indian', label: 'Indian', hint: 'The usual thali' }
+const CUISINE_SURPRISE = { id: 'surprise', label: 'Surprise me', hint: 'Pick a cuisine for us' }
+
+const KNOWN_CUISINE_IDS = ['indian', 'surprise', ...CUISINE_ORDER]
+
+/** Indian always, then whatever the API says is offerable, then Surprise me. */
+function cuisineChips(offerable = []) {
+  const middle = CUISINE_ORDER
+    .filter((c) => offerable.includes(c))
+    .map((c) => ({ id: c, ...CUISINE_META[c] }))
+  return [CUISINE_INDIAN, ...middle, ...(middle.length > 0 ? [CUISINE_SURPRISE] : [])]
+}
 
 const MEAL_HINTS = {
   breakfast: 'Light morning meal',
@@ -73,7 +97,7 @@ function planKey(type, ids, list, pick) {
 function loadCuisine() {
   try {
     const v = window.sessionStorage.getItem(CUISINE_KEY)
-    return CUISINE_CHOICES.some((c) => c.id === v) ? v : 'indian'
+    return KNOWN_CUISINE_IDS.includes(v) ? v : 'indian'
   } catch {
     return 'indian'
   }
@@ -483,6 +507,12 @@ export default function MealPlan() {
   // True only while the plan in state matches what is currently selected.
   // Both the thali visual and the shopping list read this same plan object,
   // which is why they went stale together.
+  // A cuisine saved from an earlier session may not be offerable today; the
+  // API already falls back to Indian, so reflect that in the picker.
+  const selectedCuisine = cuisineInfo
+    && !cuisineChips(cuisineInfo.offerable).some((c) => c.id === cuisine)
+    ? 'indian' : cuisine
+
   const planCurrent = Boolean(plan) && planKeyOf === planKey(mealType, present, guests, cuisine)
   // A change is selected but its plan has not arrived yet.
   const awaitingPlan = stage === 'plan' && !error && (loading || !planCurrent)
@@ -572,28 +602,24 @@ export default function MealPlan() {
               <div className="cuisine-picker">
                 <p className="cuisine-title">Which cuisine?</p>
                 <div className="cuisine-row">
-                  {CUISINE_CHOICES.map((c) => {
-                    const offerable = c.id === 'indian' || c.id === 'surprise'
-                      ? (c.id === 'indian' || cuisineInfo.offerable.length > 0)
-                      : cuisineInfo.offerable.includes(c.id)
-                    if (!offerable) return null
-                    return (
-                      <button key={c.id} type="button"
-                        className={`cuisine-chip${cuisine === c.id ? ' is-on' : ''}`}
-                        onClick={() => chooseCuisine(c.id)}
-                        aria-pressed={cuisine === c.id}>
-                        <span className="cuisine-chip-name">{c.label}</span>
-                        <span className="cuisine-chip-hint">{c.hint}</span>
-                      </button>
-                    )
-                  })}
+                  {cuisineChips(cuisineInfo.offerable).map((c) => (
+                    <button key={c.id} type="button"
+                      className={`cuisine-chip${selectedCuisine === c.id ? ' is-on' : ''}`}
+                      onClick={() => chooseCuisine(c.id)}
+                      aria-pressed={selectedCuisine === c.id}>
+                      <span className="cuisine-chip-name">{c.label}</span>
+                      <span className="cuisine-chip-hint">{c.hint}</span>
+                    </button>
+                  ))}
                 </div>
 
                 {(cuisineInfo.unavailable || []).length > 0 && (
                   <div className="cuisine-unavailable">
+                    <p className="cuisine-unavailable-title">Not available today</p>
                     {cuisineInfo.unavailable.map((u) => (
-                      <p key={u.cuisine}>
-                        <strong>{u.cuisine}</strong> &mdash; {u.reason}
+                      <p key={u.cuisine} className="cuisine-unavailable-row">
+                        <span className="chip chip-health">{u.cuisine}</span>
+                        {u.reason}
                       </p>
                     ))}
                   </div>
