@@ -1,0 +1,108 @@
+/* Pantry — what the family already has. Tokens come from .thali. */
+
+.pantry {
+  margin-top: 24px;
+  padding: 18px;
+  border: var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.pantry-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pantry-title { margin: 0; }
+.pantry-sub { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.pantry-clear { margin-top: 0; color: var(--muted); flex: 0 0 auto; }
+.pantry-clear:hover { color: var(--ink); }
+
+.pantry-saved {
+  margin: 12px 0 0;
+  padding: 9px 13px;
+  font-size: 13px;
+  border: 0.5px solid var(--diet-line);
+  border-radius: 8px;
+  background: var(--diet-bg);
+  color: var(--diet-ink);
+}
+
+.pantry-saved strong { font-weight: 600; }
+
+.pantry-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.pantry-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  font-size: 13px;
+  border: 0.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.pantry-chip:hover { border-color: var(--muted); }
+.pantry-chip.is-on { background: var(--ink); border-color: var(--ink); color: #ffffff; }
+.pantry-chip input { width: 14px; height: 14px; margin: 0; accent-color: var(--ink); }
+.pantry-chip.is-on input { accent-color: #ffffff; }
+.pantry-chip:focus-within { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+.pantry-custom-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+
+.pantry-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px 6px 12px;
+  font-size: 13px;
+  border: 0.5px solid var(--stage-line);
+  border-radius: 999px;
+  background: var(--stage-bg);
+  color: var(--stage-ink);
+}
+
+.pantry-custom button {
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.pantry-custom button:hover { opacity: 1; }
+.pantry-custom svg { width: 14px; height: 14px; }
+
+.pantry-add { display: flex; gap: 8px; margin-top: 14px; }
+
+.pantry-add input {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: inherit;
+  font-size: 13px;
+  padding: 9px 11px;
+  border: var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.pantry-add input:focus { outline: none; border-color: var(--ink); }
+.pantry-add-btn { flex: 0 0 auto; font-size: 13px; padding: 9px 16px; }
+.pantry-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+@media (max-width: 620px) {
+  .pantry-head { flex-direction: column; gap: 8px; }
+}

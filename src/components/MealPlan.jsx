@@ -3,11 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { loadGuests, normaliseGuests, saveGuests } from '../lib/guests.js'
 import { displayName } from '../lib/names.js'
 import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
+import { applyPantry } from '../lib/shoppingList.js'
 import { buildShoppingList } from '../lib/shoppingList.js'
+import { loadPantry, savePantry } from '../lib/pantry.js'
+import { lookupIngredient } from '../lib/ingredientGuide.js'
 import CookMode from './CookMode.jsx'
 import MultiDishCookMode from './MultiDishCookMode.jsx'
 import WhoIsEating from './WhoIsEating.jsx'
 import IngredientText from './IngredientPopover.jsx'
+import Pantry from './Pantry.jsx'
 import PerMemberDisplay from './PerMemberDisplay.jsx'
 import './FamilyProfile.css'
 import './MealPlan.css'
@@ -312,6 +316,7 @@ export default function MealPlan() {
   const [cuisine, setCuisine] = useState(loadCuisine)
   // Which cuisines today's constraints can actually furnish a meal from.
   const [cuisineInfo, setCuisineInfo] = useState(null)
+  const [pantry, setPantry] = useState(loadPantry)
   const [plan, setPlan] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -442,6 +447,15 @@ export default function MealPlan() {
         ingredientsAggregated: buildShoppingList(dishes, prev.headcount || 1),
       }
     })
+  }
+
+  // Shopping-list only: the pantry never touches meal generation, so a family
+  // that already has paneer still gets paneer dishes suggested.
+  const shopping = applyPantry(plan?.ingredientsAggregated || [], pantry, lookupIngredient)
+
+  const updatePantry = (next) => {
+    setPantry(next)
+    savePantry(next)
   }
 
   const presentMembers = family.filter((m) => present.includes(m.id))
@@ -678,8 +692,13 @@ export default function MealPlan() {
                   This list assumes you already have these.
                 </p>
                 <ul className="shopping-list">
-                  {plan.ingredientsAggregated.map((item, i) => <li key={i}>{item}</li>)}
+                  {shopping.lines.length > 0
+                    ? shopping.lines.map((item, i) => <li key={i}>{item}</li>)
+                    : <li className="shopping-empty">Everything is already in your pantry.</li>}
                 </ul>
+
+                <Pantry items={pantry} onChange={updatePantry}
+                  removedCount={shopping.removed.length} />
               </>
             )}
 

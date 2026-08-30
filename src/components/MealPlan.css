@@ -594,3 +594,5 @@
   .cuisine-row { flex-direction: column; }
   .cuisine-chip { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 10px; }
 }
+
+.shopping-empty { color: var(--muted); font-style: italic; }

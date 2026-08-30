@@ -261,3 +261,74 @@ export function isPantryStaple(name) {
 export function filterPantryStaples(lines) {
   return lines.filter((line) => !isPantryStaple(String(line).split('—')[0]))
 }
+
+/* ------------------------------------------------------------------ *
+ * User pantry                                                         *
+ *                                                                     *
+ * The staples list above is what every Indian kitchen is assumed to
+ * hold. This is the rest: what THIS family happens to have today.
+ *
+ * Deliberately binary — in the pantry means dropped from the list, with
+ * no quantities tracked. A real pantry model would need amounts, units
+ * and depletion as meals are cooked; that is a different feature, and
+ * "do I already have rice?" answers the question a shopper actually
+ * asks while standing in the kitchen.
+ * ------------------------------------------------------------------ */
+
+/** Comparable tokens for a name: lowercase words, parentheticals dropped. */
+function nameTokens(text) {
+  return new Set(
+    String(text || '')
+      .replace(/\s*\(.*?\)/g, ' ')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean),
+  )
+}
+
+/**
+ * Expand each pantry entry into the terms that should match it, pulling
+ * aliases from the ingredient guide so "asafoetida" in the pantry also
+ * clears "hing" from the list, and vice versa.
+ */
+export function expandPantryTerms(pantryItems, lookup) {
+  const terms = []
+  for (const raw of pantryItems || []) {
+    const item = String(raw || '').trim()
+    if (!item) continue
+    terms.push(item)
+    const entry = lookup?.(item)
+    if (entry) {
+      terms.push(entry.key)
+      for (const alias of entry.aliases || []) terms.push(alias)
+    }
+  }
+  return [...new Set(terms.map((t) => t.toLowerCase()))]
+    .map((t) => nameTokens(t))
+    .filter((t) => t.size > 0)
+}
+
+/**
+ * Drop shopping-list lines the family already has.
+ *
+ * @param {string[]} lines        aggregated shopping list
+ * @param {string[]} pantryItems  what the family says it has
+ * @param {Function} [lookup]     ingredient-guide lookup, for aliases
+ * @returns {{ lines: string[], removed: string[] }}
+ */
+export function applyPantry(lines, pantryItems, lookup) {
+  const terms = expandPantryTerms(pantryItems, lookup)
+  if (terms.length === 0) return { lines: [...(lines || [])], removed: [] }
+
+  const kept = []
+  const removed = []
+  for (const line of lines || []) {
+    // Compare against the ingredient name only, never the quantity.
+    const tokens = nameTokens(String(line).split('\u2014')[0])
+    const hit = terms.some((term) => [...term].every((t) => tokens.has(t)))
+    if (hit) removed.push(line)
+    else kept.push(line)
+  }
+  return { lines: kept, removed }
+}
