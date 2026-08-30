@@ -9,7 +9,7 @@
 //      Saturday)") — these never appear in the calendar, so a date-only check
 //      would miss every weekly fast.
 
-import fastingData from '../data/fastingTraditions.json'
+import fastingData from '../data/fastingTraditions.json' with { type: 'json' }
 import { FAST_LABEL, slugify } from '../data/memberOptions.js'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',

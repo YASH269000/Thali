@@ -1,4 +1,4 @@
-import fastingData from './fastingTraditions.json'
+import fastingData from './fastingTraditions.json' with { type: 'json' }
 
 /* ------------------------------------------------------------------ *
  * Options derived from the fasting database                           *

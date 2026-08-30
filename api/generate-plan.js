@@ -15,7 +15,7 @@ import { FAST_LABEL } from '../src/data/memberOptions.js'
 // traceable by the Vercel bundler, so recipes.json was omitted from the
 // deployed function and the module threw on load. A static import is
 // inlined into the bundle, exactly like the JSON the src/lib modules import.
-import RECIPES from '../src/data/recipes.json'
+import RECIPES from '../src/data/recipes.json' with { type: 'json' }
 import {
   describeGuests, guestHeadcount, guestWholeMealConstraints, guestsAsMembers, normaliseGuests,
 } from '../src/lib/guests.js'

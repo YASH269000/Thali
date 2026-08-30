@@ -1,7 +1,7 @@
 // Finds Indian ingredients inside free-text ingredient lists so the UI can
 // offer an explanation to someone who has never cooked this food before.
 
-import GUIDE from '../data/ingredientSubstitutes.json'
+import GUIDE from '../data/ingredientSubstitutes.json' with { type: 'json' }
 
 function escapeRe(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
