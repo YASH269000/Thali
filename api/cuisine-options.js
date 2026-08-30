@@ -48,7 +48,7 @@ export default async function handler(req, res) {
   const reasonFor = (count) => {
     if (count === 0) {
       return strict.includes('diabeticFriendly')
-        ? 'No dishes safe for everyone today — most are too high-GI for a diabetic member.'
+        ? 'No dishes safe for everyone today — most are too high-GI for a member who needs low-GI food.'
         : 'No dishes fit everyone\u2019s constraints today.'
     }
     return `Only ${count} dish${count === 1 ? '' : 'es'} fit everyone today \u2014 not enough for a full meal.`

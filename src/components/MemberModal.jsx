@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import {
+  ADVISORY_HEALTH,
+  ADVISORY_HEALTH_NOTE,
   CUISINES,
   detectLifeStage,
   DIET_OPTIONS,
   FASTS_BY_RELIGION,
+  HEALTH_LABEL,
   HEALTH_OPTIONS,
   LIFE_STAGE_HINT,
   LIFE_STAGE_LABEL,
@@ -195,10 +198,26 @@ export default function MemberModal({ member, onSave, onCancel }) {
                   className={`check-card${form.health.includes(h.id) ? ' is-selected' : ''}`}>
                   <input type="checkbox" checked={form.health.includes(h.id)}
                     onChange={() => toggle('health', h.id)} />
-                  <span>{h.label}</span>
+                  <span>
+                    {h.label}
+                    {h.advisory && <span className="check-note">Not filtered</span>}
+                  </span>
                 </label>
               ))}
             </div>
+            {form.health.some((id) => ADVISORY_HEALTH.includes(id)) && (
+              <p className="advisory-note" role="note">
+                <strong>
+                  {form.health
+                    .filter((id) => ADVISORY_HEALTH.includes(id))
+                    .map((id) => HEALTH_LABEL[id] || id)
+                    .join(', ')}
+                </strong>
+                {' \u2014 '}{ADVISORY_HEALTH_NOTE} Thali will not exclude any
+                dish because of these, and will not tell you a dish is safe
+                for them.
+              </p>
+            )}
           </section>
 
           {/* ------------------------------------------ 4. FASTS */}

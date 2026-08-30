@@ -203,6 +203,44 @@
   color: var(--muted);
 }
 
+.chip-advisory {
+  opacity: 0.75;
+}
+
+.chip-suffix {
+  margin-left: 5px;
+  font-size: 10px;
+  font-weight: 400;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.check-note {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* Says plainly that a recorded condition does not change the food. Styled as
+   a quiet note, not an alarm — it is a limitation, not a warning. */
+.advisory-note {
+  margin: 10px 0 0;
+  padding: 9px 11px;
+  border: 0.5px solid #e5e5e0;
+  border-radius: 8px;
+  background: #fbfbf8;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.advisory-note strong {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
 .member-likes + .member-dislikes {
   margin-top: 2px;
 }

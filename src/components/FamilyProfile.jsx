@@ -4,6 +4,8 @@ import { activeFastIdsOn } from '../lib/fastingRules.js'
 import { avatarTone, initials } from '../lib/avatar.js'
 import { displayName } from '../lib/names.js'
 import {
+  ADVISORY_HEALTH,
+  ADVISORY_HEALTH_NOTE,
   DIET_LABEL,
   FAST_LABEL,
   HEALTH_LABEL,
@@ -213,8 +215,13 @@ export default function FamilyProfile() {
                           </span>
                         )}
                         {(m.health || []).map((h) => (
-                          <span key={h} className="chip chip-health">
+                          <span key={h}
+                            className={`chip chip-health${ADVISORY_HEALTH.includes(h) ? ' chip-advisory' : ''}`}
+                            title={ADVISORY_HEALTH.includes(h) ? ADVISORY_HEALTH_NOTE : undefined}>
                             {HEALTH_LABEL[h] || h}
+                            {ADVISORY_HEALTH.includes(h) && (
+                              <span className="chip-suffix">not filtered</span>
+                            )}
                           </span>
                         ))}
                         {(m.fasts || []).map((f) => (

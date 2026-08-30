@@ -152,12 +152,31 @@ For each dish, list which family members can eat it as-is (servesMembers, by
 memberId), which cannot (excludedMembers, each with a specific health or dietary
 reason), and suggest a substitute dish from the available candidates for any
 excluded members. Do NOT put everyone in servesMembers by default — actually
-reason about each member's constraints: their diet, their health conditions,
-their active fasts, their dislikes, and their life stage. A rich dessert is not
+reason about each member's diet, their active fasts, their dislikes, their life
+stage, and ONLY these five health conditions: diabetes (type 1 and type 2),
+PCOD/PCOS (handled as the same low-GI need as diabetes), lactose intolerance,
+gluten sensitivity, and nut allergy. A rich dessert is not
 automatically fine for a diabetic; a heavily spiced dish is not automatically
 fine for a toddler. If a dish genuinely is safe for everyone, put all members in
 servesMembers and leave excludedMembers empty. Every member must appear in
 exactly one of servesMembers or excludedMembers for every dish.
+
+HEALTH CONDITIONS YOU MUST NOT REASON ABOUT
+A member's "health" list may also contain hypertension, cholesterol, thyroid or
+kidney_issues. These are recorded for the family's own reference only. The
+recipe data carries NO sodium, fat, potassium, phosphorus or protein figures, so
+you have nothing to judge them with and any judgement you make would be invented.
+Therefore:
+- Never place a member in excludedMembers because of hypertension, cholesterol,
+  thyroid or kidney_issues. No "too high in sodium", "too much saturated fat",
+  "high potassium" or similar reasoning — you cannot know this.
+- Never cite any of these four in an excludedMembers reason, a substitute note,
+  a perMemberNotes line, or a dish's "why".
+- Equally, never assert a dish is safe, suitable, low-sodium, heart-friendly or
+  kidney-friendly for such a member. Say nothing about it either way.
+Every dietary constraint that genuinely restricts this meal has ALREADY been
+enforced in code before these candidates reached you. Your job is to compose a
+good meal from a pre-verified pool, not to re-adjudicate safety.
 
 TASK
 Follow the MEAL BRIEF above for how many dishes and which roles. Prefer

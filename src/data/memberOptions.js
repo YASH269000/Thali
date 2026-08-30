@@ -59,18 +59,33 @@ export const DIET_OPTIONS = [
   { id: 'sattvic', label: 'Sattvic', description: 'No onion, garlic, or stimulants. Fresh and light.' },
 ]
 
+/**
+ * `advisory: true` marks a condition Thali records but does NOT filter meals
+ * for. The recipe data carries no sodium, saturated fat, potassium or
+ * phosphorus figures, so there is nothing to filter on — and a meal planner
+ * that implied otherwise would be telling someone their food is safe when it
+ * has never checked. These are labelled in the UI rather than quietly ignored.
+ */
 export const HEALTH_OPTIONS = [
   { id: 'diabetes_t1', label: 'Diabetes (Type 1)' },
   { id: 'diabetes_t2', label: 'Diabetes (Type 2)' },
-  { id: 'hypertension', label: 'High blood pressure' },
-  { id: 'cholesterol', label: 'High cholesterol' },
+  { id: 'hypertension', label: 'High blood pressure', advisory: true },
+  { id: 'cholesterol', label: 'High cholesterol', advisory: true },
   { id: 'pcod', label: 'PCOD / PCOS' },
-  { id: 'thyroid', label: 'Thyroid' },
+  { id: 'thyroid', label: 'Thyroid', advisory: true },
   { id: 'lactose_intolerant', label: 'Lactose intolerant' },
   { id: 'gluten_sensitive', label: 'Gluten sensitive' },
-  { id: 'kidney_issues', label: 'Kidney issues' },
+  { id: 'kidney_issues', label: 'Kidney issues', advisory: true },
   { id: 'nut_allergy', label: 'Nut allergy' },
 ]
+
+/** Conditions recorded but never used to include or exclude a dish. */
+export const ADVISORY_HEALTH = HEALTH_OPTIONS
+  .filter((h) => h.advisory)
+  .map((h) => h.id)
+
+export const ADVISORY_HEALTH_NOTE =
+  'Thali does not yet filter meals for this. It is recorded for your reference only — please follow your doctor\u2019s advice.'
 
 export const HEALTH_LABEL = HEALTH_OPTIONS.reduce((acc, h) => {
   acc[h.id] = h.label

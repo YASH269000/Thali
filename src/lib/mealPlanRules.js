@@ -50,8 +50,22 @@ export function dietKind(recipe) {
 // allergen column in the source workbook should replace it.
 const NUT_RE = /\b(peanut|peanuts|groundnut|groundnuts|moongphali|cashew|cashews|kaju|almond|almonds|badam|pistachio|pista|walnut|akhrot|hazelnut|pecan|macadamia|nut butter|peanut butter|mixed nuts|dry fruits?|nuts)\b/i
 
+// INDB ingredient strings describe absence as well as presence — "Breakfast
+// cereal, crunchy clusters type, without nuts" excluded four dishes from a
+// nut-allergic member for containing the word "nuts" in a phrase saying they
+// contain none. Negated mentions are blanked before the keyword test.
+//
+// Written as a scrub rather than a lookbehind on purpose: a variable-length
+// lookbehind is a SyntaxError on Safari below 16.4, and this module is imported
+// by the client, so an unsupported pattern would fail at parse time and take
+// the whole app down on an older phone rather than degrade.
+const NUT_NEGATION_RE =
+  /\b(?:without|no|non|free\s+of|excluding|minus)\s+(?:added\s+)?(?:nut|nuts|dry\s+fruits?)\b|\bnuts?\s*[-\u2010\u2011\u2013]?\s*free\b/gi
+
 export function containsNuts(recipe) {
-  return NUT_RE.test(`${recipe.name || ''} ${recipe.ingredients || ''}`)
+  const haystack = `${recipe.name || ''} ${recipe.ingredients || ''}`
+    .replace(NUT_NEGATION_RE, ' ')
+  return NUT_RE.test(haystack)
 }
 
 const DIET_ALLOWS = {
@@ -78,9 +92,15 @@ const HEALTH_FLAGS = {
   gluten_sensitive: 'glutenFree',
   diabetes_t1: 'diabeticFriendly',
   diabetes_t2: 'diabeticFriendly',
+  // PCOD/PCOS is insulin-resistance driven, so the dietary advice is the same
+  // low-GI advice diabetes gets. It reuses that flag rather than needing
+  // nutrition data the recipes do not carry.
+  pcod: 'diabeticFriendly',
 }
 
-const STRICT_HEALTH = ['diabetes_t1', 'diabetes_t2']
+// Members for whom a `partial` dish must carry a visible caution rather than
+// passing silently. This never excludes anything — see evaluateRecipe.
+const STRICT_HEALTH = ['diabetes_t1', 'diabetes_t2', 'pcod']
 
 // Only two fasting traditions have a matching compliance flag.
 function fastFlags(activeFastIds) {

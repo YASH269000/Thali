@@ -1,6 +1,13 @@
 import { avatarTone, initials } from '../lib/avatar.js'
 import { GUEST_RESTRICTIONS, describeGuests, guestHeadcount } from '../lib/guests.js'
-import { DIET_LABEL, FAST_LABEL, HEALTH_LABEL, LIFE_STAGE_LABEL } from '../data/memberOptions.js'
+import {
+  ADVISORY_HEALTH,
+  ADVISORY_HEALTH_NOTE,
+  DIET_LABEL,
+  FAST_LABEL,
+  HEALTH_LABEL,
+  LIFE_STAGE_LABEL,
+} from '../data/memberOptions.js'
 import { displayName } from '../lib/names.js'
 import './WhoIsEating.css'
 
@@ -90,7 +97,14 @@ export default function WhoIsEating({
                       </span>
                     )}
                     {(m.health || []).slice(0, 2).map((h) => (
-                      <span key={h} className="chip chip-health">{HEALTH_LABEL[h] || h}</span>
+                      // Advisory conditions are dimmed rather than suffixed —
+                      // this row shows at most two chips and the full
+                      // explanation lives on the profile card.
+                      <span key={h}
+                        className={`chip chip-health${ADVISORY_HEALTH.includes(h) ? ' chip-advisory' : ''}`}
+                        title={ADVISORY_HEALTH.includes(h) ? ADVISORY_HEALTH_NOTE : undefined}>
+                        {HEALTH_LABEL[h] || h}
+                      </span>
                     ))}
                     {(m.fasts || []).slice(0, 1).map((f) => (
                       <span key={f} className="chip chip-fast">{FAST_LABEL[f] || f}</span>
