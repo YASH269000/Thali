@@ -40,6 +40,7 @@ const BLANK = {
   religion: 'none',
   cuisine: 'no_preference',
   spiceLevel: 2,
+  likes: '',
   dislikes: '',
 }
 
@@ -104,6 +105,7 @@ export default function MemberModal({ member, onSave, onCancel }) {
       id: form.id || String(Date.now()),
       name: form.name.trim(),
       age: Number(ageRaw),
+      likes: form.likes.trim(),
       dislikes: form.dislikes.trim(),
       spiceLevel: Number(form.spiceLevel),
       lifeStage: detectLifeStage(ageRaw),
@@ -263,6 +265,13 @@ export default function MemberModal({ member, onSave, onCancel }) {
               <div className="slider-scale">
                 <span>None</span><span>Very spicy</span>
               </div>
+            </div>
+
+            <div className="field">
+              <label htmlFor="f-likes">Likes</label>
+              <input id="f-likes" type="text" value={form.likes}
+                placeholder="e.g. paneer, rajma chawal, extra lemon"
+                onChange={(e) => set({ likes: e.target.value })} />
             </div>
 
             <div className="field">

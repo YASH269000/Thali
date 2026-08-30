@@ -224,6 +224,9 @@ export default function FamilyProfile() {
                         ))}
                       </div>
 
+                      {m.likes && (
+                        <p className="member-likes">Likes: {m.likes}</p>
+                      )}
                       {m.dislikes && (
                         <p className="member-dislikes">Dislikes: {m.dislikes}</p>
                       )}

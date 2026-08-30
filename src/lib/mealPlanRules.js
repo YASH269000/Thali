@@ -122,6 +122,7 @@ export function memberConstraints(member, activeFastIds) {
     strictFlags: [...strict],
     activeFasts: observed,
     health: member.health || [],
+    likes: member.likes || '',
     dislikes: member.dislikes || '',
     lifeStage: member.lifeStage,
     spiceLevel: member.spiceLevel,

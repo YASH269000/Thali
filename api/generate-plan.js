@@ -101,6 +101,7 @@ function buildPrompt({
     lifeStage: c.lifeStage,
     spiceLevel: c.spiceLevel,
     health: c.health,
+    likes: c.likes,
     dislikes: c.dislikes,
     fastsActiveToday: c.activeFasts.map((id) => FAST_LABEL[id] || id),
     mustSatisfyFlags: c.requiredFlags,
@@ -161,6 +162,11 @@ exactly one of servesMembers or excludedMembers for every dish.
 TASK
 Follow the MEAL BRIEF above for how many dishes and which roles. Prefer
 dishes with hasSteps=true, since those carry full preparation instructions.
+Where two candidates fit the brief equally well, prefer the one matching a
+member's "likes". Likes are a soft nudge only — a bonus when honoured, never a
+requirement. Never exclude a member from a dish because it is not among their
+likes, never let likes override a diet, health, allergy, fasting or life-stage
+constraint, and never pick a dish outside the candidate list to satisfy one.
 Cover the whole family from one cooking session; where one member is fasting
 and others are not, say plainly in perMemberNotes which dish serves whom.
 
