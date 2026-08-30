@@ -9,6 +9,7 @@ import { loadPantry, savePantry } from '../lib/pantry.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import { lookupIngredient } from '../lib/ingredientGuide.js'
 import CookMode from './CookMode.jsx'
+import Disclaimer from './Disclaimer.jsx'
 import MultiDishCookMode from './MultiDishCookMode.jsx'
 import WhoIsEating from './WhoIsEating.jsx'
 import IngredientText from './IngredientPopover.jsx'
@@ -912,6 +913,8 @@ export default function MealPlan() {
           </button>
         </div>
       </main>
+
+      <Disclaimer />
 
       {wholeMeal && plan && (
         <MultiDishCookMode

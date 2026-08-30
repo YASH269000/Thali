@@ -1,0 +1,26 @@
+/* Matches the .advisory-note treatment in FamilyProfile.css: a limitation
+   stated plainly, not a warning banner. Same 760px column as .content. */
+
+.app-disclaimer {
+  border-top: 0.5px solid var(--line, #e5e5e0);
+  padding: 18px 20px 28px;
+}
+
+.app-disclaimer p {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted, #6b6b66);
+}
+
+.app-disclaimer strong {
+  font-weight: 600;
+  color: var(--ink, #1a1a1a);
+}
+
+@media (max-width: 620px) {
+  .app-disclaimer {
+    padding: 16px 16px 24px;
+  }
+}

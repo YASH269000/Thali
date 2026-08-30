@@ -12,6 +12,7 @@ import {
   LIFE_STAGE_LABEL,
 } from '../data/memberOptions.js'
 import FastingCalendar from './FastingCalendar.jsx'
+import Disclaimer from './Disclaimer.jsx'
 import MemberModal from './MemberModal.jsx'
 import './FamilyProfile.css'
 
@@ -289,6 +290,8 @@ export default function FamilyProfile() {
           )}
         </div>
       </main>
+
+      <Disclaimer />
 
       {modalOpen && (
         <MemberModal
