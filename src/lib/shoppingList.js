@@ -381,20 +381,28 @@ function nameTokens(text) {
  * clears "hing" from the list, and vice versa.
  */
 export function expandPantryTerms(pantryItems, lookup) {
+  // Each term remembers the pantry entry it came from, so the UI can say which
+  // ticked item did the work rather than only how many lines vanished.
   const terms = []
+  const seen = new Set()
   for (const raw of pantryItems || []) {
     const item = String(raw || '').trim()
     if (!item) continue
-    terms.push(item)
+    const words = [item]
     const entry = lookup?.(item)
     if (entry) {
-      terms.push(entry.key)
-      for (const alias of entry.aliases || []) terms.push(alias)
+      words.push(entry.key)
+      for (const alias of entry.aliases || []) words.push(alias)
+    }
+    for (const w of words) {
+      const lower = w.toLowerCase()
+      if (seen.has(lower)) continue
+      seen.add(lower)
+      const tokens = nameTokens(lower)
+      if (tokens.size > 0) terms.push({ item, tokens })
     }
   }
-  return [...new Set(terms.map((t) => t.toLowerCase()))]
-    .map((t) => nameTokens(t))
-    .filter((t) => t.size > 0)
+  return terms
 }
 
 /**
@@ -403,20 +411,26 @@ export function expandPantryTerms(pantryItems, lookup) {
  * @param {string[]} lines        aggregated shopping list
  * @param {string[]} pantryItems  what the family says it has
  * @param {Function} [lookup]     ingredient-guide lookup, for aliases
- * @returns {{ lines: string[], removed: string[] }}
+ * @returns {{ lines: string[], removed: string[], matched: string[] }}
+ *   matched — the pantry entries that actually took something off this list,
+ *   in the order they were ticked. Which ticked items are relevant to THIS
+ *   meal is not visible from the removed lines alone.
  */
 export function applyPantry(lines, pantryItems, lookup) {
   const terms = expandPantryTerms(pantryItems, lookup)
-  if (terms.length === 0) return { lines: [...(lines || [])], removed: [] }
+  if (terms.length === 0) return { lines: [...(lines || [])], removed: [], matched: [] }
 
   const kept = []
   const removed = []
+  const matched = new Set()
   for (const line of lines || []) {
     // Compare against the ingredient name only, never the quantity.
     const tokens = nameTokens(String(line).split('\u2014')[0])
-    const hit = terms.some((term) => [...term].every((t) => tokens.has(t)))
-    if (hit) removed.push(line)
-    else kept.push(line)
+    const hits = terms.filter((term) => [...term.tokens].every((t) => tokens.has(t)))
+    if (hits.length > 0) {
+      removed.push(line)
+      for (const h of hits) matched.add(h.item)
+    } else kept.push(line)
   }
-  return { lines: kept, removed }
+  return { lines: kept, removed, matched: [...matched] }
 }

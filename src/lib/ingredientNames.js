@@ -66,6 +66,25 @@ const NOISE_PHRASES = [
 
 // Sentence case, not title case: a shopping list is written, not headlined,
 // and the source capitalisation is inconsistent between the two dialects.
+// Commas inside a gloss do not separate qualifiers. "bottle gourd
+// (dudhi/lauki — peeled, cubed)" is one name; splitting on every comma made it
+// "Cubed) bottle gourd (dudhi/lauki — peeled".
+function splitTopLevelCommas(text) {
+  const out = []
+  let depth = 0
+  let current = ''
+  for (const ch of text) {
+    if (ch === '(') depth += 1
+    if (ch === ')') depth = Math.max(0, depth - 1)
+    if (ch === ',' && depth === 0) {
+      if (current.trim()) out.push(current.trim())
+      current = ''
+    } else current += ch
+  }
+  if (current.trim()) out.push(current.trim())
+  return out
+}
+
 const sentenceCase = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s)
 
 // "SIVA'S, AMHUR POWDER (DRY MANGO POWDER)" — an INDB row that leads with a
@@ -103,7 +122,7 @@ export function cleanIngredientName(raw) {
   }
   if (!s) return ''
 
-  const parts = s.split(',').map((p) => p.trim()).filter(Boolean)
+  const parts = splitTopLevelCommas(s)
   if (parts.length > 1) {
     const head = parts[0]
     const headWords = head.toLowerCase().split(/\s+/)

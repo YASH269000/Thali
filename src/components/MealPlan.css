@@ -295,12 +295,36 @@
 }
 
 .shopping-list li {
+  display: flex;
+  gap: 10px;
   padding: 7px 0;
   font-size: 13px;
   border-bottom: var(--rule);
 }
 
+/* Fixed width so the names line up however far the count runs. */
+.shopping-n {
+  flex: 0 0 auto;
+  min-width: 18px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.shopping-item { flex: 1 1 auto; }
+
 .shopping-list li:last-child { border-bottom: none; }
+
+.heading-count {
+  margin-left: 7px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.hidden-note {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
 
 /* ---------------------------------------------------- swap cards */
 

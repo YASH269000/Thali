@@ -381,6 +381,20 @@ function DishCard({ dish, onStartCooking, alternates, onSwap, recentIds }) {
   )
 }
 
+/**
+ * The ingredient name out of a "name — amount" line.
+ *
+ * Splits on the LAST separator, not the first: a name can carry one of its own
+ * ("Onion (chopped fine — skip for Jain) — 1/2"). Parentheticals come off too,
+ * because this is for a one-line summary, not the list itself.
+ */
+function listItemName(line) {
+  const text = String(line)
+  const cut = text.lastIndexOf(' \u2014 ')
+  const name = cut === -1 ? text : text.slice(0, cut)
+  return name.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim() || name.trim()
+}
+
 export default function MealPlan() {
   const navigate = useNavigate()
   const [family] = useState(loadFamily)
@@ -847,7 +861,22 @@ export default function MealPlan() {
 
             {plan.ingredientsAggregated?.length > 0 && (
               <>
-                <h2 className="section-heading">Shopping list</h2>
+                <h2 className="section-heading">
+                  Shopping list
+                  {shopping.lines.length > 0 && (
+                    <span className="heading-count">
+                      &mdash; {shopping.lines.length}{' '}
+                      {shopping.lines.length === 1 ? 'item' : 'items'}
+                    </span>
+                  )}
+                </h2>
+                {shopping.removed.length > 0 && (
+                  <p className="hidden-note">
+                    {shopping.removed.length}{' '}
+                    {shopping.removed.length === 1 ? 'item' : 'items'} hidden
+                    &mdash; already in your pantry
+                  </p>
+                )}
                 <div className="portions">
                   <div className="portions-control">
                     <span className="portions-label">Guests coming</span>
@@ -878,11 +907,18 @@ export default function MealPlan() {
                   Not shown: everyday staples (water, salt, oil, basic spices).
                   This list assumes you already have these.
                 </p>
-                <ul className="shopping-list">
-                  {shopping.lines.length > 0
-                    ? shopping.lines.map((item, i) => <li key={i}>{item}</li>)
-                    : <li className="shopping-empty">Everything is already in your pantry.</li>}
-                </ul>
+                {shopping.lines.length > 0 ? (
+                  <ol className="shopping-list">
+                    {shopping.lines.map((item, i) => (
+                      <li key={i}>
+                        <span className="shopping-n" aria-hidden="true">{i + 1}.</span>
+                        <span className="shopping-item">{item}</span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="shopping-empty">Everything is already in your pantry.</p>
+                )}
 
                 <div className="share-row">
                   {shopping.lines.length > 0 ? (
@@ -904,7 +940,8 @@ export default function MealPlan() {
                 </div>
 
                 <Pantry items={pantry} onChange={updatePantry}
-                  removedCount={shopping.removed.length} />
+                  removedNames={shopping.removed.map(listItemName)}
+                  matched={shopping.matched} />
               </>
             )}
 

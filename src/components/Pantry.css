@@ -58,6 +58,25 @@
 .pantry-chip.is-on input { accent-color: #ffffff; }
 .pantry-chip:focus-within { outline: 2px solid var(--ink); outline-offset: 1px; }
 
+/* Ticked AND used by this meal. A ring outside the chip rather than a colour
+   change, so it layers over the existing on/off states instead of competing
+   with them, and a dot for anyone who cannot separate the two by outline. */
+.pantry-chip.is-matched,
+.pantry-custom.is-matched {
+  outline: 1px solid var(--diet-line);
+  outline-offset: 2px;
+}
+
+.pantry-chip-dot {
+  flex: 0 0 auto;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--diet-line);
+}
+
+.pantry-chip.is-on .pantry-chip-dot { background: #ffffff; }
+
 .pantry-custom-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
 
 .pantry-custom {

@@ -15,9 +15,13 @@ function CloseIcon() {
  * What the family already has. Binary by design — see the note in
  * shoppingList.js: no quantities, no depletion tracking.
  */
-export default function Pantry({ items, onChange, removedCount }) {
+export default function Pantry({ items, onChange, removedNames = [], matched = [] }) {
   const [draft, setDraft] = useState('')
   const has = (name) => items.some((i) => i.toLowerCase() === name.toLowerCase())
+  // Ticked and actually used by this meal, as opposed to ticked and irrelevant
+  // to it — the pantry outlives any one plan, so most ticks are the latter.
+  const matchedSet = new Set(matched.map((m) => m.toLowerCase()))
+  const isMatched = (name) => matchedSet.has(name.toLowerCase())
 
   const toggle = (name) => {
     onChange(has(name)
@@ -53,18 +57,25 @@ export default function Pantry({ items, onChange, removedCount }) {
         )}
       </div>
 
-      {removedCount > 0 && (
+      {removedNames.length > 0 && (
+        // Names the lines that were taken off, not the ticked entries that did
+        // it: one entry can clear two lines, and a count that disagreed with
+        // the names beside it would read like a bug.
         <p className="pantry-saved">
-          <strong>{removedCount}</strong>{' '}
-          {removedCount === 1 ? 'item is' : 'items are'} already in your pantry
+          <strong>{removedNames.length}</strong>{' '}
+          {removedNames.length === 1 ? 'item' : 'items'} already in your pantry:{' '}
+          {removedNames.join(', ')}
         </p>
       )}
 
       <div className="pantry-grid">
         {COMMON_PANTRY.map((name) => (
-          <label key={name} className={`pantry-chip${has(name) ? ' is-on' : ''}`}>
+          <label key={name}
+            className={`pantry-chip${has(name) ? ' is-on' : ''}${isMatched(name) ? ' is-matched' : ''}`}
+            title={isMatched(name) ? `${name} was taken off this meal's list` : undefined}>
             <input type="checkbox" checked={has(name)} onChange={() => toggle(name)} />
             <span>{name}</span>
+            {isMatched(name) && <span className="pantry-chip-dot" aria-hidden="true" />}
           </label>
         ))}
       </div>
@@ -72,8 +83,10 @@ export default function Pantry({ items, onChange, removedCount }) {
       {custom.length > 0 && (
         <div className="pantry-custom-list">
           {custom.map((name) => (
-            <span key={name} className="pantry-custom">
+            <span key={name}
+              className={`pantry-custom${isMatched(name) ? ' is-matched' : ''}`}>
               {name}
+              {isMatched(name) && <span className="pantry-chip-dot" aria-hidden="true" />}
               <button type="button" onClick={() => toggle(name)}
                 aria-label={`Remove ${name} from pantry`}>
                 <CloseIcon />
