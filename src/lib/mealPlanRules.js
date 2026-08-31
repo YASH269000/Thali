@@ -26,21 +26,34 @@ export const FLAG_KEYS = [
  * ------------------------------------------------------------------ */
 
 const MEAT_RE = /\b(chicken|mutton|lamb|goat|beef|pork|bacon|ham|fish|prawn|shrimp|crab|lobster|squid|oyster|clam|anchov|tuna|salmon|sardine|mackerel|pomfret|duck|quail|turkey|keema|kheema|seekh|kebab|liver|meat)\b/i
-const EGG_RE = /\b(egg|eggs|omelet|omelette|anda|ande|bhurji)\b/i
+// Mayonnaise is egg. It is the one animal ingredient in this data that never
+// says its own name — "Korean Corn Cheese: corn, mozzarella, mayo, butter"
+// reads as vegetarian to a word match that only looks for "egg".
+const EGG_RE = /\b(egg|eggs|omelet|omelette|anda|ande|bhurji|mayonnaise|mayo)\b/i
+
+// How restrictive a kind is: who CANNOT eat it. Used to combine the declared
+// kind with the inferred one.
+const KIND_RANK = { veg: 0, egg: 1, non_veg: 2 }
 
 /** 'non_veg' | 'egg' | 'veg' — the most restrictive category a recipe fits. */
 export function dietKind(recipe) {
-  // An explicit dietKind on the record always wins. Imported international
-  // dishes carry one, because keyword inference cannot tell that "Pad Thai",
-  // "Bibimbap", "Carbonara" or "Pho" contain meat — nothing in those names
-  // says so, and a vegetarian must never be served one by accident.
-  const explicit = recipe.dietKind
-  if (explicit === 'veg' || explicit === 'egg' || explicit === 'non_veg') return explicit
-
+  // Keyword inference always runs, whatever the record claims.
   const blob = `${recipe.name || ''} ${recipe.ingredients || ''}`
-  if (MEAT_RE.test(blob)) return 'non_veg'
-  if (EGG_RE.test(blob)) return 'egg'
-  return 'veg'
+  const inferred = MEAT_RE.test(blob) ? 'non_veg' : EGG_RE.test(blob) ? 'egg' : 'veg'
+
+  // An explicit dietKind can only make a recipe STRICTER, never more
+  // permissive. It has to be able to tighten: keyword inference cannot tell
+  // that "Pad Thai", "Bibimbap", "Carbonara" or "Pho" contain meat, and the
+  // imported international rows carry the flag precisely for that.
+  //
+  // Letting it loosen is what served egg to a vegetarian. 32 of the 95
+  // international rows disagree with their own ingredient text, and the flag
+  // was winning every time — "Veg Ramen (dietKind: veg) :: wheat ramen
+  // noodles, broth, veg, egg" passed the vegetarian gate untouched, because
+  // returning the flag early meant EGG_RE below never ran at all.
+  const declared = KIND_RANK[recipe.dietKind] === undefined ? null : recipe.dietKind
+  if (!declared) return inferred
+  return KIND_RANK[declared] >= KIND_RANK[inferred] ? declared : inferred
 }
 
 // Allergy safety net. `nut_allergy` is in the health list but there is no
