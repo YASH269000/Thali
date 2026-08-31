@@ -817,3 +817,130 @@
   font-size: 14px;
   line-height: 1.5;
 }
+
+/* ---- Buy for ---------------------------------------------------- */
+
+.buy-window {
+  margin: 0 0 14px;
+}
+
+.buy-window-label {
+  display: block;
+  font-size: 13px;
+  color: #6b6b66;
+  margin-bottom: 6px;
+}
+
+.buy-window-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.buy-window-chip {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 0.5px solid #e5e5e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1a1a1a;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.buy-window-chip.is-on {
+  border-color: #1a1a1a;
+  background: #1a1a1a;
+  color: #fafaf7;
+}
+
+.buy-window-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b6b66;
+}
+
+/* Two quantities per row: what the recipe needs, what to buy. */
+.shopping-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.shopping-qty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin-left: auto;
+}
+
+.shopping-need,
+.shopping-buy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.qty-label {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b6b66;
+}
+
+.shopping-need {
+  color: #6b6b66;
+}
+
+.buy-input {
+  width: 9ch;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 0.5px solid #e5e5e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1a1a1a;
+  font: inherit;
+  font-size: 15px;
+}
+
+.buy-input:focus-visible {
+  outline: none;
+  border-color: #1a1a1a;
+}
+
+.buy-input.is-edited {
+  border-color: #1a1a1a;
+  font-weight: 600;
+}
+
+.buy-reset {
+  border: none;
+  background: none;
+  padding: 4px;
+  font: inherit;
+  font-size: 12px;
+  color: #6b6b66;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.shopping-held {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: #6b6b66;
+}
+
+@media (max-width: 560px) {
+  .shopping-qty {
+    margin-left: 0;
+    width: 100%;
+  }
+}

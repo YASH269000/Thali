@@ -163,7 +163,7 @@ const COUNT_SINGULAR = {
   cloves: 'clove', pieces: 'piece', slices: 'slice', bunches: 'bunch',
   pinches: 'pinch', handfuls: 'handful', inches: 'inch', nos: 'no',
 }
-const COUNT_PLURAL = Object.fromEntries(
+export const COUNT_PLURAL = Object.fromEntries(
   Object.entries(COUNT_SINGULAR).map(([plural, singular]) => [singular, plural]),
 )
 
@@ -190,20 +190,23 @@ function inBestUnit(baseValue, familyName) {
 }
 
 /**
- * Aggregate a shopping list for `totalDiners`, scaling each recipe by
- * totalDiners / recipe.serves.
+ * Structured rows behind the shopping list: one per ingredient identity, with
+ * per-bucket totals rather than a formatted string.
+ *
+ * Extracted so the display layer can offer a "Buy for" quantity beside the
+ * recipe's own. Nothing about the arithmetic changed — buildShoppingList below
+ * is these entries, formatted.
  *
  * @param {Array} recipes  full recipe records (need `ingredients` and `serves`)
  * @param {number} totalDiners
- * @returns {Array<string>} e.g. "Toor dal — 1 1/2 cups"
  */
-export function buildShoppingList(recipes, totalDiners) {
+export function buildShoppingEntries(recipes, totalDiners) {
   // One entry per ingredient identity. Staples are dropped as they are read
   // rather than at the end, so a staple can never merge with something that
   // is not one.
   const items = []
 
-  const read = (text, factor, ref, skipLines) => {
+  const read = (text, factor, ref, skipLines, fromComponent = false) => {
     for (const item of splitIngredients(text)) {
       // "1 cup hummus (see recipe)" is not a thing to buy — it is a thing to
       // make, and the chickpeas and tahini for it are added below. Leaving
@@ -233,7 +236,7 @@ export function buildShoppingList(recipes, totalDiners) {
       // numbered list is read after the shopper has already read the line.
       const flagged = namedInModification(clean, ref?.modification)
 
-      items.push({ base, form, name: clean, unit: parsed.unit, value, flagged })
+      items.push({ base, form, name: clean, unit: parsed.unit, value, flagged, fromComponent })
     }
   }
 
@@ -256,7 +259,10 @@ export function buildShoppingList(recipes, totalDiners) {
     // eight needs twice the jar a meal for four does. It over-buys where a
     // dish wants a spoonful, so componentBatches() below names every folded-in
     // sub-recipe for the UI rather than letting the extra appear from nowhere.
-    for (const c of components) read(c.ingredients, factor, null, null)
+    //
+    // Tagged, because a batch already covers more than this meal: the "Buy
+    // for" control must not multiply it again. See buyQuantities.js.
+    for (const c of components) read(c.ingredients, factor, null, null, true)
   }
 
   // A name with no form joins the one form its base is otherwise sold in, so
@@ -279,7 +285,17 @@ export function buildShoppingList(recipes, totalDiners) {
     const key = `${it.base}|${it.form}`
     let entry = merged.get(key)
     if (!entry) {
-      entry = { name: it.name, amounts: new Map(), unitless: false, flagged: false }
+      entry = {
+        key,
+        base: it.base,
+        form: it.form,
+        name: it.name,
+        // bucket -> { total, fixed }. `fixed` is the part that came from a
+        // component's batch and must not be multiplied again.
+        amounts: new Map(),
+        unitless: false,
+        flagged: false,
+      }
       merged.set(key, entry)
     }
     if (it.flagged) entry.flagged = true
@@ -294,30 +310,61 @@ export function buildShoppingList(recipes, totalDiners) {
     // "1 clove garlic" and "6 cloves garlic" became two amounts on one line.
     const bucket = family ? family.name : `as:${countUnit(it.unit)}`
     const scale = family ? family.units[String(it.unit).toLowerCase()] : 1
-    entry.amounts.set(bucket, (entry.amounts.get(bucket) || 0) + it.value * scale)
+    const amount = it.value * scale
+    const cell = entry.amounts.get(bucket) || { total: 0, fixed: 0 }
+    cell.total += amount
+    if (it.fromComponent) cell.fixed += amount
+    entry.amounts.set(bucket, cell)
   }
 
-  return [...merged.values()].map((e) => {
-    // Sorted by family so a line reads the same whatever order the dishes
-    // happened to come in.
-    const parts = [...e.amounts.entries()]
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([bucket, total]) => {
-        if (bucket.startsWith('as:')) {
-          const unit = bucket.slice(3)
-          const amount = formatQuantity(total, unit)
-          const label = unit && total > 1 ? (COUNT_PLURAL[unit] || unit) : unit
-          return amount ? `${amount}${label ? ` ${label}` : ''}` : ''
-        }
-        const { value, unit } = inBestUnit(total, bucket)
-        const amount = formatQuantity(value, unit)
-        return amount ? `${amount} ${unit}` : ''
-      })
-      .filter(Boolean)
+  return [...merged.values()]
+}
 
-    const mark = e.flagged ? ` ${SUBSTITUTION_MARK}` : ''
-    return parts.length ? `${e.name} — ${parts.join(' + ')}${mark}` : `${e.name}${mark}`
-  })
+/** One bucket written the way a list writes it: "1 1/2 cups", "3 cloves". */
+export function formatBucket(bucket, total) {
+  if (bucket.startsWith('as:')) {
+    const unit = bucket.slice(3)
+    const amount = formatQuantity(total, unit)
+    const label = unit && total > 1 ? (COUNT_PLURAL[unit] || unit) : unit
+    return amount ? `${amount}${label ? ` ${label}` : ''}` : ''
+  }
+  const { value, unit } = inBestUnit(total, bucket)
+  const amount = formatQuantity(value, unit)
+  return amount ? `${amount} ${unit}` : ''
+}
+
+/** The amount half of a row: "1 1/2 cups + 3 cloves", or '' when there is none. */
+export function formatAmounts(entry) {
+  // Sorted by family so a line reads the same whatever order the dishes
+  // happened to come in.
+  return [...entry.amounts.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([bucket, cell]) => formatBucket(bucket, cell.total))
+    .filter(Boolean)
+    .join(' + ')
+}
+
+/** One entry as the single line the list has always rendered. */
+export function formatEntry(entry) {
+  const amounts = formatAmounts(entry)
+  const mark = entry.flagged ? ` ${SUBSTITUTION_MARK}` : ''
+  return amounts ? `${entry.name} — ${amounts}${mark}` : `${entry.name}${mark}`
+}
+
+/**
+ * Aggregate a shopping list for `totalDiners`, scaling each recipe by
+ * totalDiners / recipe.serves.
+ *
+ * Kept as the string form because that is what the API response carries and
+ * what the WhatsApp share reads. The structured entries above are the same
+ * computation one step earlier; this is only their formatting.
+ *
+ * @param {Array} recipes  full recipe records (need `ingredients` and `serves`)
+ * @param {number} totalDiners
+ * @returns {Array<string>} e.g. "Toor dal — 1 1/2 cups"
+ */
+export function buildShoppingList(recipes, totalDiners) {
+  return buildShoppingEntries(recipes, totalDiners).map(formatEntry)
 }
 
 /** Travels with the line itself, so it survives the WhatsApp share too. */
@@ -457,46 +504,47 @@ export function listItemName(line) {
 }
 
 /**
- * Drop shopping-list lines the family already has.
+ * Drop the rows the family already has.
  *
- * @param {string[]} lines        aggregated shopping list
+ * Takes structured entries rather than formatted lines, because the display
+ * layer now needs the row itself — Need, Buy and the edit key all read fields
+ * on it. The matching is unchanged.
+ *
+ * @param {Array} entries      rows from buildShoppingEntries
  * @param {string[]} pantryItems  what the family says it has
- * @returns {{ lines, removed, matched, prepared }}
- *   removed  — the lines taken off
+ * @returns {{ rows, removed, matched, prepared }}
+ *   rows     — the entries still to buy
+ *   removed  — the lines taken off, formatted, for the pantry summary
  *   matched  — the pantry entries that actually took something off THIS list,
  *              in the order they were ticked. Which ticked items are relevant
  *              to this meal is not visible from the removed lines alone.
- *   prepared — { item, name, prep } for every line whose recipe wanted the
+ *   prepared — { item, name, prep } for every row whose recipe wanted the
  *              ingredient prepared. Having tomatoes is not the same as having
  *              them chopped, and the note says which is still to do.
  */
-export function applyPantry(lines, pantryItems) {
+export function applyPantry(entries, pantryItems) {
   const terms = expandPantryTerms(pantryItems)
-  if (terms.length === 0) {
-    return { lines: [...(lines || [])], removed: [], matched: [], prepared: [] }
-  }
+  const all = [...(entries || [])]
+  if (terms.length === 0) return { rows: all, removed: [], matched: [], prepared: [] }
 
-  const kept = []
+  const rows = []
   const removed = []
   const prepared = []
   const matched = new Set()
-  for (const line of lines || []) {
-    // Compare against the ingredient name only, never the quantity.
-    const text = String(line)
-    const cut = text.lastIndexOf(' \u2014 ')
-    const name = (cut === -1 ? text : text.slice(0, cut)).trim()
-    const id = pantryIdentity(name)
+  for (const entry of all) {
+    const id = pantryIdentity(entry.name)
     const hits = terms.filter((t) => pantryMatches(t.id, id))
-    if (hits.length === 0) { kept.push(line); continue }
+    if (hits.length === 0) { rows.push(entry); continue }
 
+    const line = formatEntry(entry)
     removed.push(line)
     for (const h of hits) matched.add(h.item)
     const label = prepLabel(id.prep)
-    // Keyed on the name as the list DISPLAYS it, via the shared helper above,
+    // Keyed on the name as the list DISPLAYS it, via the shared helper below,
     // because that is what the pantry note is rendered against.
     if (label) prepared.push({ item: hits[0].item, name: listItemName(line), prep: label })
   }
-  return { lines: kept, removed, matched: [...matched], prepared }
+  return { rows, removed, matched: [...matched], prepared }
 }
 
 /**

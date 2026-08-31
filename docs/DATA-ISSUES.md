@@ -141,6 +141,19 @@ parent's own diner factor. That over-buys for a spoonful, which is why the
 shopping list names every sub-recipe it folded in rather than letting the extra
 lines appear unexplained. A yield field on the component recipes would fix it.
 
+The "Buy for" control has to know about this. A batch already covers more than
+one meal, so amounts that arrived from a component are held out of the 3-day
+and 1-week multipliers — `buildShoppingEntries` tags them and each bucket
+carries `{ total, fixed }`, where `fixed` is the component's share.
+
+The interaction is messier than it sounds, and the number is worth recording:
+**24 of the 42 composite dishes produce at least one mixed row — 55 rows in
+total** — where one ingredient reaches the row from both the dish and its
+sub-recipe's batch. Garlic in a lasagne comes partly from the lasagne and
+partly from the marinara. Freezing the whole row would silently under-buy the
+dish's own share, so only the component's share is held: Buy is
+`fixed + (total - fixed) x multiplier`.
+
 ## Gelatine in INDB desserts — FIXED
 
 35 INDB rows list `Gelatine`. `MEAT_RE` did not match it, so `dietKind()`

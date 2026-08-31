@@ -5,10 +5,14 @@ import {
 } from '../lib/guests.js'
 import { displayName } from '../lib/names.js'
 import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
-import { applyPantry } from '../lib/shoppingList.js'
 import {
-  buildShoppingList, componentBatches, listItemName, SUBSTITUTION_MARK,
+  applyPantry, buildShoppingEntries, buildShoppingList, componentBatches,
+  formatAmounts, listItemName, SUBSTITUTION_MARK,
 } from '../lib/shoppingList.js'
+import {
+  BUY_WINDOWS, buyValue, editKey, heldReason, loadBuyEdits, loadBuyWindow,
+  saveBuyEdits, saveBuyWindow, windowById,
+} from '../lib/buyQuantities.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import CookMode from './CookMode.jsx'
@@ -420,6 +424,10 @@ export default function MealPlan() {
   // does not wipe a guest list the user just typed in.
   const [guests, setGuests] = useState(loadGuests)
   const [cuisine, setCuisine] = useState(loadCuisine)
+  // "Buy for" is a property of the shopping trip, not of one plan, so it and
+  // any hand-edited quantities outlive a regeneration.
+  const [buyWindow, setBuyWindow] = useState(loadBuyWindow)
+  const [buyEdits, setBuyEdits] = useState(loadBuyEdits)
   // Which cuisines today's constraints can actually furnish a meal from.
   const [cuisineInfo, setCuisineInfo] = useState(null)
   const [pantry, setPantry] = useState(loadPantry)
@@ -630,11 +638,37 @@ export default function MealPlan() {
   // server uses — tempering, oil and ghee stay constant, as they do there.
   const baseServings = plan?.headcount || 1
   const totalServings = baseServings + extraGuests
-  const baseLines = plan?.dishes?.length
-    ? buildShoppingList(plan.dishes, totalServings)
-    : (plan?.ingredientsAggregated || [])
+  const baseEntries = plan?.dishes?.length
+    ? buildShoppingEntries(plan.dishes, totalServings)
+    : []
 
-  const shopping = applyPantry(baseLines, pantry)
+  const shopping = applyPantry(baseEntries, pantry)
+
+  // What WhatsApp sends and what the copy count reports: the Buy figure, since
+  // that is the number the shopper acts on.
+  const shareLines = shopping.rows.map((row) => {
+    const buy = buyValue(row, buyWindow, buyEdits)
+    const mark = row.flagged ? ` ${SUBSTITUTION_MARK}` : ''
+    return buy ? `${row.name} — ${buy}${mark}` : `${row.name}${mark}`
+  })
+
+  const changeBuyWindow = (id) => {
+    setBuyWindow(id)
+    saveBuyWindow(id)
+  }
+
+  const changeBuy = (row, value) => {
+    const next = { ...buyEdits, [editKey(row, buyWindow)]: value }
+    setBuyEdits(next)
+    saveBuyEdits(next)
+  }
+
+  const resetBuy = (row) => {
+    const next = { ...buyEdits }
+    delete next[editKey(row, buyWindow)]
+    setBuyEdits(next)
+    saveBuyEdits(next)
+  }
 
   // Dishes that borrow another recipe "with a modification". The note is
   // rendered against the list, and the affected line is marked inline too, so
@@ -936,10 +970,10 @@ export default function MealPlan() {
               <>
                 <h2 className="section-heading">
                   Shopping list
-                  {shopping.lines.length > 0 && (
+                  {shopping.rows.length > 0 && (
                     <span className="heading-count">
-                      &mdash; {shopping.lines.length}{' '}
-                      {shopping.lines.length === 1 ? 'item' : 'items'}
+                      &mdash; {shopping.rows.length}{' '}
+                      {shopping.rows.length === 1 ? 'item' : 'items'}
                     </span>
                   )}
                 </h2>
@@ -1015,25 +1049,81 @@ export default function MealPlan() {
                     ))}
                   </div>
                 )}
-                {shopping.lines.length > 0 ? (
+                {shopping.rows.length > 0 && (
+                  <div className="buy-window">
+                    <span className="buy-window-label" id="buy-window-label">Buy for</span>
+                    <div className="buy-window-row" role="group" aria-labelledby="buy-window-label">
+                      {BUY_WINDOWS.map((w) => (
+                        <button key={w.id} type="button"
+                          className={`buy-window-chip${buyWindow === w.id ? ' is-on' : ''}`}
+                          onClick={() => changeBuyWindow(w.id)}
+                          aria-pressed={buyWindow === w.id}>
+                          {w.label}
+                        </button>
+                      ))}
+                    </div>
+                    {windowById(buyWindow).multiplier > 1 && (
+                      <p className="buy-window-note">
+                        Only things that keep are multiplied. Fresh produce, dairy
+                        and herbs stay at the meal quantity, and so does anything
+                        already covered by a sub-recipe batch.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {shopping.rows.length > 0 ? (
                   <ol className="shopping-list">
-                    {shopping.lines.map((item, i) => (
-                      <li key={i}
-                        className={item.includes(SUBSTITUTION_MARK) ? 'is-flagged' : undefined}>
-                        <span className="shopping-n" aria-hidden="true">{i + 1}.</span>
-                        <span className="shopping-item">{item}</span>
-                      </li>
-                    ))}
+                    {shopping.rows.map((row, i) => {
+                      const need = formatAmounts(row)
+                      const held = windowById(buyWindow).multiplier > 1 ? heldReason(row) : ''
+                      const edited = buyEdits[editKey(row, buyWindow)] !== undefined
+                      return (
+                        <li key={row.key} className={row.flagged ? 'is-flagged' : undefined}>
+                          <span className="shopping-n" aria-hidden="true">{i + 1}.</span>
+                          <div className="shopping-row">
+                            <span className="shopping-item">
+                              {row.name}
+                              {row.flagged && (
+                                <span className="substitution-mark"> {SUBSTITUTION_MARK}</span>
+                              )}
+                            </span>
+                            <span className="shopping-qty">
+                              <span className="shopping-need">
+                                <span className="qty-label">Need</span>
+                                {need || '\u2014'}
+                              </span>
+                              <label className="shopping-buy">
+                                <span className="qty-label">Buy</span>
+                                <input type="text" inputMode="text"
+                                  className={`buy-input${edited ? ' is-edited' : ''}`}
+                                  value={buyValue(row, buyWindow, buyEdits)}
+                                  aria-label={`Buy quantity for ${row.name}`}
+                                  onChange={(e) => changeBuy(row, e.target.value)} />
+                                {edited && (
+                                  <button type="button" className="buy-reset"
+                                    onClick={() => resetBuy(row)}
+                                    aria-label={`Reset buy quantity for ${row.name}`}>
+                                    Reset
+                                  </button>
+                                )}
+                              </label>
+                            </span>
+                            {held && <span className="shopping-held">{held}</span>}
+                          </div>
+                        </li>
+                      )
+                    })}
                   </ol>
                 ) : (
                   <p className="shopping-empty">Everything is already in your pantry.</p>
                 )}
 
                 <div className="share-row">
-                  {shopping.lines.length > 0 ? (
+                  {shopping.rows.length > 0 ? (
                     <a className="btn share-btn"
                       href={whatsappUrl(buildShareMessage(
-                        shopping.lines, plan.mealType, plan.dateLabel,
+                        shareLines, plan.mealType, plan.dateLabel,
                       ))}
                       target="_blank" rel="noopener noreferrer">
                       <WhatsAppIcon /> Share on WhatsApp
@@ -1044,7 +1134,8 @@ export default function MealPlan() {
                     </button>
                   )}
                   <span className="share-note">
-                    Shares what you still need &mdash; pantry items are left out.
+                    Shares the Buy quantities for {windowById(buyWindow).label.toLowerCase()}
+                    {' '}&mdash; pantry items are left out.
                   </span>
                 </div>
 
