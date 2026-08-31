@@ -5,6 +5,7 @@
 // the table grew from 3 diners to 5. Arithmetic does not have that problem.
 
 import { ingredientIdentity } from './ingredientNames.js'
+import { namedInModification } from './recipeRefs.js'
 
 const VULGAR = {
   '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1 / 3, '⅔': 2 / 3,
@@ -206,7 +207,13 @@ export function buildShoppingList(recipes, totalDiners) {
       const scalable = parsed.quantity !== null && !NO_SCALE.test(parsed.name)
       const value = scalable ? parsed.quantity * factor : parsed.quantity
 
-      items.push({ base, form, name: clean, unit: parsed.unit, value })
+      // A dish that points at another recipe can carry a substitution — D002
+      // is J007 "with jaggery replaced by stevia", and J007 really does list
+      // jaggery. Marking the line itself is the point: a note printed beside a
+      // numbered list is read after the shopper has already read the line.
+      const flagged = namedInModification(clean, recipe.ref?.modification)
+
+      items.push({ base, form, name: clean, unit: parsed.unit, value, flagged })
     }
   }
 
@@ -230,9 +237,10 @@ export function buildShoppingList(recipes, totalDiners) {
     const key = `${it.base}|${it.form}`
     let entry = merged.get(key)
     if (!entry) {
-      entry = { name: it.name, amounts: new Map(), unitless: false }
+      entry = { name: it.name, amounts: new Map(), unitless: false, flagged: false }
       merged.set(key, entry)
     }
+    if (it.flagged) entry.flagged = true
     // Prefer the longer name: "Coriander leaves" reads better than "Coriander".
     if (it.name.length > entry.name.length) entry.name = it.name
 
@@ -262,9 +270,13 @@ export function buildShoppingList(recipes, totalDiners) {
       })
       .filter(Boolean)
 
-    return parts.length ? `${e.name} — ${parts.join(' + ')}` : e.name
+    const mark = e.flagged ? ` ${SUBSTITUTION_MARK}` : ''
+    return parts.length ? `${e.name} — ${parts.join(' + ')}${mark}` : `${e.name}${mark}`
   })
 }
+
+/** Travels with the line itself, so it survives the WhatsApp share too. */
+export const SUBSTITUTION_MARK = '(see substitution note)'
 
 /* ------------------------------------------------------------------ *
  * Pantry staples                                                      *

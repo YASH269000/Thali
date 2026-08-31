@@ -148,6 +148,61 @@
 
 .ck-translating { color: var(--muted); font-size: 20px; }
 
+/* The borrowed-recipe banner. Sits above the step so it is the first thing on
+   screen when Cook Mode opens; amber only when there is a change to act on. */
+.ck-ref-note {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 0.5px solid #e5e5e0;
+  border-radius: 12px;
+  background: #fbfbf8;
+}
+
+.ck-ref-note.is-warning {
+  border-color: #e0c48a;
+  background: #fdf6e6;
+}
+
+.ck-ref-head {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #6b6b66;
+}
+
+.ck-ref-note.is-warning .ck-ref-head { color: #8a6d1f; }
+
+.ck-ref-body { margin: 0; font-size: 17px; line-height: 1.45; color: #1a1a1a; }
+
+.ck-ref-line {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 10px 0 0;
+  font-size: 17px;
+  line-height: 1.45;
+  color: #1a1a1a;
+}
+
+.ck-ref-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #8a6d1f;
+}
+
+.ck-ref-warn {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 0.5px solid #e0c48a;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b6b66;
+}
+
 .ck-ai-note {
   max-width: 600px;
   margin: 0 0 20px;

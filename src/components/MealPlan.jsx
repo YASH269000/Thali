@@ -4,7 +4,7 @@ import { loadGuests, normaliseGuests, saveGuests } from '../lib/guests.js'
 import { displayName } from '../lib/names.js'
 import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
 import { applyPantry } from '../lib/shoppingList.js'
-import { buildShoppingList } from '../lib/shoppingList.js'
+import { buildShoppingList, SUBSTITUTION_MARK } from '../lib/shoppingList.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import { lookupIngredient } from '../lib/ingredientGuide.js'
@@ -599,6 +599,13 @@ export default function MealPlan() {
 
   const shopping = applyPantry(baseLines, pantry, lookupIngredient)
 
+  // Dishes that borrow another recipe "with a modification". The note is
+  // rendered against the list, and the affected line is marked inline too, so
+  // the two cannot be read apart.
+  const substitutions = (plan?.dishes || [])
+    .filter((d) => d.ref?.modification)
+    .map((d) => ({ dish: d.name, from: d.ref.targetName, text: d.ref.modification }))
+
   // Named apart from setGuests, which owns the who-screen guest groups.
   const changeExtraGuests = (n) => {
     const next = Math.max(0, Math.min(50, Math.floor(n) || 0))
@@ -907,10 +914,25 @@ export default function MealPlan() {
                   Not shown: everyday staples (water, salt, oil, basic spices).
                   This list assumes you already have these.
                 </p>
+                {substitutions.length > 0 && (
+                  <div className="substitution-note" role="note">
+                    {substitutions.map((sub) => (
+                      <p key={sub.dish}>
+                        <strong>{sub.dish}</strong> uses the{' '}
+                        {sub.from || 'referenced'} recipe, with one change:{' '}
+                        <em>{sub.text}</em>. Lines marked{' '}
+                        <span className="substitution-mark">{SUBSTITUTION_MARK}</span>{' '}
+                        below come from that recipe unchanged &mdash; check this
+                        before you buy.
+                      </p>
+                    ))}
+                  </div>
+                )}
                 {shopping.lines.length > 0 ? (
                   <ol className="shopping-list">
                     {shopping.lines.map((item, i) => (
-                      <li key={i}>
+                      <li key={i}
+                        className={item.includes(SUBSTITUTION_MARK) ? 'is-flagged' : undefined}>
                         <span className="shopping-n" aria-hidden="true">{i + 1}.</span>
                         <span className="shopping-item">{item}</span>
                       </li>

@@ -10,6 +10,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { activeFastIdsOn, calendarNotesOn, foodRulesFor } from '../src/lib/fastingRules.js'
 import { compactForPrompt, filterRecipes, roleOf, selectCandidatesForMeal } from '../src/lib/mealPlanRules.js'
 import { buildShoppingList } from '../src/lib/shoppingList.js'
+import { findRefContradictions, resolveRecipeRef } from '../src/lib/recipeRefs.js'
 import { FAST_LABEL } from '../src/data/memberOptions.js'
 // Statically imported, never read from disk. A runtime readFileSync is not
 // traceable by the Vercel bundler, so recipes.json was omitted from the
@@ -261,6 +262,19 @@ function buildAttribution(dish, family, resolveMember) {
   return { servesMembers: serves, excludedMembers: excluded, substitutes }
 }
 
+// Reported once per cold start, never reconciled. A recipe whose ingredients
+// and preparation give different amounts for the same substitution is a data
+// fix, not something to paper over at runtime: both texts reach the user
+// verbatim. See docs/DATA-ISSUES.md.
+for (const c of findRefContradictions(RECIPES)) {
+  console.warn(
+    `[thali:data] ${c.recipeId} ${c.name}: cross-reference notes disagree — ` +
+    `ingredients say "${c.ingredientsSays}" (${c.amounts.ingredients.join(', ')}), ` +
+    `preparation says "${c.preparationSays}" (${c.amounts.preparation.join(', ')}). ` +
+    'Both are shown to the user; neither is applied.',
+  )
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -435,8 +449,12 @@ export default async function handler(req, res) {
   }
   const attribution = (d) => buildAttribution(d, diners, resolveMember)
 
+  // Five Thali Originals are written as pure cross-references ("Refer to
+  // Recipe E001"). Following them here, where the whole database is in memory,
+  // keeps recipes.json untouched and keeps the 1.8 MB of recipes out of the
+  // browser bundle — the client just receives a dish that has ingredients.
   const dishes = plan.dishes.map((d) => {
-    const full = byId.get(d.recipeId)
+    const full = resolveRecipeRef(byId.get(d.recipeId), byId)
     return {
       recipeId: d.recipeId,
       name: full?.name || d.name,
@@ -461,6 +479,10 @@ export default async function handler(req, res) {
       // Cautions that must be displayed with the dish — a `partial` dish is
       // never presented to a diabetic as unconditionally safe.
       caveats: caveats.get(d.recipeId) || [],
+      // Present only on a dish that points at another recipe. `modification`
+      // is what the shopping list must flag; `prepNote` is what the cook has
+      // to read before step 1. Neither is applied — see recipeRefs.js.
+      ref: full?.ref || null,
     }
   })
 
@@ -474,6 +496,7 @@ export default async function handler(req, res) {
     alternates[role] = mains
       .filter((r) => roleOf(r) === role && !onPlate.has(r.recipeId))
       .slice(0, 12)
+      .map((raw) => resolveRecipeRef(raw, byId))
       .map((r) => ({
         recipeId: r.recipeId,
         name: r.name,
@@ -495,6 +518,7 @@ export default async function handler(req, res) {
         known: true,
         why: '',
         caveats: caveats.get(r.recipeId) || [],
+        ref: r.ref || null,
       }))
   }
 

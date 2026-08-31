@@ -314,6 +314,31 @@
 
 .shopping-list li:last-child { border-bottom: none; }
 
+/* Grouped with the list, not filed away from it: the marked line and this
+   note have to be read together or the mark means nothing. */
+.substitution-note {
+  margin: 0 0 10px;
+  padding: 10px 13px;
+  border: 0.5px solid #e0c48a;
+  border-radius: 8px;
+  background: #fdf6e6;
+}
+
+.substitution-note p { margin: 0; font-size: 12px; line-height: 1.55; color: #6b6b66; }
+.substitution-note strong { color: #1a1a1a; font-weight: 600; }
+.substitution-note em { font-style: normal; color: #1a1a1a; font-weight: 600; }
+
+.substitution-mark { white-space: nowrap; color: #8a6d1f; font-weight: 600; }
+
+.shopping-list li.is-flagged {
+  margin: 0 -12px;
+  padding-left: 12px;
+  padding-right: 12px;
+  background: #fdf6e6;
+}
+
+.shopping-list li.is-flagged .shopping-item { font-weight: 500; }
+
 .heading-count {
   margin-left: 7px;
   font-weight: 400;
