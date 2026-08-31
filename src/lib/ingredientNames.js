@@ -229,3 +229,159 @@ export function ingredientIdentity(raw) {
 
   return { base, form, clean }
 }
+
+/* ------------------------------------------------------------------ *
+ * Pantry identity                                                     *
+ *                                                                     *
+ * The same canonicaliser as the shopping-list dedupe above, with two
+ * differences that matter only when answering "does this family
+ * already have this?".
+ *
+ * A pantry hit tells someone they own an ingredient. Being wrong costs
+ * them the dish, so the rule is: same thing, prepared differently, is
+ * a match; a different product on the shelf never is.
+ * ------------------------------------------------------------------ */
+
+// What a cook does to an ingredient they already have. Someone with tomatoes
+// in the fridge has them whether the recipe wants them chopped or sliced.
+//
+// "ground" is deliberately absent. Every word here is an action; "ground"
+// names a different product — ground coriander is coriander powder, not
+// coriander leaves, and treating it as an action makes the pantry claim the
+// one thing it must never claim. Same for powdered, dried, raw, cooked,
+// roasted and smoked.
+const PREP_WORDS = [
+  'sliced', 'chopped', 'diced', 'minced', 'grated', 'crushed', 'mashed',
+  'julienned', 'cubed', 'shredded', 'boiled', 'blanched', 'soaked', 'toasted',
+]
+
+const PREP_DEGREE = ['finely', 'roughly', 'thinly', 'coarsely']
+
+// State and grade words that do not change what you buy. Deliberately short.
+// "fresh" is NOT here: fresh coriander and dried coriander are two different
+// purchases, and the same is true of every fresh/dried pair in this data.
+const STATE_WORDS = [
+  'thick', 'thin', 'cold', 'warm', 'chilled', 'full-fat', 'low-fat', 'plain',
+]
+
+const PREP_RUN = `(?:(?:${PREP_DEGREE.join('|')})\\s+)?(?:${PREP_WORDS.join('|')})`
+const STRIPPABLE = `(?:${PREP_RUN}|${STATE_WORDS.join('|')})`
+const LEAD_RE = new RegExp(`^(?:${STRIPPABLE})\\s+`, 'i')
+const TAIL_RE = new RegExp(`\\s+(?:${STRIPPABLE})$`, 'i')
+// Prep is reported wherever it appears, including inside a parenthetical,
+// because that is where recipes usually put it: "2 tomatoes (chopped)".
+const ANY_PREP_RE = new RegExp(`\\b(?:${PREP_RUN})\\b`, 'gi')
+
+/** Leading and trailing prep/state words removed. */
+function stripQualifiers(text) {
+  let s = String(text || '').trim()
+  for (;;) {
+    const lead = LEAD_RE.exec(s)
+    if (lead) { s = s.slice(lead[0].length).trim(); continue }
+    const tail = TAIL_RE.exec(s)
+    if (tail) { s = s.slice(0, tail.index).trim(); continue }
+    break
+  }
+  return s
+}
+
+/**
+ * `{ base, form, prep }` for one side of a pantry comparison.
+ *
+ * Qualifiers come off BEFORE ingredientIdentity, not after. The canonicaliser
+ * has rules that only fire on a bare head noun — IMPLIED_FORM turns
+ * "coriander" into "coriander leaves" — and they cannot fire on "chopped
+ * coriander". Stripping afterwards left that ingredient with no form while the
+ * pantry chip had one, and the two never met.
+ *
+ * `prep` is only ever reported to the user, never used to decide a match.
+ */
+export function pantryIdentity(raw) {
+  const text = String(raw || '')
+  const prep = [...new Set(
+    (text.match(ANY_PREP_RE) || []).map((p) => p.toLowerCase().replace(/\s+/g, ' ')),
+  )]
+
+  // Parentheticals are prep or gloss, never identity — ingredientIdentity
+  // ignores them for base and form anyway, so dropping them here only lets the
+  // strip above see the head noun.
+  const outside = text.replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim()
+  const settled = stripQualifiers(outside) || outside || text
+  const { base, form } = ingredientIdentity(settled)
+
+  // When the guide recognises the whole name, the name IS the ingredient and
+  // any form word inside it belongs to the alias rather than distinguishing
+  // anything: "gram flour" is besan, not a flour form of besan. Without this,
+  // exact form matching below rejected besan/gram flour and atta/whole wheat
+  // flour, which the guide has always said are the same thing.
+  const aliased = Boolean(lookupIngredient(settled.toLowerCase()))
+  return { base, form: aliased ? '' : form, prep }
+}
+
+/**
+ * Does a pantry entry cover this ingredient?
+ *
+ * Word-for-word equality, never a subset test, and forms must match exactly.
+ *
+ * Subset is what the old matcher used, and it is why "Onion" in the pantry
+ * claimed "spring onion". Exact forms are what the shopping-list dedupe
+ * deliberately does NOT do — there, an absent form joins the one form its base
+ * is sold in, which is right for merging two mentions of one purchase and
+ * wrong here: it made "Onion" cover onion powder, "Garlic" cover garlic paste
+ * and "Rice" cover rice flour.
+ */
+export function pantryMatches(itemIdentity, ingredientIdentityish) {
+  const a = itemIdentity
+  const b = ingredientIdentityish
+  if (!a?.base || !b?.base) return false
+  if (a.form !== b.form) return false
+  const wa = a.base.split(/\s+/).filter(Boolean)
+  const wb = b.base.split(/\s+/).filter(Boolean)
+  return wa.length === wb.length && wa.every((w, i) => sameWord(w, wb[i]))
+}
+
+/** Candidate stems for one word, so singular and plural compare equal. */
+function wordStems(w) {
+  const keys = new Set([w])
+  if (/ies$/.test(w) && w.length > 4) {
+    keys.add(`${w.slice(0, -3)}y`)
+    keys.add(`${w.slice(0, -3)}i`)
+  } else if (/(?:ch|sh|s|x|z|o)es$/.test(w) && w.length > 3) {
+    keys.add(w.slice(0, -2))
+  }
+  if (/s$/.test(w) && !/(?:ss|us|is)$/.test(w) && w.length > 3) keys.add(w.slice(0, -1))
+  return keys
+}
+
+function sameWord(a, b) {
+  if (a === b) return true
+  const sa = wordStems(a)
+  return [...wordStems(b)].some((k) => sa.has(k))
+}
+
+// Past participle -> the gerund a note is written in. Spelled out rather than
+// derived: "sliced" minus "d" plus "ing" is "sliceing".
+const PREP_GERUND = {
+  sliced: 'slicing', chopped: 'chopping', diced: 'dicing', minced: 'mincing',
+  grated: 'grating', crushed: 'crushing', mashed: 'mashing',
+  julienned: 'julienning', cubed: 'cubing', shredded: 'shredding',
+  boiled: 'boiling', blanched: 'blanching', soaked: 'soaking',
+  toasted: 'toasting',
+}
+
+/** "needs chopping and slicing" — what is still to do, for the pantry note. */
+export function prepLabel(prep) {
+  const verbs = []
+  for (const raw of prep || []) {
+    const words = String(raw).toLowerCase().split(/\s+/).filter(Boolean)
+    const participle = words.at(-1)
+    const gerund = PREP_GERUND[participle]
+    if (!gerund) continue
+    const degree = words.length > 1 ? `${words.slice(0, -1).join(' ')} ` : ''
+    const phrase = `${degree}${gerund}`
+    if (!verbs.includes(phrase)) verbs.push(phrase)
+  }
+  if (verbs.length === 0) return ''
+  if (verbs.length === 1) return `needs ${verbs[0]}`
+  return `needs ${verbs.slice(0, -1).join(', ')} and ${verbs.at(-1)}`
+}

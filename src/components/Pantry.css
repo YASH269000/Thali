@@ -125,3 +125,8 @@
 @media (max-width: 620px) {
   .pantry-head { flex-direction: column; gap: 8px; }
 }
+
+/* What is still to do to an ingredient the family already has. */
+.pantry-prep {
+  color: #6b6b66;
+}

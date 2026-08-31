@@ -4,7 +4,7 @@
 // The model scaled down reliably but not up — rice stayed at 1.5 cups when
 // the table grew from 3 diners to 5. Arithmetic does not have that problem.
 
-import { ingredientIdentity } from './ingredientNames.js'
+import { ingredientIdentity, pantryIdentity, pantryMatches, prepLabel } from './ingredientNames.js'
 import { namedInModification } from './recipeRefs.js'
 
 const VULGAR = {
@@ -420,46 +420,40 @@ export function filterPantryStaples(lines) {
  * asks while standing in the kitchen.
  * ------------------------------------------------------------------ */
 
-/** Comparable tokens for a name: lowercase words, parentheticals dropped. */
-function nameTokens(text) {
-  return new Set(
-    String(text || '')
-      .replace(/\s*\(.*?\)/g, ' ')
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, ' ')
-      .split(/\s+/)
-      .filter(Boolean),
-  )
-}
-
 /**
- * Expand each pantry entry into the terms that should match it, pulling
- * aliases from the ingredient guide so "asafoetida" in the pantry also
- * clears "hing" from the list, and vice versa.
+ * Each pantry entry canonicalised for matching.
+ *
+ * The aliases the old version pulled out of the ingredient guide by hand are
+ * now inside pantryIdentity — ingredientIdentity already resolves "gram flour"
+ * onto besan and "dahi" onto curd, so expanding them here as a second list was
+ * a duplicate of the canonicaliser that could drift from it.
  */
-export function expandPantryTerms(pantryItems, lookup) {
-  // Each term remembers the pantry entry it came from, so the UI can say which
-  // ticked item did the work rather than only how many lines vanished.
+export function expandPantryTerms(pantryItems) {
   const terms = []
   const seen = new Set()
   for (const raw of pantryItems || []) {
     const item = String(raw || '').trim()
-    if (!item) continue
-    const words = [item]
-    const entry = lookup?.(item)
-    if (entry) {
-      words.push(entry.key)
-      for (const alias of entry.aliases || []) words.push(alias)
-    }
-    for (const w of words) {
-      const lower = w.toLowerCase()
-      if (seen.has(lower)) continue
-      seen.add(lower)
-      const tokens = nameTokens(lower)
-      if (tokens.size > 0) terms.push({ item, tokens })
-    }
+    if (!item || seen.has(item.toLowerCase())) continue
+    seen.add(item.toLowerCase())
+    const id = pantryIdentity(item)
+    if (id.base) terms.push({ item, id })
   }
   return terms
+}
+
+/**
+ * The ingredient name half of an aggregated line, without its quantity or its
+ * parentheticals: "Tomatoes (chopped) — 2" -> "Tomatoes".
+ *
+ * Shared with the UI on purpose. The pantry note is looked up by this name, so
+ * a second copy that split on the first em-dash instead of the last quietly
+ * stopped every note on a line whose gloss contained one.
+ */
+export function listItemName(line) {
+  const text = String(line)
+  const cut = text.lastIndexOf(' \u2014 ')
+  const name = cut === -1 ? text : text.slice(0, cut)
+  return name.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim() || name.trim()
 }
 
 /**
@@ -467,29 +461,42 @@ export function expandPantryTerms(pantryItems, lookup) {
  *
  * @param {string[]} lines        aggregated shopping list
  * @param {string[]} pantryItems  what the family says it has
- * @param {Function} [lookup]     ingredient-guide lookup, for aliases
- * @returns {{ lines: string[], removed: string[], matched: string[] }}
- *   matched — the pantry entries that actually took something off this list,
- *   in the order they were ticked. Which ticked items are relevant to THIS
- *   meal is not visible from the removed lines alone.
+ * @returns {{ lines, removed, matched, prepared }}
+ *   removed  — the lines taken off
+ *   matched  — the pantry entries that actually took something off THIS list,
+ *              in the order they were ticked. Which ticked items are relevant
+ *              to this meal is not visible from the removed lines alone.
+ *   prepared — { item, name, prep } for every line whose recipe wanted the
+ *              ingredient prepared. Having tomatoes is not the same as having
+ *              them chopped, and the note says which is still to do.
  */
-export function applyPantry(lines, pantryItems, lookup) {
-  const terms = expandPantryTerms(pantryItems, lookup)
-  if (terms.length === 0) return { lines: [...(lines || [])], removed: [], matched: [] }
+export function applyPantry(lines, pantryItems) {
+  const terms = expandPantryTerms(pantryItems)
+  if (terms.length === 0) {
+    return { lines: [...(lines || [])], removed: [], matched: [], prepared: [] }
+  }
 
   const kept = []
   const removed = []
+  const prepared = []
   const matched = new Set()
   for (const line of lines || []) {
     // Compare against the ingredient name only, never the quantity.
-    const tokens = nameTokens(String(line).split('\u2014')[0])
-    const hits = terms.filter((term) => [...term.tokens].every((t) => tokens.has(t)))
-    if (hits.length > 0) {
-      removed.push(line)
-      for (const h of hits) matched.add(h.item)
-    } else kept.push(line)
+    const text = String(line)
+    const cut = text.lastIndexOf(' \u2014 ')
+    const name = (cut === -1 ? text : text.slice(0, cut)).trim()
+    const id = pantryIdentity(name)
+    const hits = terms.filter((t) => pantryMatches(t.id, id))
+    if (hits.length === 0) { kept.push(line); continue }
+
+    removed.push(line)
+    for (const h of hits) matched.add(h.item)
+    const label = prepLabel(id.prep)
+    // Keyed on the name as the list DISPLAYS it, via the shared helper above,
+    // because that is what the pantry note is rendered against.
+    if (label) prepared.push({ item: hits[0].item, name: listItemName(line), prep: label })
   }
-  return { lines: kept, removed, matched: [...matched] }
+  return { lines: kept, removed, matched: [...matched], prepared }
 }
 
 /**

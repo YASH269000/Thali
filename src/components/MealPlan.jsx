@@ -4,10 +4,11 @@ import { loadGuests, normaliseGuests, saveGuests } from '../lib/guests.js'
 import { displayName } from '../lib/names.js'
 import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
 import { applyPantry } from '../lib/shoppingList.js'
-import { buildShoppingList, componentBatches, SUBSTITUTION_MARK } from '../lib/shoppingList.js'
+import {
+  buildShoppingList, componentBatches, listItemName, SUBSTITUTION_MARK,
+} from '../lib/shoppingList.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
-import { lookupIngredient } from '../lib/ingredientGuide.js'
 import CookMode from './CookMode.jsx'
 import Clock from './Clock.jsx'
 import Disclaimer from './Disclaimer.jsx'
@@ -395,12 +396,6 @@ function DishCard({ dish, onStartCooking, alternates, onSwap, recentIds }) {
  * ("Onion (chopped fine — skip for Jain) — 1/2"). Parentheticals come off too,
  * because this is for a one-line summary, not the list itself.
  */
-function listItemName(line) {
-  const text = String(line)
-  const cut = text.lastIndexOf(' \u2014 ')
-  const name = cut === -1 ? text : text.slice(0, cut)
-  return name.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim() || name.trim()
-}
 
 export default function MealPlan() {
   const navigate = useNavigate()
@@ -637,7 +632,7 @@ export default function MealPlan() {
     ? buildShoppingList(plan.dishes, totalServings)
     : (plan?.ingredientsAggregated || [])
 
-  const shopping = applyPantry(baseLines, pantry, lookupIngredient)
+  const shopping = applyPantry(baseLines, pantry)
 
   // Dishes that borrow another recipe "with a modification". The note is
   // rendered against the list, and the affected line is marked inline too, so
@@ -1044,6 +1039,7 @@ export default function MealPlan() {
 
                 <Pantry items={pantry} onChange={updatePantry}
                   removedNames={shopping.removed.map(listItemName)}
+                  prepared={shopping.prepared}
                   matched={shopping.matched} />
               </>
             )}

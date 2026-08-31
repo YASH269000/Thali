@@ -15,13 +15,17 @@ function CloseIcon() {
  * What the family already has. Binary by design — see the note in
  * shoppingList.js: no quantities, no depletion tracking.
  */
-export default function Pantry({ items, onChange, removedNames = [], matched = [] }) {
+export default function Pantry({ items, onChange, removedNames = [], matched = [], prepared = [] }) {
   const [draft, setDraft] = useState('')
   const has = (name) => items.some((i) => i.toLowerCase() === name.toLowerCase())
   // Ticked and actually used by this meal, as opposed to ticked and irrelevant
   // to it — the pantry outlives any one plan, so most ticks are the latter.
   const matchedSet = new Set(matched.map((m) => m.toLowerCase()))
   const isMatched = (name) => matchedSet.has(name.toLowerCase())
+  // Having tomatoes is not the same as having them chopped. Where the recipe
+  // wanted a prepared form, the work that is left travels with the name.
+  const prepFor = new Map(prepared.map((p) => [p.name.toLowerCase(), p.prep]))
+  const prepForChip = new Map(prepared.map((p) => [p.item.toLowerCase(), p.prep]))
 
   const toggle = (name) => {
     onChange(has(name)
@@ -64,7 +68,16 @@ export default function Pantry({ items, onChange, removedNames = [], matched = [
         <p className="pantry-saved">
           <strong>{removedNames.length}</strong>{' '}
           {removedNames.length === 1 ? 'item' : 'items'} already in your pantry:{' '}
-          {removedNames.join(', ')}
+          {removedNames.map((name, i) => {
+            const prep = prepFor.get(name.toLowerCase())
+            return (
+              <span key={name}>
+                {i > 0 && ', '}
+                {name}
+                {prep && <span className="pantry-prep"> ({prep})</span>}
+              </span>
+            )
+          })}
         </p>
       )}
 
@@ -72,7 +85,9 @@ export default function Pantry({ items, onChange, removedNames = [], matched = [
         {COMMON_PANTRY.map((name) => (
           <label key={name}
             className={`pantry-chip${has(name) ? ' is-on' : ''}${isMatched(name) ? ' is-matched' : ''}`}
-            title={isMatched(name) ? `${name} was taken off this meal's list` : undefined}>
+            title={isMatched(name)
+              ? `${name} was taken off this meal's list${prepForChip.get(name.toLowerCase()) ? ` — ${prepForChip.get(name.toLowerCase())}` : ''}`
+              : undefined}>
             <input type="checkbox" checked={has(name)} onChange={() => toggle(name)} />
             <span>{name}</span>
             {isMatched(name) && <span className="pantry-chip-dot" aria-hidden="true" />}
