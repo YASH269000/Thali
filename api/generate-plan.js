@@ -9,7 +9,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { activeFastIdsOn, calendarNotesOn, foodRulesFor } from '../src/lib/fastingRules.js'
 import {
-  compactForPrompt, filterRecipes, isInternational, roleOf, selectCandidatesForMeal,
+  compactForPrompt, filterRecipes, isInternational, MEAL_TARGET, roleOf,
+  selectCandidatesForMeal, SINGLETON_ROLES,
 } from '../src/lib/mealPlanRules.js'
 import { buildShoppingList } from '../src/lib/shoppingList.js'
 import { findRefContradictions, resolveComponents, resolveRecipeRef } from '../src/lib/recipeRefs.js'
@@ -54,14 +55,10 @@ const MEAL_BRIEF_FASTING = {
 // structure here ("1 dal, 1 sabzi, 1 roti") made Indian the default-shaped
 // answer, and the model returned it every time even with a coherent
 // single-cuisine alternative sitting in the candidate list.
-// What a full meal of each type looks like. Kept as numbers so the brief can
-// be honest when a cuisine cannot furnish that many dishes.
-const MEAL_TARGET = { breakfast: [2, 3], lunch: [4, 5], dinner: [3, 4] }
-
-// Roles a single meal may hold only once. A thali can carry two sabzis or two
-// accompaniments; it does not carry two rices — or, now that the International
-// v2 set brings 36 of them, two soups.
-const SINGLETON_ROLES = new Set(['rice', 'main', 'dal', 'bread', 'soup'])
+//
+// MEAL_TARGET — what a full meal of each type looks like — is imported rather
+// than declared, because the cuisine picker warns about exactly the cuisines
+// that will push shapeFor() below its floor, and the two must agree.
 
 /**
  * The "how many dishes" sentence, capped at what actually exists.

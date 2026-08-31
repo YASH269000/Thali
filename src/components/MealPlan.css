@@ -800,3 +800,20 @@
 .component-note-list li {
   margin: 3px 0;
 }
+
+/* A cuisine that can be cooked from but cannot fill the meal being planned.
+   Amber, matching the fasting chips: a caution, not an error. */
+.cuisine-chip.is-thin .cuisine-chip-hint {
+  color: #8a6d1f;
+}
+
+.cuisine-thin-note {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border: 0.5px solid #e5e0cd;
+  border-radius: 8px;
+  background: #fdfaf0;
+  color: #6b6b66;
+  font-size: 14px;
+  line-height: 1.5;
+}

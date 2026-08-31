@@ -526,22 +526,94 @@ const INTERNATIONAL_CUISINE_WEIGHTS = {
 const MIN_CUISINE_DISHES = 3
 
 /**
+ * What a full meal of each type looks like: [fewest, most] dishes.
+ *
+ * Lives here rather than in api/generate-plan.js because two callers need the
+ * same number and must not disagree about it — the prompt, which drops to the
+ * honest-small-plan wording below the floor, and the cuisine picker, which has
+ * to warn about exactly the cuisines that will trigger it.
+ */
+export const MEAL_TARGET = { breakfast: [2, 3], lunch: [4, 5], dinner: [3, 4] }
+
+/**
+ * Roles a single meal may hold only once. A thali can carry two sabzis or two
+ * accompaniments; it does not carry two rices, or two soups.
+ *
+ * Lives beside MEAL_TARGET and for the same reason: the planner enforces it
+ * and the cuisine picker has to count with it, or the picker promises a
+ * four-dish lunch from a pool that is really two soups and a pickle.
+ */
+export const SINGLETON_ROLES = new Set(['rice', 'main', 'dal', 'bread', 'soup'])
+
+/** [fewest, most] dishes for a meal of this type. */
+export function dishesNeededFor(mealType) {
+  return MEAL_TARGET[mealType] || MEAL_TARGET.dinner
+}
+
+/**
  * Weighted pick of one international cuisine that can actually supply a meal
  * from this pool. Returns null when none can.
  */
+/**
+ * How many dishes a cuisine can actually put on the table for one meal.
+ *
+ * Not the same as how many pass the dietary filter, and the gap is what made
+ * the picker lie. For a Buddhist member, Indo-Chinese had 4 eligible lunch
+ * dishes — two soups, a pickle and a green tea — and the plan came back with
+ * two. Both losses are structural, not chance:
+ *
+ *   - a role with no quota for this meal type is never sampled, so the tea
+ *     was counted and could not be served;
+ *   - a singleton role can only ever contribute one dish, so the second soup
+ *     was counted and had to be dropped.
+ *
+ * Counting the way the planner actually builds gives 2, which is what arrives.
+ */
+function usableDishes(recipes, mealType) {
+  const quota = QUOTAS[mealType] || QUOTAS.dinner
+  const byRole = new Map()
+  for (const r of recipes) {
+    const role = roleOf(r)
+    if (!quota[role]) continue
+    byRole.set(role, (byRole.get(role) || 0) + 1)
+  }
+  let total = 0
+  for (const [role, n] of byRole) total += SINGLETON_ROLES.has(role) ? 1 : n
+  return total
+}
+
 export function internationalCuisineOptions(pool, mealType) {
-  const counts = new Map()
+  const byCuisine = new Map()
   for (const r of pool) {
     if (!isInternational(r)) continue
     if (mealType && !fitsMealType(r, mealType)) continue
-    counts.set(r.region, (counts.get(r.region) || 0) + 1)
+    if (!byCuisine.has(r.region)) byCuisine.set(r.region, [])
+    byCuisine.get(r.region).push(r)
   }
+  const [needed, most] = dishesNeededFor(mealType)
   return Object.keys(INTERNATIONAL_CUISINE_WEIGHTS)
-    .map((region) => ({
-      cuisine: region,
-      count: counts.get(region) || 0,
-      available: (counts.get(region) || 0) >= MIN_CUISINE_DISHES,
-    }))
+    .map((region) => {
+      const recipes = byCuisine.get(region) || []
+      // What the family could eat, and what a meal can actually be built from.
+      // The second is the one every threshold below is judged against.
+      const eligible = recipes.length
+      const count = usableDishes(recipes, mealType)
+      return {
+        cuisine: region,
+        count,
+        eligible,
+        needed,
+        most,
+        available: count >= MIN_CUISINE_DISHES,
+        // Enough to cook from, but with no slack left for the meal being
+        // planned. The test is `<= needed`, not `< needed`: a lunch wants 4-5
+        // dishes, so a pool of exactly 4 means every single one has to be used
+        // and one duplicate-role collision makes the meal shorter still. The
+        // plan would be honest and short either way; the picker says so first,
+        // rather than letting a thin plan arrive looking like a bug.
+        thin: count >= MIN_CUISINE_DISHES && count <= needed,
+      }
+    })
 }
 
 export function pickInternationalCuisine(pool, random = Math.random) {

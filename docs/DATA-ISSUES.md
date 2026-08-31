@@ -166,3 +166,24 @@ Absence statements are handled alongside, in the words the files use:
 "No lard — oil only" (MX035), "No fish sauce or shrimp" (EA043), "No shrimp
 paste" (TH041). Without `MEAT_NEGATION_RE` those three would have been hidden
 from vegetarians by sentences saying they are safe.
+
+
+## Eligible dishes are not servable dishes
+
+`internationalCuisineOptions()` used to count every recipe that passed the
+dietary filter and fitted the meal type. That number is not what reaches the
+table, and the gap is wide enough to make the picker wrong.
+
+For a Buddhist member, Indo-Chinese had 4 eligible lunch dishes — two soups, a
+pickled vegetable and a green tea. The plan came back with two. Both losses are
+structural:
+
+- `QUOTAS.lunch` has no `beverage` key, so the tea was never sampled;
+- `soup` is a singleton role, so the second soup had to be dropped.
+
+The count is now taken the way the planner builds — roles with no quota for
+this meal type excluded, singleton roles capped at one — and both `available`
+and the thin-pool warning are judged against it. `eligible` is still reported
+alongside for transparency. Predicted and actual dish counts now agree: Jain
+guest on Italian predicted 3 and returned 3; Buddhist on East Asian predicted 5
+and returned 5.

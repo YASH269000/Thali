@@ -52,6 +52,13 @@ const CUISINE_SURPRISE = { id: 'surprise', label: 'Surprise me', hint: 'Pick a c
 
 const KNOWN_CUISINE_IDS = ['indian', 'surprise', ...CUISINE_ORDER]
 
+/** Cuisines that can furnish THIS meal type today, per the API. */
+function offerableFor(cuisineInfo, mealType) {
+  return (cuisineInfo?.byMeal?.[mealType] || [])
+    .filter((o) => o.available)
+    .map((o) => o.cuisine)
+}
+
 /** Indian always, then whatever the API says is offerable, then Surprise me. */
 function cuisineChips(offerable = []) {
   const middle = CUISINE_ORDER
@@ -537,11 +544,12 @@ export default function MealPlan() {
   // accident. Correcting the stored choice keeps one source of truth.
   useEffect(() => {
     if (!cuisineInfo) return
-    if (cuisineChips(cuisineInfo.offerable).some((c) => c.id === cuisine)) return
+    const offerable = offerableFor(cuisineInfo, mealType)
+    if (cuisineChips(offerable).some((c) => c.id === cuisine)) return
     saveCuisine('indian')
     // oxlint-disable-next-line react/set-state-in-effect
     setCuisine('indian')
-  }, [cuisineInfo, cuisine])
+  }, [cuisineInfo, cuisine, mealType])
 
   const chooseCuisine = (id) => {
     saveCuisine(id)
@@ -593,10 +601,29 @@ export default function MealPlan() {
   // which is why they went stale together.
   // A cuisine saved from an earlier session may not be offerable today; the
   // API already falls back to Indian, so reflect that in the picker.
-  const selectedCuisine = cuisineInfo
-    && !cuisineChips(cuisineInfo.offerable).some((c) => c.id === cuisine)
-    ? 'indian' : cuisine
+  // Everything the picker shows is about the meal being planned, not a union
+  // across all three. Indo-Chinese can furnish a Buddhist family a breakfast
+  // and not a lunch; offering the chip on the strength of the breakfast, while
+  // planning lunch, is how the request came to name a cuisine the server then
+  // quietly dropped.
+  const mealCuisines = cuisineInfo?.byMeal?.[mealType] || []
+  const offerableNow = offerableFor(cuisineInfo, mealType)
+  const unavailableNow = mealCuisines.filter((o) => !o.available && o.reason)
+  // Offerable, but with no slack for this meal — the plan will be short and
+  // says so here first.
+  const thinCuisines = new Map(
+    mealCuisines.filter((o) => o.thin && o.note).map((o) => [o.cuisine, o]),
+  )
 
+  const selectedCuisine = cuisineInfo
+    && !cuisineChips(offerableNow).some((c) => c.id === cuisine)
+    ? 'indian' : cuisine
+  const selectedThinNote = thinCuisines.get(selectedCuisine)?.note || null
+
+  // Cuisines that can be cooked from but cannot furnish a full meal of the
+  // type being planned — a Buddhist member takes Indo-Chinese lunch from 47
+  // dishes to 4. The plan would be honest and short; this warns first, so a
+  // three-dish lunch is a choice rather than a surprise.
   const planCurrent = Boolean(plan) && planKeyOf === planKey(mealType, present, guests, cuisine)
   // A change is selected but its plan has not arrived yet.
   const awaitingPlan = stage === 'plan' && !error && (loading || !planCurrent)
@@ -723,21 +750,31 @@ export default function MealPlan() {
               <div className="cuisine-picker">
                 <p className="cuisine-title">Which cuisine?</p>
                 <div className="cuisine-row">
-                  {cuisineChips(cuisineInfo.offerable).map((c) => (
+                  {cuisineChips(offerableNow).map((c) => (
                     <button key={c.id} type="button"
-                      className={`cuisine-chip${selectedCuisine === c.id ? ' is-on' : ''}`}
+                      className={`cuisine-chip${selectedCuisine === c.id ? ' is-on' : ''}${thinCuisines.has(c.id) ? ' is-thin' : ''}`}
                       onClick={() => chooseCuisine(c.id)}
                       aria-pressed={selectedCuisine === c.id}>
                       <span className="cuisine-chip-name">{c.label}</span>
-                      <span className="cuisine-chip-hint">{c.hint}</span>
+                      <span className="cuisine-chip-hint">
+                        {thinCuisines.has(c.id)
+                          ? `Only ${thinCuisines.get(c.id).count} dishes today`
+                          : c.hint}
+                      </span>
                     </button>
                   ))}
                 </div>
 
-                {(cuisineInfo.unavailable || []).length > 0 && (
+                {selectedThinNote && (
+                  <p className="cuisine-thin-note" role="status">{selectedThinNote}</p>
+                )}
+
+                {unavailableNow.length > 0 && (
                   <div className="cuisine-unavailable">
-                    <p className="cuisine-unavailable-title">Not available today</p>
-                    {cuisineInfo.unavailable.map((u) => (
+                    <p className="cuisine-unavailable-title">
+                      Not available for this {mealType}
+                    </p>
+                    {unavailableNow.map((u) => (
                       <p key={u.cuisine} className="cuisine-unavailable-row">
                         <span className="chip chip-health">{u.cuisine}</span>
                         {u.reason}
