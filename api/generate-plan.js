@@ -8,9 +8,11 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { activeFastIdsOn, calendarNotesOn, foodRulesFor } from '../src/lib/fastingRules.js'
-import { compactForPrompt, filterRecipes, roleOf, selectCandidatesForMeal } from '../src/lib/mealPlanRules.js'
+import {
+  compactForPrompt, filterRecipes, isInternational, roleOf, selectCandidatesForMeal,
+} from '../src/lib/mealPlanRules.js'
 import { buildShoppingList } from '../src/lib/shoppingList.js'
-import { findRefContradictions, resolveRecipeRef } from '../src/lib/recipeRefs.js'
+import { findRefContradictions, resolveComponents, resolveRecipeRef } from '../src/lib/recipeRefs.js'
 import { FAST_LABEL } from '../src/data/memberOptions.js'
 // Statically imported, never read from disk. A runtime readFileSync is not
 // traceable by the Vercel bundler, so recipes.json was omitted from the
@@ -57,8 +59,9 @@ const MEAL_BRIEF_FASTING = {
 const MEAL_TARGET = { breakfast: [2, 3], lunch: [4, 5], dinner: [3, 4] }
 
 // Roles a single meal may hold only once. A thali can carry two sabzis or two
-// accompaniments; it does not carry two rices.
-const SINGLETON_ROLES = new Set(['rice', 'main', 'dal', 'bread'])
+// accompaniments; it does not carry two rices — or, now that the International
+// v2 set brings 36 of them, two soups.
+const SINGLETON_ROLES = new Set(['rice', 'main', 'dal', 'bread', 'soup'])
 
 /**
  * The "how many dishes" sentence, capped at what actually exists.
@@ -408,7 +411,7 @@ export default async function handler(req, res) {
     anyFasting,
     internationalCuisine: selection.internationalCuisine,
     internationalDishes: candidates
-      .filter((c) => c.source === 'International')
+      .filter((c) => isInternational(c))
       .map((c) => `${c.name} (${c.category})`),
     calendarNotes: calendarNotesOn(date),
     foodRules: foodRulesFor(activeLabels),
@@ -532,8 +535,15 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
   // Recipe E001"). Following them here, where the whole database is in memory,
   // keeps recipes.json untouched and keeps the 1.8 MB of recipes out of the
   // browser bundle — the client just receives a dish that has ingredients.
+  // Recipes a dish uses as ingredients — "2 cups marinara sauce", "16
+  // falafel". Resolved here, where the whole database is in memory, and sent
+  // with the dish: the browser rebuilds the shopping list from plan.dishes and
+  // has no catalogue of its own to look them up in.
+  const plannedIds = plan.dishes.map((d) => d.recipeId)
+
   const dishes = plan.dishes.map((d) => {
     const full = resolveRecipeRef(byId.get(d.recipeId), byId)
+    const components = full ? resolveComponents(full, RECIPES, { skipIds: plannedIds }) : []
     return {
       recipeId: d.recipeId,
       name: full?.name || d.name,
@@ -556,6 +566,9 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
       hasFullPreparation: Boolean(full?.hasFullPreparation),
       source: full?.source || null,
       flags: full?.flags || null,
+      // Sub-recipes this dish is built from. Cook Mode shows them as
+      // "make this first"; the shopping list folds their ingredients in.
+      components,
       // Cautions that must be displayed with the dish — a `partial` dish is
       // never presented to a diabetic as unconditionally safe.
       caveats: caveats.get(d.recipeId) || [],
@@ -578,6 +591,10 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
       .slice(0, 12)
       .map((raw) => resolveRecipeRef(raw, byId))
       .map((r) => ({
+        // An alternate can be swapped onto the plate, after which the client
+        // rebuilds the shopping list and Cook Mode from it. Without its
+        // components, swapping in the lasagne quietly loses the marinara.
+        components: resolveComponents(r, RECIPES, { skipIds: plannedIds }),
         recipeId: r.recipeId,
         name: r.name,
         role,
@@ -632,10 +649,12 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
     // Computed from the recipes, not taken from the model: scaling by
     // totalDiners / recipe.serves is arithmetic, and the model scaled down
     // reliably but not up.
-    ingredientsAggregated: buildShoppingList(
-      dishes.map((d) => byId.get(d.recipeId)).filter(Boolean),
-      headcount,
-    ),
+    // Built from `dishes`, not from the raw catalogue records. Those carry
+    // the resolved cross-reference and the sub-recipes; re-reading byId threw
+    // both away, so this list disagreed with the one the browser rebuilds from
+    // the same dishes — and a D002-style dish aggregated the literal words
+    // "Refer to Recipe J007".
+    ingredientsAggregated: buildShoppingList(dishes, headcount),
     planSummary: plan.planSummary || '',
     possibleSwaps,
     alternates,
@@ -651,7 +670,7 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
       recentExclusionApplied: selection.excludedApplied,
       recentExcludedCount: recentRecipeIds.length,
       anyFasting,
-      internationalCandidates: candidates.filter((c) => c.source === 'International').length,
+      internationalCandidates: candidates.filter((c) => isInternational(c)).length,
       internationalCuisine: selection.internationalCuisine,
       candidateRoles: candidates.reduce((a, c) => {
         a[c.role] = (a[c.role] || 0) + 1

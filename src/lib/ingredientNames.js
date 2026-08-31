@@ -119,6 +119,13 @@ export function cleanIngredientName(raw) {
     prev = s
     s = s.replace(INSTRUCTION_PAREN_RE, ' ').trim()
     s = s.replace(TRAILING_NOTE_RE, '').trim()
+    // Peeling a note from inside a gloss can leave the gloss hanging open:
+    // "besan (chickpea flour, if needed)" loses ", if needed)" and reads
+    // "Besan (chickpea flour" on the list. An unclosed parenthetical is not a
+    // name, so what is left of it goes too.
+    if ((s.match(/\(/g) || []).length > (s.match(/\)/g) || []).length) {
+      s = s.slice(0, s.lastIndexOf('(')).trim()
+    }
   }
   if (!s) return ''
 

@@ -121,7 +121,30 @@ function TimerOverlay({ timer, onClose }) {
  * Cook mode                                                           *
  * ------------------------------------------------------------------ */
 
+/**
+ * A dish that is built from other recipes opens them from inside Cook Mode.
+ * "Falafel Wrap Plate" cannot be cooked without first making the falafel and
+ * the hummus, and sending the cook back to the meal plan to find them is how
+ * a hands-covered-in-flour person loses their place.
+ *
+ * The sub-recipe replaces the view outright rather than nesting: it is a
+ * different thing to cook, with its own steps, timers and read-aloud. Closing
+ * it returns to the dish that asked for it.
+ */
 export default function CookMode({ dish, onClose }) {
+  const [sub, setSub] = useState(null)
+
+  if (sub) {
+    return (
+      <CookModeView dish={sub} backTo={dish.name}
+        onClose={() => setSub(null)} onOpenComponent={setSub} />
+    )
+  }
+  return <CookModeView dish={dish} onClose={onClose} onOpenComponent={setSub} />
+}
+
+/** One recipe's steps. `dish` may be a plan dish or a sub-recipe of one. */
+function CookModeView({ dish, onClose, onOpenComponent, backTo = null }) {
   const [stepIndex, setStepIndex] = useState(0)
   const [language, setLanguage] = useState('en-IN')
   const [translations, setTranslations] = useState({})
@@ -147,6 +170,10 @@ export default function CookMode({ dish, onClose }) {
   }, [dish, generatedSteps])
 
   const ingredients = useMemo(() => splitIngredients(dish.ingredients), [dish.ingredients])
+
+  // Sub-recipes this dish is built from, deepest first — the curry paste
+  // before the peanut sauce before the satay, which is the order a cook works.
+  const components = Array.isArray(dish.components) ? dish.components : []
 
   // A borrowed recipe that also carries a change is the case worth shouting
   // about; a plain "same recipe" only needs stating.
@@ -354,7 +381,9 @@ export default function CookMode({ dish, onClose }) {
       <header className="ck-head">
         <div className="ck-title">
           <h1>{dish.name}</h1>
-          {dish.hindiName && <p className="ck-hindi">{dish.hindiName}</p>}
+          {backTo
+            ? <p className="ck-hindi">Part of {backTo}</p>
+            : dish.hindiName && <p className="ck-hindi">{dish.hindiName}</p>}
         </div>
         <div className="ck-head-actions">
           <label className="ck-lang">
@@ -380,7 +409,8 @@ export default function CookMode({ dish, onClose }) {
             <MicIcon />
             <span className="ck-mic-text">{handsFree ? 'Listening' : 'Hands-free'}</span>
           </button>
-          <button type="button" className="ck-icon-btn" onClick={close} aria-label="Close cook mode">
+          <button type="button" className="ck-icon-btn" onClick={close}
+            aria-label={backTo ? `Back to ${backTo}` : 'Close cook mode'}>
             <CloseIcon />
           </button>
         </div>
@@ -420,6 +450,37 @@ export default function CookMode({ dish, onClose }) {
             {/* Above the step, so it is on screen the moment Cook Mode opens
                 — which is step 1. A note about skipping the jaggery is no use
                 to a diabetic cook who meets it at step 6. */}
+            {components.length > 0 && (
+              <div className="ck-ref-note" role="note">
+                <p className="ck-ref-head">
+                  Make {components.length === 1 ? 'this' : 'these'} first
+                </p>
+                <p className="ck-ref-body">
+                  {dish.name} is built on {components.length === 1 ? 'another recipe' : 'other recipes'}.
+                  {' '}Their ingredients are already on the shopping list.
+                </p>
+                <ul className="ck-component-list">
+                  {components.map((c) => (
+                    <li key={c.targetId}>
+                      <button type="button" className="ck-component-btn"
+                        onClick={() => onOpenComponent?.({
+                          recipeId: c.targetId,
+                          name: c.targetName,
+                          hindiName: '',
+                          category: '',
+                          ingredients: c.ingredients,
+                          preparation: c.preparation,
+                          hasFullPreparation: c.hasFullPreparation,
+                          serves: c.serves,
+                        })}>
+                        <span className="ck-component-name">{c.targetName}</span>
+                        <span className="ck-component-line">{c.ingredientLine}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {dish.ref?.resolved && (
               <div className={`ck-ref-note${refHasNotes ? ' is-warning' : ''}`} role="note">
                 <p className="ck-ref-head">

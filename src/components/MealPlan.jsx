@@ -4,7 +4,7 @@ import { loadGuests, normaliseGuests, saveGuests } from '../lib/guests.js'
 import { displayName } from '../lib/names.js'
 import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
 import { applyPantry } from '../lib/shoppingList.js'
-import { buildShoppingList, SUBSTITUTION_MARK } from '../lib/shoppingList.js'
+import { buildShoppingList, componentBatches, SUBSTITUTION_MARK } from '../lib/shoppingList.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import { lookupIngredient } from '../lib/ingredientGuide.js'
@@ -530,6 +530,19 @@ export default function MealPlan() {
     return () => { cancelled = true }
   }, [stage, family, present, guests])
 
+  // A cuisine saved from an earlier session can stop being offerable — someone
+  // started a fast, a Jain guest joined. The chip already fell back to Indian
+  // for display, but the request kept naming the old cuisine and the server
+  // quietly planned Indian instead: the picker and the plan agreed only by
+  // accident. Correcting the stored choice keeps one source of truth.
+  useEffect(() => {
+    if (!cuisineInfo) return
+    if (cuisineChips(cuisineInfo.offerable).some((c) => c.id === cuisine)) return
+    saveCuisine('indian')
+    // oxlint-disable-next-line react/set-state-in-effect
+    setCuisine('indian')
+  }, [cuisineInfo, cuisine])
+
   const chooseCuisine = (id) => {
     saveCuisine(id)
     setCuisine(id)
@@ -605,6 +618,12 @@ export default function MealPlan() {
   const substitutions = (plan?.dishes || [])
     .filter((d) => d.ref?.modification)
     .map((d) => ({ dish: d.name, from: d.ref.targetName, text: d.ref.modification }))
+
+  // Sub-recipes whose ingredients were folded into the list above. Said out
+  // loud because the quantities are a batch of each: a curry that wants three
+  // spoons of paste still needs a jar of paste made, and a list that grew by
+  // twelve lines with no explanation reads like a bug.
+  const componentNotes = componentBatches(plan?.dishes || [])
 
   // Named apart from setGuests, which owns the who-screen guest groups.
   const changeExtraGuests = (n) => {
@@ -918,6 +937,27 @@ export default function MealPlan() {
                   Not shown: everyday staples (water, salt, oil, basic spices).
                   This list assumes you already have these.
                 </p>
+                {componentNotes.length > 0 && (
+                  <div className="substitution-note" role="note">
+                    <p>
+                      Some of these dishes are made from other recipes, and the
+                      list includes everything those need too:
+                    </p>
+                    <ul className="component-note-list">
+                      {componentNotes.map((c) => (
+                        <li key={`${c.dish}|${c.targetId}`}>
+                          <strong>{c.dish}</strong> needs {c.ingredientLine || c.name}
+                          {' '}&mdash; a batch of <strong>{c.name}</strong> is
+                          {' '}included.
+                        </li>
+                      ))}
+                    </ul>
+                    <p>
+                      A batch is scaled to the meal, not to the spoonful a dish
+                      asks for, so you may have some left over.
+                    </p>
+                  </div>
+                )}
                 {substitutions.length > 0 && (
                   <div className="substitution-note" role="note">
                     {substitutions.map((sub) => (

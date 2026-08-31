@@ -156,6 +156,22 @@ const UNIT_FAMILIES = [
 // Largest first, so a total is written in the biggest unit it fills.
 const PREFERRED = { mass: ['kg', 'g'], volume: ['l', 'ml'], spoon: ['cup', 'tbsp', 'tsp'] }
 
+// Count units that are the same unit in singular and plural. Stored singular
+// and written back out plural above, so a line reads "7 cloves" not
+// "1 clove + 6 cloves".
+const COUNT_SINGULAR = {
+  cloves: 'clove', pieces: 'piece', slices: 'slice', bunches: 'bunch',
+  pinches: 'pinch', handfuls: 'handful', inches: 'inch', nos: 'no',
+}
+const COUNT_PLURAL = Object.fromEntries(
+  Object.entries(COUNT_SINGULAR).map(([plural, singular]) => [singular, plural]),
+)
+
+function countUnit(unit) {
+  const u = String(unit || '').toLowerCase()
+  return COUNT_SINGULAR[u] || u
+}
+
 function unitFamily(unit) {
   const u = String(unit || '').toLowerCase()
   if (!u) return null
@@ -187,11 +203,13 @@ export function buildShoppingList(recipes, totalDiners) {
   // is not one.
   const items = []
 
-  for (const recipe of recipes) {
-    const serves = Number(recipe.serves) > 0 ? Number(recipe.serves) : 4
-    const factor = totalDiners / serves
+  const read = (text, factor, ref, skipLines) => {
+    for (const item of splitIngredients(text)) {
+      // "1 cup hummus (see recipe)" is not a thing to buy — it is a thing to
+      // make, and the chickpeas and tahini for it are added below. Leaving
+      // both on the list has the shopper buying the dish twice.
+      if (skipLines?.has(item)) continue
 
-    for (const item of splitIngredients(recipe.ingredients)) {
       const parsed = parseIngredient(item)
       if (!parsed.name) continue
 
@@ -203,7 +221,9 @@ export function buildShoppingList(recipes, totalDiners) {
 
       // NO_SCALE deliberately reads the raw name, not the cleaned one: it is
       // about how a quantity behaves, not about what the thing is called, and
-      // it already matches both dialects.
+      // it already matches both dialects. "oil for deep frying (about 3 cups)"
+      // is the International v2 spelling of the same idea: the fryer sets the
+      // amount, not the head count.
       const scalable = parsed.quantity !== null && !NO_SCALE.test(parsed.name)
       const value = scalable ? parsed.quantity * factor : parsed.quantity
 
@@ -211,10 +231,32 @@ export function buildShoppingList(recipes, totalDiners) {
       // is J007 "with jaggery replaced by stevia", and J007 really does list
       // jaggery. Marking the line itself is the point: a note printed beside a
       // numbered list is read after the shopper has already read the line.
-      const flagged = namedInModification(clean, recipe.ref?.modification)
+      const flagged = namedInModification(clean, ref?.modification)
 
       items.push({ base, form, name: clean, unit: parsed.unit, value, flagged })
     }
+  }
+
+  for (const recipe of recipes) {
+    const serves = Number(recipe.serves) > 0 ? Number(recipe.serves) : 4
+    const factor = totalDiners / serves
+
+    const components = recipe.components || []
+    read(
+      recipe.ingredients, factor, recipe.ref,
+      new Set(components.flatMap((c) => c.ingredientLines || [c.ingredientLine]).filter(Boolean)),
+    )
+
+    // Sub-recipes the dish uses as ingredients — "2 cups marinara sauce",
+    // "16 falafel". Their own ingredients are folded in here, or the shopper
+    // buys the lasagne and has nothing to make the sauce from.
+    //
+    // Scaled by the parent's factor, which is the honest reading of a batch:
+    // you cannot make 3 tbsp of curry paste, you make a jar, and a meal for
+    // eight needs twice the jar a meal for four does. It over-buys where a
+    // dish wants a spoonful, so componentBatches() below names every folded-in
+    // sub-recipe for the UI rather than letting the extra appear from nowhere.
+    for (const c of components) read(c.ingredients, factor, null, null)
   }
 
   // A name with no form joins the one form its base is otherwise sold in, so
@@ -247,8 +289,10 @@ export function buildShoppingList(recipes, totalDiners) {
     if (it.value === null) { entry.unitless = true; continue }
 
     const family = unitFamily(it.unit)
-    // Counts ("2 medium", a bare "3") only add to the identical unit.
-    const bucket = family ? family.name : `as:${String(it.unit || '').toLowerCase()}`
+    // Counts ("2 medium", a bare "3") only add to the identical unit —
+    // singular and plural of one count being the same unit. Without this
+    // "1 clove garlic" and "6 cloves garlic" became two amounts on one line.
+    const bucket = family ? family.name : `as:${countUnit(it.unit)}`
     const scale = family ? family.units[String(it.unit).toLowerCase()] : 1
     entry.amounts.set(bucket, (entry.amounts.get(bucket) || 0) + it.value * scale)
   }
@@ -262,7 +306,8 @@ export function buildShoppingList(recipes, totalDiners) {
         if (bucket.startsWith('as:')) {
           const unit = bucket.slice(3)
           const amount = formatQuantity(total, unit)
-          return amount ? `${amount}${unit ? ` ${unit}` : ''}` : ''
+          const label = unit && total > 1 ? (COUNT_PLURAL[unit] || unit) : unit
+          return amount ? `${amount}${label ? ` ${label}` : ''}` : ''
         }
         const { value, unit } = inBestUnit(total, bucket)
         const amount = formatQuantity(value, unit)
@@ -445,4 +490,31 @@ export function applyPantry(lines, pantryItems, lookup) {
     } else kept.push(line)
   }
   return { lines: kept, removed, matched: [...matched] }
+}
+
+/**
+ * The sub-recipes folded into a shopping list, in cooking order.
+ *
+ * Rendered beside the list for the same reason `substitutions` is: quantities
+ * that appeared because a dish needs a batch of something else must say so.
+ *
+ * @returns {Array<{ dish, name, targetId, ingredientLine }>}
+ */
+export function componentBatches(recipes) {
+  const out = []
+  const seen = new Set()
+  for (const recipe of recipes || []) {
+    for (const c of recipe.components || []) {
+      const key = `${recipe.recipeId}|${c.targetId}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push({
+        dish: recipe.name,
+        name: c.targetName,
+        targetId: c.targetId,
+        ingredientLine: c.ingredientLine || '',
+      })
+    }
+  }
+  return out
 }

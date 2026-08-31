@@ -11,8 +11,20 @@
 
 export const FLAG_KEYS = [
   'ekadashiSafe', 'navratriSafe', 'jainSafe', 'diabeticFriendly',
-  'lactoseFree', 'vegan', 'onionGarlicFree', 'glutenFree',
+  'lactoseFree', 'vegan', 'onionGarlicFree', 'glutenFree', 'alcoholFree',
 ]
+
+/**
+ * Non-Indian recipes, whatever import they came from.
+ *
+ * Written once because six places test it — the candidate reservation, the
+ * cuisine picker, the weighted pick and the prompt builder — and a rename that
+ * lands in five of them silently stops reserving international slots rather
+ * than failing.
+ */
+export function isInternational(recipe) {
+  return recipe?.source === 'International v2'
+}
 
 /* ------------------------------------------------------------------ *
  * Vegetarian safety net                                               *
@@ -31,6 +43,32 @@ const MEAT_RE = /\b(chicken|mutton|lamb|goat|beef|pork|bacon|ham|fish|prawn|shri
 // reads as vegetarian to a word match that only looks for "egg".
 const EGG_RE = /\b(egg|eggs|omelet|omelette|anda|ande|bhurji|mayonnaise|mayo)\b/i
 
+// Text that says an animal ingredient is ABSENT must not read as presence.
+// The International v2 set states this constantly and deliberately — "400 g
+// ramen noodles (egg-free)", "½ cup eggless mayonnaise", "24 gyoza wrappers
+// (egg-free)" — and 28 of its 350 vegetarian recipes were being classified
+// `egg` and hidden from vegetarians because of it.
+//
+// Same shape as NUT_NEGATION_RE below: a scrub rather than a lookbehind, since
+// a variable-length lookbehind is a SyntaxError on Safari below 16.4 and this
+// module is imported by the client.
+//
+// "eggless mayonnaise" needs its own branch: scrubbing "eggless" alone leaves
+// "mayonnaise", which EGG_RE still catches.
+const EGG_NEGATION_RE =
+  /\b(?:eggless|egg[-\u2010\u2011\u2013\s]?free|vegan)\s+mayo(?:nnaise)?\b|\begg(?:s)?[-\u2010\u2011\u2013\s]?free\b|\beggless\b|\b(?:without|no)\s+eggs?\b/gi
+
+// "oyster mushroom" is a mushroom. Bare "oyster" and "oyster sauce" stay meat,
+// so this is deliberately anchored to the mushroom.
+const MEAT_NEGATION_RE = /\boysters?\s+mushrooms?\b/gi
+
+/** Name + ingredients with absence statements removed. */
+function animalHaystack(recipe) {
+  return `${recipe.name || ''} ${recipe.ingredients || ''}`
+    .replace(EGG_NEGATION_RE, ' ')
+    .replace(MEAT_NEGATION_RE, ' ')
+}
+
 // How restrictive a kind is: who CANNOT eat it. Used to combine the declared
 // kind with the inferred one.
 const KIND_RANK = { veg: 0, egg: 1, non_veg: 2 }
@@ -38,7 +76,7 @@ const KIND_RANK = { veg: 0, egg: 1, non_veg: 2 }
 /** 'non_veg' | 'egg' | 'veg' — the most restrictive category a recipe fits. */
 export function dietKind(recipe) {
   // Keyword inference always runs, whatever the record claims.
-  const blob = `${recipe.name || ''} ${recipe.ingredients || ''}`
+  const blob = animalHaystack(recipe)
   const inferred = MEAT_RE.test(blob) ? 'non_veg' : EGG_RE.test(blob) ? 'egg' : 'veg'
 
   // An explicit dietKind can only make a recipe STRICTER, never more
@@ -76,6 +114,12 @@ const NUT_NEGATION_RE =
   /\b(?:without|no|non|free\s+of|excluding|minus)\s+(?:added\s+)?(?:nut|nuts|dry\s+fruits?)\b|\bnuts?\s*[-\u2010\u2011\u2013]?\s*free\b/gi
 
 export function containsNuts(recipe) {
+  // The International v2 set carries a real allergen column. It is read as an
+  // ADDITION to the keyword test, never a replacement: it catches what
+  // keywords cannot (pine nuts in pesto), and a record that omits it is no
+  // less protected than before.
+  if (/\b(peanuts?|tree nuts?)\b/i.test(String(recipe.allergens || ''))) return true
+
   const haystack = `${recipe.name || ''} ${recipe.ingredients || ''}`
     .replace(NUT_NEGATION_RE, ' ')
   return NUT_RE.test(haystack)
@@ -98,6 +142,26 @@ const DIET_FLAGS = {
   jain: ['jainSafe', 'onionGarlicFree'],
   sattvic: ['onionGarlicFree'],
   vegan: ['vegan'],
+}
+
+/* ------------------------------------------------------------------ *
+ * Religion                                                            *
+ *                                                                     *
+ * These are identity constraints, not fasts. They hold every day of
+ * the year, so they sit here beside diet rather than in fastFlags()
+ * where they would switch on and off with the calendar. Same tier as
+ * `vegetarian`: a hard `no` excludes the dish outright.
+ *
+ * Only what the flag data can actually enforce is listed. Halal, for
+ * instance, is a slaughter method the recipes carry no column for, so
+ * nothing here pretends to check it.
+ * ------------------------------------------------------------------ */
+const RELIGION_FLAGS = {
+  Muslim: ['alcoholFree'],
+  Sikh: ['alcoholFree'],
+  // The Five Precepts read as no alcohol; the pungent roots (onion, garlic,
+  // and their family) are the long-standing monastic and Mahayana exclusion.
+  Buddhist: ['onionGarlicFree', 'alcoholFree'],
 }
 
 const HEALTH_FLAGS = {
@@ -133,6 +197,7 @@ export function memberConstraints(member, activeFastIds) {
   const required = new Set()
 
   for (const f of DIET_FLAGS[member.diet] || []) required.add(f)
+  for (const f of RELIGION_FLAGS[member.religion] || []) required.add(f)
   for (const h of member.health || []) {
     if (HEALTH_FLAGS[h]) required.add(HEALTH_FLAGS[h])
   }
@@ -150,6 +215,7 @@ export function memberConstraints(member, activeFastIds) {
     id: member.id,
     name: member.name,
     diet: member.diet,
+    religion: member.religion || 'none',
     allowedKinds: DIET_ALLOWS[member.diet] || ['veg'],
     requiredFlags: [...required],
     strictFlags: [...strict],
@@ -326,8 +392,25 @@ const ROLE_RULES = [
   ['snack', /snack/i, /\b(pakora|bhajiya|samosa|tikki|cutlet|vada)\b/i],
 ]
 
-/** Coarse role bucket for a recipe, from its category then its name. */
+// Roles a record may declare outright. The ROLE_RULES keyword ladder below is
+// only a fallback for records that carry no role of their own.
+const KNOWN_ROLES = new Set([
+  'dal', 'rice', 'bread', 'sabzi', 'accompaniment', 'beverage',
+  'snack', 'dessert', 'soup', 'main',
+])
+
+/**
+ * Coarse role bucket for a recipe.
+ *
+ * A stored `role` is authoritative and is never re-inferred. The keyword
+ * ladder was built for Indian dish names and has nothing to say about
+ * "Minestrone" or "Enfrijoladas" — it would file most of the International v2
+ * set under `main` and the meal would come back shapeless.
+ */
 export function roleOf(recipe) {
+  const declared = String(recipe.role || '')
+  if (KNOWN_ROLES.has(declared)) return declared
+
   const cat = String(recipe.category || '')
   const name = String(recipe.name || '')
   for (const [role, catRe] of ROLE_RULES) if (catRe.test(cat)) return role
@@ -335,8 +418,39 @@ export function roleOf(recipe) {
   return 'main'
 }
 
+/**
+ * Meal types a record declares for itself, as a Set, or null when it declares
+ * none. International v2 carries this ('lunch, dinner' | 'breakfast, snack' |
+ * 'dessert'); the Indian records do not and fall through to the heuristic.
+ */
+const DECLARABLE_MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack']
+
+function declaredMealTypes(recipe) {
+  const raw = String(recipe.mealTypes || '').trim()
+  if (!raw) return null
+  const parts = raw.split(',').map((x) => x.trim().toLowerCase()).filter(Boolean)
+  // "dessert" is a course, not a meal type. Taken literally it matches no meal
+  // and the 26 International v2 desserts became reachable from nothing at all,
+  // while the Indian desserts still reached breakfast through the name rules
+  // below. A declaration that names no real meal falls through to the
+  // heuristic, so both sets are treated the same way.
+  const meals = parts.filter((p) => DECLARABLE_MEAL_TYPES.includes(p))
+  return meals.length > 0 ? new Set(meals) : null
+}
+
 /** Is this recipe plausible for the given meal type? */
 export function fitsMealType(recipe, mealType) {
+  const declared = declaredMealTypes(recipe)
+  if (declared) {
+    if (declared.has(mealType)) return true
+    // "breakfast, snack" also earns a place as a starter or side at a bigger
+    // meal, which is how these dishes are actually eaten. "dessert" does not:
+    // it stays an optional extra rather than filling the candidate list, the
+    // same treatment the Indian desserts get below.
+    if (mealType !== 'breakfast' && declared.has('snack')) return true
+    return false
+  }
+
   const cat = String(recipe.category || '')
   const role = roleOf(recipe)
 
@@ -349,14 +463,17 @@ export function fitsMealType(recipe, mealType) {
 
   // Lunch and dinner are thali-shaped; desserts and drinks stay optional
   // extras rather than filling the candidate list.
-  return ['dal', 'rice', 'bread', 'sabzi', 'accompaniment', 'main'].includes(role)
+  return ['dal', 'rice', 'bread', 'sabzi', 'accompaniment', 'soup', 'main'].includes(role)
 }
 
 // How many candidates of each role to offer the model, per meal type.
+// `soup` earns its own line rather than riding the tail backfill: a role with
+// no quota key gets zero reserved slots, and an East Asian or Continental
+// lunch leans on soup the way an Indian one leans on dal.
 const QUOTAS = {
   breakfast: { main: 26, bread: 12, snack: 8, accompaniment: 14, beverage: 10, dessert: 4, dal: 3, rice: 3 },
-  lunch: { dal: 14, rice: 12, bread: 12, sabzi: 20, accompaniment: 12, main: 8 },
-  dinner: { dal: 14, sabzi: 20, bread: 14, rice: 8, accompaniment: 10, main: 8 },
+  lunch: { dal: 14, rice: 12, bread: 12, sabzi: 20, accompaniment: 12, soup: 8, main: 8 },
+  dinner: { dal: 14, sabzi: 20, bread: 14, rice: 8, accompaniment: 10, soup: 8, main: 8 },
 }
 
 // Share of each role's quota reserved for recipes that carry preparation
@@ -396,7 +513,7 @@ const MIN_CUISINE_DISHES = 3
 export function internationalCuisineOptions(pool, mealType) {
   const counts = new Map()
   for (const r of pool) {
-    if (r.source !== 'International') continue
+    if (!isInternational(r)) continue
     if (mealType && !fitsMealType(r, mealType)) continue
     counts.set(r.region, (counts.get(r.region) || 0) + 1)
   }
@@ -411,7 +528,7 @@ export function internationalCuisineOptions(pool, mealType) {
 export function pickInternationalCuisine(pool, random = Math.random) {
   const counts = new Map()
   for (const r of pool) {
-    if (r.source !== 'International') continue
+    if (!isInternational(r)) continue
     counts.set(r.region, (counts.get(r.region) || 0) + 1)
   }
   const eligible = [...counts.entries()]
@@ -493,9 +610,9 @@ export function selectCandidatesForMeal(
     // Non-Indian dishes are drawn from their own reserved slice first, so a
     // handful always reach the model rather than being crowded out.
     const intlPool = cuisine
-      ? bucket.filter((r) => r.source === 'International' && r.region === cuisine)
+      ? bucket.filter((r) => isInternational(r) && r.region === cuisine)
       : []
-    const domestic = bucket.filter((r) => r.source !== 'International')
+    const domestic = bucket.filter((r) => !isInternational(r))
     const intlTarget = cuisine ? Math.round(quota * INTERNATIONAL_SHARE) : 0
     const chosenIntl = sampleFrom(intlPool, intlTarget, random)
 

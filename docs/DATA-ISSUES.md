@@ -94,3 +94,61 @@ an unshoppable list. 11 contain vague catch-alls (`herbs`×6, `sauces`×2,
 `spices`×2, `broth`×2, `veg`, `assorted veg`, `veg/herbs`).
 
 These are one-line menu descriptions in a recipe-shaped field, not thin recipes.
+
+## International v2: the compliance flags carry no note text
+
+The seven `thali_international_v2_*.json` files give each of the nine
+compliance flags as a bare string — `"glutenFree": "conditional"` — while the
+app's `flags` object is `{ status, note }` and the note is user-facing. It is
+the swap instruction on a `conditional` dish, the caution on a `partial` one,
+and the reason a member was excluded from a dish.
+
+`scripts/import-international-v2.mjs` therefore **synthesises** all 3,150
+notes from the recipe's own ingredients and `allergens` column. Nothing is
+invented about the food: a `no` on `vegan` names the dairy the recipe really
+lists, a `conditional` on `glutenFree` names the soy sauce it really contains.
+But the wording is Thali's, not the dataset's.
+
+The proper fix is a note column in the source files.
+
+The synthesis is uniform where the data is uniform, which is worth knowing:
+
+- `glutenFree: conditional` is soy sauce in 82 of its 83 records, so 82 dishes
+  carry the same "use tamari" swap.
+- `lactoseFree: conditional` is butter in all 13.
+- `diabeticFriendly: partial` covers 257 of the 350 records and gets one
+  generic portion caution, because the data holds no GI or carbohydrate figure
+  to say anything sharper.
+
+## International v2: composite recipes are matched by name, not by id
+
+18 ingredient lines say "(see recipe)" outright; another ~45 name a sub-recipe
+with no marker at all ("2 cups marinara sauce", "12 corn tortillas"). Neither
+form carries the target's id.
+
+`resolveComponents()` in `src/lib/recipeRefs.js` matches a closed list of 16
+phrases against recipe names within the same cuisine. Two consequences:
+
+- A sub-recipe outside that list is not followed. The list was built from the
+  ~63 links that exist today; a re-import that adds a new composite dish needs
+  a new entry.
+- `Refried Beans (frijoles refritos)` is `role: sabzi`, not an accompaniment or
+  snack, so matching runs across every role rather than only those two.
+
+Quantities are the other half of this. A recipe asks for "3 tbsp curry paste"
+and the paste recipe states no yield, so a batch is folded in, scaled by the
+parent's own diner factor. That over-buys for a spoonful, which is why the
+shopping list names every sub-recipe it folded in rather than letting the extra
+lines appear unexplained. A yield field on the component recipes would fix it.
+
+## Gelatine in 27 INDB dessert rows (pre-existing, not International v2)
+
+`ASC307`–`ASC318`, `BFP306`, `BFP307`, `BFP346`–`BFP370`, `BFP531`, `BFP532`
+and others list `Gelatine`, which is not vegetarian. `MEAT_RE` in
+`src/lib/mealPlanRules.js` does not match it, so `dietKind()` calls these rows
+`veg` and they can reach a vegetarian, Jain or vegan member.
+
+This predates the International v2 import and is untouched by it. The fix is
+either a `dietKind` column on the INDB rows or `gelatin|gelatine|isinglass` in
+`MEAT_RE` — the latter is a one-word change but it re-classifies 27 rows, so it
+belongs in its own commit with its own before/after diff.

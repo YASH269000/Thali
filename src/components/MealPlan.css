@@ -790,3 +790,13 @@
 @media (max-width: 620px) {
   .portions { flex-direction: column; align-items: flex-start; gap: 10px; }
 }
+
+/* Sub-recipes folded into the shopping list. */
+.component-note-list {
+  margin: 6px 0;
+  padding-left: 18px;
+}
+
+.component-note-list li {
+  margin: 3px 0;
+}
