@@ -4,6 +4,8 @@
 // The model scaled down reliably but not up — rice stayed at 1.5 cups when
 // the table grew from 3 diners to 5. Arithmetic does not have that problem.
 
+import { ingredientIdentity } from './ingredientNames.js'
+
 const VULGAR = {
   '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1 / 3, '⅔': 2 / 3,
   '⅛': 0.125, '⅜': 0.375, '⅝': 0.625, '⅞': 0.875,
@@ -127,9 +129,47 @@ export function parseIngredient(item) {
   return { quantity, unit, name: rest, raw }
 }
 
-/** Key for merging the same ingredient across dishes. */
-function mergeKey(name, unit) {
-  return `${name.toLowerCase().replace(/\s*\(.*?\)/g, '').replace(/[^a-z0-9 ]/g, '').trim()}|${unit}`
+/* ------------------------------------------------------------------ *
+ * Units                                                               *
+ *                                                                     *
+ * Amounts add up only inside a family. Spoons and cups convert to each
+ * other; grams and millilitres do not, and neither converts to "2
+ * medium". Where an ingredient arrives in two families it stays one
+ * line carrying both amounts, which is what a shopper needs to see.
+ * ------------------------------------------------------------------ */
+
+const UNIT_FAMILIES = [
+  { name: 'mass', base: 'g', units: { g: 1, gm: 1, gram: 1, grams: 1, kg: 1000 } },
+  { name: 'volume', base: 'ml', units: { ml: 1, l: 1000, litre: 1000, litres: 1000, liter: 1000, ltr: 1000 } },
+  {
+    name: 'spoon',
+    base: 'tsp',
+    units: {
+      tsp: 1, teaspoon: 1, teaspoons: 1,
+      tbsp: 3, tablespoon: 3, tablespoons: 3,
+      cup: 48, cups: 48,
+    },
+  },
+]
+
+// Largest first, so a total is written in the biggest unit it fills.
+const PREFERRED = { mass: ['kg', 'g'], volume: ['l', 'ml'], spoon: ['cup', 'tbsp', 'tsp'] }
+
+function unitFamily(unit) {
+  const u = String(unit || '').toLowerCase()
+  if (!u) return null
+  return UNIT_FAMILIES.find((f) => f.units[u]) || null
+}
+
+/** Amount rewritten in the largest unit of its family that it fills. */
+function inBestUnit(baseValue, familyName) {
+  const family = UNIT_FAMILIES.find((f) => f.name === familyName)
+  for (const unit of PREFERRED[familyName]) {
+    const factor = family.units[unit]
+    if (baseValue / factor >= 1) return { value: baseValue / factor, unit }
+  }
+  const unit = PREFERRED[familyName].at(-1)
+  return { value: baseValue / family.units[unit], unit }
 }
 
 /**
@@ -141,7 +181,10 @@ function mergeKey(name, unit) {
  * @returns {Array<string>} e.g. "Toor dal — 1 1/2 cups"
  */
 export function buildShoppingList(recipes, totalDiners) {
-  const merged = new Map()
+  // One entry per ingredient identity. Staples are dropped as they are read
+  // rather than at the end, so a staple can never merge with something that
+  // is not one.
+  const items = []
 
   for (const recipe of recipes) {
     const serves = Number(recipe.serves) > 0 ? Number(recipe.serves) : 4
@@ -151,35 +194,76 @@ export function buildShoppingList(recipes, totalDiners) {
       const parsed = parseIngredient(item)
       if (!parsed.name) continue
 
+      const { base, form, clean } = ingredientIdentity(parsed.name)
+      // The staples check reads the cleaned name, which is the fix for INDB
+      // rows: "Water, distilled" and "Oil, sunflower" only look like water and
+      // oil once the lab qualifiers are off them.
+      if (!clean || isPantryStaple(clean)) continue
+
+      // NO_SCALE deliberately reads the raw name, not the cleaned one: it is
+      // about how a quantity behaves, not about what the thing is called, and
+      // it already matches both dialects.
       const scalable = parsed.quantity !== null && !NO_SCALE.test(parsed.name)
       const value = scalable ? parsed.quantity * factor : parsed.quantity
 
-      const key = mergeKey(parsed.name, parsed.unit)
-      const existing = merged.get(key)
-      if (existing) {
-        if (existing.value !== null && value !== null) existing.value += value
-      } else {
-        merged.set(key, {
-          name: parsed.name,
-          unit: parsed.unit,
-          value,
-          scaled: scalable,
-          raw: parsed.raw,
-        })
-      }
+      items.push({ base, form, name: clean, unit: parsed.unit, value })
     }
   }
 
-  const lines = [...merged.values()]
-    .filter((e) => !isPantryStaple(e.name))
-    .map((e) => {
-      if (e.value === null) return e.name
-      const amount = formatQuantity(e.value, e.unit)
-      if (!amount) return e.name
-      const unit = e.unit ? ` ${e.unit}` : ''
-      return `${e.name} — ${amount}${unit}`
-    })
-  return lines
+  // A name with no form joins the one form its base is otherwise sold in, so
+  // a recipe's bare "coriander" merges into "coriander leaves" — but never
+  // collapses seeds into powder, because those are two forms, not one.
+  const formsByBase = new Map()
+  for (const it of items) {
+    if (!it.form) continue
+    if (!formsByBase.has(it.base)) formsByBase.set(it.base, new Set())
+    formsByBase.get(it.base).add(it.form)
+  }
+  for (const it of items) {
+    if (it.form) continue
+    const forms = formsByBase.get(it.base)
+    if (forms && forms.size === 1) it.form = [...forms][0]
+  }
+
+  const merged = new Map()
+  for (const it of items) {
+    const key = `${it.base}|${it.form}`
+    let entry = merged.get(key)
+    if (!entry) {
+      entry = { name: it.name, amounts: new Map(), unitless: false }
+      merged.set(key, entry)
+    }
+    // Prefer the longer name: "Coriander leaves" reads better than "Coriander".
+    if (it.name.length > entry.name.length) entry.name = it.name
+
+    if (it.value === null) { entry.unitless = true; continue }
+
+    const family = unitFamily(it.unit)
+    // Counts ("2 medium", a bare "3") only add to the identical unit.
+    const bucket = family ? family.name : `as:${String(it.unit || '').toLowerCase()}`
+    const scale = family ? family.units[String(it.unit).toLowerCase()] : 1
+    entry.amounts.set(bucket, (entry.amounts.get(bucket) || 0) + it.value * scale)
+  }
+
+  return [...merged.values()].map((e) => {
+    // Sorted by family so a line reads the same whatever order the dishes
+    // happened to come in.
+    const parts = [...e.amounts.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([bucket, total]) => {
+        if (bucket.startsWith('as:')) {
+          const unit = bucket.slice(3)
+          const amount = formatQuantity(total, unit)
+          return amount ? `${amount}${unit ? ` ${unit}` : ''}` : ''
+        }
+        const { value, unit } = inBestUnit(total, bucket)
+        const amount = formatQuantity(value, unit)
+        return amount ? `${amount} ${unit}` : ''
+      })
+      .filter(Boolean)
+
+    return parts.length ? `${e.name} — ${parts.join(' + ')}` : e.name
+  })
 }
 
 /* ------------------------------------------------------------------ *
@@ -210,8 +294,12 @@ const KEEP_ALWAYS = [
   /\b(sendha|rock|kala|black|pink|himalayan|sea)\s*(namak|salt)\b/i,
   /\bnamak\b(?!\s*$)/i,
   /\b(kuttu|singhara|rajgira|amaranth|buckwheat|water chestnut)\b/i,
-  // A named oil is a deliberate choice, unlike generic "oil"
-  /\b(mustard|coconut|sesame|til|groundnut|peanut|olive|sunflower|rice bran|ghee)\s+oil\b/i,
+  // A named oil is a deliberate choice, unlike generic "oil". Sunflower is
+  // NOT on this list: it is what INDB writes for plain cooking oil in 447 of
+  // its rows, and no Thali Original asks for it by name, so treating it as a
+  // choice put "Sunflower oil" on every list under a note promising oil was
+  // excluded.
+  /\b(mustard|coconut|sesame|til|groundnut|peanut|olive|rice bran|ghee)\s+oil\b/i,
   // Specialty blends, bought per recipe
   /\b(biryani|chole|chaat|pav bhaji|sambar|rasam|kitchen king|tandoori|chana|kadai|butter chicken)\s*(masala|powder)\b/i,
   // Fresh herbs and produce
@@ -223,7 +311,7 @@ const STAPLES = [
   /^(?:cold|warm|hot|boiling|lukewarm|distilled|filtered|plain)?\s*water$/i,
   /^(?:table|iodi[sz]ed|common|regular|plain)?\s*salt(?:\s*to\s*taste)?$/i,
   /^salt\b.*\btaste$/i,
-  /^(?:cooking|vegetable|refined|any|neutral|plain)?\s*oil(?:\s*for\s*.*)?$/i,
+  /^(?:cooking|vegetable|refined|any|neutral|plain|sunflower)?\s*oil(?:\s*for\s*.*)?$/i,
   /^ghee(?:\s+for\s+.*)?$/i,
   /^(?:turmeric|haldi)(?:\s*powder)?$/i,
   /^(?:red\s*)?chilli?\s*powder$/i,
