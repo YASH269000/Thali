@@ -141,14 +141,28 @@ parent's own diner factor. That over-buys for a spoonful, which is why the
 shopping list names every sub-recipe it folded in rather than letting the extra
 lines appear unexplained. A yield field on the component recipes would fix it.
 
-## Gelatine in 27 INDB dessert rows (pre-existing, not International v2)
+## Gelatine in INDB desserts — FIXED
 
-`ASC307`–`ASC318`, `BFP306`, `BFP307`, `BFP346`–`BFP370`, `BFP531`, `BFP532`
-and others list `Gelatine`, which is not vegetarian. `MEAT_RE` in
-`src/lib/mealPlanRules.js` does not match it, so `dietKind()` calls these rows
-`veg` and they can reach a vegetarian, Jain or vegan member.
+35 INDB rows list `Gelatine`. `MEAT_RE` did not match it, so `dietKind()`
+called 12 of them `veg` and they could reach a vegetarian, Jain or vegan
+member; the other 23 were held back only by their egg content, so an
+eggetarian could still be served them.
 
-This predates the International v2 import and is untouched by it. The fix is
-either a `dietKind` column on the INDB rows or `gelatin|gelatine|isinglass` in
-`MEAT_RE` — the latter is a one-word change but it re-classifies 27 rows, so it
-belongs in its own commit with its own before/after diff.
+`gelatin`, `gelatine`, `isinglass`, `lard`, `tallow`, `suet` and
+`worcestershire` are now in `MEAT_RE`. 37 rows re-classify, 13 of them out of
+`veg`. No International v2 row changes.
+
+One judgement call worth knowing: **Worcestershire sauce** (BFP096 Barbeque
+sauce, 10 ml) contains anchovy in its classic form, but vegetarian versions are
+widely sold in India. Thali excludes it, because for a safety net the cost of
+being wrong in one direction is a barbecue sauce and in the other is serving
+fish to a vegetarian. Remove `worcestershire` from `MEAT_RE` to reverse that.
+
+The full audit — every recipe resolving to `veg`, checked against gelatine,
+rendered fats, fish and shellfish, flesh and other animal derivatives, across
+name, ingredients and preparation — comes back clean at 1,444 recipes.
+
+Absence statements are handled alongside, in the words the files use:
+"No lard — oil only" (MX035), "No fish sauce or shrimp" (EA043), "No shrimp
+paste" (TH041). Without `MEAT_NEGATION_RE` those three would have been hidden
+from vegetarians by sentences saying they are safe.

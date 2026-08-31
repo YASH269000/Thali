@@ -37,7 +37,11 @@ export function isInternational(recipe) {
  * source workbook should replace it.
  * ------------------------------------------------------------------ */
 
-const MEAT_RE = /\b(chicken|mutton|lamb|goat|beef|pork|bacon|ham|fish|prawn|shrimp|crab|lobster|squid|oyster|clam|anchov|tuna|salmon|sardine|mackerel|pomfret|duck|quail|turkey|keema|kheema|seekh|kebab|liver|meat)\b/i
+// Gelatine and the rendered fats say nothing about themselves. "Gelatine:
+// 0.25tsp" sits in the middle of an INDB ingredient row that is otherwise
+// milk, sugar and fruit, and no other word in the row objects — 12 desserts
+// were reaching vegetarian, Jain and vegan members on the strength of that.
+const MEAT_RE = /\b(chicken|mutton|lamb|goat|beef|pork|bacon|ham|fish|prawn|shrimp|crab|lobster|squid|oyster|clam|anchov|tuna|salmon|sardine|mackerel|pomfret|duck|quail|turkey|keema|kheema|seekh|kebab|liver|meat|gelatin|gelatine|gelatin(?:e)?s|isinglass|lard|tallow|suet|worcestershire)\b/i
 // Mayonnaise is egg. It is the one animal ingredient in this data that never
 // says its own name — "Korean Corn Cheese: corn, mozzarella, mayo, butter"
 // reads as vegetarian to a word match that only looks for "egg".
@@ -60,7 +64,22 @@ const EGG_NEGATION_RE =
 
 // "oyster mushroom" is a mushroom. Bare "oyster" and "oyster sauce" stay meat,
 // so this is deliberately anchored to the mushroom.
-const MEAT_NEGATION_RE = /\boysters?\s+mushrooms?\b/gi
+//
+// The rest are the same absence statements the egg scrub handles, in the words
+// this data uses for them: Refried Beans ends "No lard — oil only", the
+// vegetarian kimchi and curry paste end "No fish sauce", "No shrimp paste".
+// Adding `lard` to MEAT_RE without this would have hidden the refried beans
+// from vegetarians on the strength of a sentence saying they are safe.
+//
+// The tail handles the coordinated form these files actually write: "No fish
+// sauce or shrimp — fully vegetarian", "No dried shrimp, no fish sauce".
+const ANIMAL_ABSENCE = '(?:dried\\s+)?(?:lard|gelatin(?:e)?|fish\\s+sauce|oyster\\s+sauce|worcestershire|shrimp\\s+paste|shrimp|meat)'
+const MEAT_NEGATION_RE = new RegExp(
+  `\\boysters?\\s+mushrooms?\\b`
+  + `|\\b(?:no|without|free\\s+of)\\s+${ANIMAL_ABSENCE}(?:\\s*,?\\s*(?:or|and|no)\\s+${ANIMAL_ABSENCE})*\\b`
+  + `|\\bvegetarian\\s+(?:gelatin(?:e)?|fish\\s+sauce|oyster\\s+sauce|worcestershire)\\b`,
+  'gi',
+)
 
 /** Name + ingredients with absence statements removed. */
 function animalHaystack(recipe) {
