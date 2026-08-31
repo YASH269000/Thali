@@ -52,6 +52,28 @@ const MEAL_BRIEF_FASTING = {
 // structure here ("1 dal, 1 sabzi, 1 roti") made Indian the default-shaped
 // answer, and the model returned it every time even with a coherent
 // single-cuisine alternative sitting in the candidate list.
+// What a full meal of each type looks like. Kept as numbers so the brief can
+// be honest when a cuisine cannot furnish that many dishes.
+const MEAL_TARGET = { breakfast: [2, 3], lunch: [4, 5], dinner: [3, 4] }
+
+// Roles a single meal may hold only once. A thali can carry two sabzis or two
+// accompaniments; it does not carry two rices.
+const SINGLETON_ROLES = new Set(['rice', 'main', 'dal', 'bread'])
+
+/**
+ * The "how many dishes" sentence, capped at what actually exists.
+ *
+ * Asking for 4-5 dishes from a pool of 3 is how a vegetarian East Asian lunch
+ * came back as two rice dishes and a ramen: the model was told to build a full
+ * lunch and given three dishes to build it from, so it used all three.
+ */
+function shapeFor(mealType, available) {
+  const [lo, hi] = MEAL_TARGET[mealType] || MEAL_TARGET.dinner
+  const base = MEAL_SHAPE[mealType] || MEAL_SHAPE.dinner
+  if (!Number.isFinite(available) || available >= lo) return base
+  return `Only ${available} ${available === 1 ? 'dish fits' : 'dishes fit'} today, so return ${available === 1 ? 'that one dish' : `those ${available}`} and no more. Do NOT pad the meal to ${lo}-${hi} dishes, and do NOT repeat a dish. A short honest meal is better than an invented one.`
+}
+
 const MEAL_SHAPE = {
   breakfast:
     'Keep it to 2-3 dishes: one main, one side, one beverage. Do NOT return a ' +
@@ -70,7 +92,7 @@ const MEAL_SHAPE = {
  * model can see a real meal exists on both sides.
  */
 function openBrief(mealType, cuisine, intlDishes) {
-  const shape = MEAL_SHAPE[mealType] || MEAL_SHAPE.dinner
+  const shape = shapeFor(mealType, intlDishes.length)
 
   // No cuisine reserved: the family asked for Indian, or nothing else could
   // furnish a meal today. This is the original Indian brief.
@@ -394,20 +416,21 @@ export default async function handler(req, res) {
   })
 
   // ---- model call ----
+  const model = new GoogleGenerativeAI(apiKey).getGenerativeModel({
+    model: MODEL,
+    generationConfig: {
+      responseMimeType: 'application/json',
+      // Generous, because 2.5 Flash thinks by default and thinking tokens
+      // count here — a tight cap truncates the JSON mid-object.
+      maxOutputTokens: 8192,
+      temperature: 0.7,
+    },
+  })
+  const ask = async (text) => (await model.generateContent(text)).response.text()
+
   let raw
   try {
-    const model = new GoogleGenerativeAI(apiKey).getGenerativeModel({
-      model: MODEL,
-      generationConfig: {
-        responseMimeType: 'application/json',
-        // Generous, because 2.5 Flash thinks by default and thinking tokens
-        // count here — a tight cap truncates the JSON mid-object.
-        maxOutputTokens: 8192,
-        temperature: 0.7,
-      },
-    })
-    const result = await model.generateContent(prompt)
-    raw = result.response.text()
+    raw = await ask(prompt)
   } catch (err) {
     return res.status(502).json({
       error: 'Gemini request failed.',
@@ -434,6 +457,62 @@ export default async function handler(req, res) {
   // ---- rehydrate: the model only ever saw compact records ----
   const byId = new Map(RECIPES.map((r) => [r.recipeId, r]))
 
+  // ---- role validation ----
+  //
+  // The role stored on a dish used to be `d.role` — the model's own claim,
+  // never checked. Nothing stopped it returning two rice dishes, and for a
+  // vegetarian East Asian lunch nothing could: the whole cuisine offered three
+  // eligible dishes and two of them were rice. Roles are recomputed here from
+  // the recipe record, and a plan that doubles up on a role that cannot repeat
+  // is sent back once before anything is dropped.
+  let roleNote = null
+  const duplicateRoles = (list) => {
+    const firstOf = new Map()
+    const extras = []
+    for (const d of list) {
+      const role = roleOf(byId.get(d.recipeId) || {})
+      if (!SINGLETON_ROLES.has(role)) continue
+      if (firstOf.has(role)) extras.push({ role, kept: firstOf.get(role), extra: d })
+      else firstOf.set(role, d)
+    }
+    return extras
+  }
+
+  let dupes = duplicateRoles(plan.dishes)
+  if (dupes.length > 0) {
+    const named = dupes
+      .map((x) => `"${x.extra.name || x.extra.recipeId}" and "${x.kept.name || x.kept.recipeId}" are both ${x.role}`)
+      .join('; ')
+    console.warn(`[thali:roles] rejected a plan — ${named}. Retrying once.`)
+    try {
+      const retry = await ask(`${prompt}
+
+YOUR PREVIOUS ANSWER WAS REJECTED
+${named}. A meal may contain at most one dish of each of these roles: ${[...SINGLETON_ROLES].join(', ')}.
+Return the plan again with only one of them, choosing a dish of a different
+role from the candidate list instead. If no other role is available, return the
+shorter meal — fewer dishes is correct, a repeated role is not.`)
+      const second = parseModelJson(retry)
+      if (Array.isArray(second.dishes) && second.dishes.length > 0
+        && duplicateRoles(second.dishes).length === 0) {
+        plan = second
+        dupes = []
+      }
+    } catch {
+      // Falls through to dropping — a failed retry must not fail the plan.
+    }
+  }
+
+  if (dupes.length > 0) {
+    // Second attempt still doubled up: keep the first of each role and say so,
+    // rather than silently serving two rice dishes as if that were the plan.
+    const drop = new Set(dupes.map((x) => x.extra))
+    plan = { ...plan, dishes: plan.dishes.filter((d) => !drop.has(d)) }
+    const names = dupes.map((x) => x.extra.name || x.extra.recipeId)
+    console.warn(`[thali:roles] retry still duplicated; dropped ${names.join(', ')}`)
+    roleNote = `${names.join(' and ')} ${names.length === 1 ? 'was' : 'were'} left out — the plan had more than one ${[...new Set(dupes.map((x) => x.role))].join(' and ')} dish, and today's choices could not fill the gap.`
+  }
+
   // The model is asked for memberIds but sometimes answers with names.
   // Accept either, and hand the client resolved {memberId, name} pairs so the
   // UI never has to guess.
@@ -458,7 +537,8 @@ export default async function handler(req, res) {
     return {
       recipeId: d.recipeId,
       name: full?.name || d.name,
-      role: d.role || '',
+      // Recomputed, never the model's own claim about what it returned.
+      role: roleOf(full || {}) || d.role || '',
       why: d.why || '',
       ...attribution(d),
       known: Boolean(full),
@@ -532,6 +612,10 @@ export default async function handler(req, res) {
   }))
 
   return res.status(200).json({
+    // Set only when a duplicate role survived the retry and a dish was
+    // dropped. The UI shows it rather than presenting the short plan as if
+    // nothing had happened.
+    roleNote,
     mealType,
     presentMembers: diners.map((m) => ({ memberId: m.id, name: m.name })),
     absentMembers: absent.map((m) => ({ memberId: m.id, name: m.name })),

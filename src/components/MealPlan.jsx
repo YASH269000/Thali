@@ -786,6 +786,10 @@ export default function MealPlan() {
           </div>
         )}
 
+        {stage === 'plan' && plan?.roleNote && planCurrent && !loading && (
+          <p className="role-note" role="note">{plan.roleNote}</p>
+        )}
+
         {stage === 'plan' && plan && planCurrent && !loading && (
           <>
             <p className="attendance">

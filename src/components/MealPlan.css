@@ -339,6 +339,19 @@
 
 .shopping-list li.is-flagged .shopping-item { font-weight: 500; }
 
+/* A dish was dropped because the plan doubled up on a role. Said plainly
+   rather than letting the shorter meal look intentional. */
+.role-note {
+  margin: 0 0 14px;
+  padding: 9px 12px;
+  border: 0.5px solid #e0c48a;
+  border-radius: 8px;
+  background: #fdf6e6;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #6b6b66;
+}
+
 .heading-count {
   margin-left: 7px;
   font-weight: 400;
