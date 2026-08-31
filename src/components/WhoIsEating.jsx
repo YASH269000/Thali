@@ -1,5 +1,7 @@
 import { avatarTone, initials } from '../lib/avatar.js'
-import { GUEST_RESTRICTIONS, describeGuests, guestHeadcount } from '../lib/guests.js'
+import {
+  GUEST_RESTRICTIONS, describeGuests, dinersLabel, guestHeadcount,
+} from '../lib/guests.js'
 import {
   ADVISORY_HEALTH,
   ADVISORY_HEALTH_NOTE,
@@ -53,8 +55,10 @@ export default function WhoIsEating({
     ? displayName(family.find((m) => m.id === selected[0])?.name || 'them')
     : `${count} ${count === 1 ? 'member' : 'members'}`
 
+  // Only the one-member case names the person; the counting itself is shared
+  // with the loading copy on the plan screen, which used to contradict it.
   const label = guestCount > 0
-    ? `Generate meal for ${count} ${count === 1 ? 'member' : 'members'} + ${guestCount} ${guestCount === 1 ? 'guest' : 'guests'} (${count + guestCount} total)`
+    ? `Generate meal for ${dinersLabel(count, guestCount)}`
     : `Generate meal for ${memberLabel}`
 
   return (

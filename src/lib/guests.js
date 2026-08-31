@@ -61,6 +61,22 @@ export function guestsAsMembers(guests) {
   })
 }
 
+/**
+ * "1 member", "2 members", "2 members + 1 guest (3 total)".
+ *
+ * One phrasing for how many people a meal is being planned for, because there
+ * were two and they disagreed: the who-screen button counted the attendance
+ * selection while the loading copy underneath it counted the whole family, so
+ * picking 2 of 4 produced "Generate meal for 2 members" followed by "against
+ * 4 members".
+ */
+export function dinersLabel(memberCount, guestCount = 0) {
+  const members = `${memberCount} ${memberCount === 1 ? 'member' : 'members'}`
+  if (!guestCount) return members
+  const guestPart = `${guestCount} ${guestCount === 1 ? 'guest' : 'guests'}`
+  return `${members} + ${guestPart} (${memberCount + guestCount} total)`
+}
+
 /** "2 vegetarian friends, 1 Jain aunt" — for the prompt and the guest card. */
 export function describeGuests(guests) {
   return normaliseGuests(guests).map((g, i) => {

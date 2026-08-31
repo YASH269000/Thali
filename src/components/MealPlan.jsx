@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loadGuests, normaliseGuests, saveGuests } from '../lib/guests.js'
+import {
+  dinersLabel, guestHeadcount, loadGuests, normaliseGuests, saveGuests,
+} from '../lib/guests.js'
 import { displayName } from '../lib/names.js'
 import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
 import { applyPantry } from '../lib/shoppingList.js'
@@ -662,6 +664,15 @@ export default function MealPlan() {
   const presentMembers = family.filter((m) => present.includes(m.id))
   const presentNames = presentMembers.map((m) => displayName(m.name))
   const planGuestCount = plan?.guestCount ?? 0
+  // Who this meal is being planned for, read from the attendance selection —
+  // the same thing the header below reports and the who-screen button counted
+  // all along. The loading copy used to read family.length instead, so a plan
+  // for 2 of 4 announced itself as a plan for 4.
+  //
+  // Guests come from live state rather than plan.guestCount, because while the
+  // first plan is still generating there is no plan to read, and on a
+  // regeneration plan.guestCount is the previous plan's.
+  const liveGuestCount = guestHeadcount(guests)
   const familyPart = presentMembers.length === family.length
     ? `${family.length} (family)`
     : `${presentMembers.length} of ${family.length} family`
@@ -821,7 +832,7 @@ export default function MealPlan() {
             <p className="loading-title">Thinking through your family&rsquo;s kitchen&hellip;</p>
             <p className="loading-body">
               Checking today&rsquo;s fasts, every diet and every health condition
-              against {family.length} {family.length === 1 ? 'member' : 'members'}.
+              against {dinersLabel(presentMembers.length, liveGuestCount)}.
             </p>
           </div>
         )}
