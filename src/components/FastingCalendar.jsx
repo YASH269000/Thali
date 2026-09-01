@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { fastingYear } from '../lib/fastingRules.js'
-import { CONFIDENCE_LABEL, PLACE, YEARS, yearIsCovered } from '../lib/observances.js'
-import {
-  confirmDate, loadOverrides, moveDate, neighbouringDates, saveOverrides,
-} from '../lib/observanceOverrides.js'
+import { CONFIDENCE, CONFIDENCE_LABEL, PLACE, YEARS, yearIsCovered } from '../lib/observances.js'
+import { confirmDate, moveDate, neighbouringDates } from '../lib/observanceOverrides.js'
 import { displayName, joinNames } from '../lib/names.js'
 import './FastingCalendar.css'
 
@@ -34,12 +32,13 @@ const dayKey = (year, month, day) => `${year}-${month}-${day}`
  * usable on a phone and 300-odd absolutely positioned tooltips clip at every
  * grid edge.
  */
-export default function FastingCalendar({ family, today = new Date() }) {
+export default function FastingCalendar({
+  family, today = new Date(), overrides = {}, onOverridesChange,
+}) {
   // Hover previews; a tap or click pins. The strip shows the preview when
   // there is one, otherwise whatever is pinned, otherwise today.
   const [hovered, setHovered] = useState(null)
   const [pinned, setPinned] = useState(null)
-  const [overrides, setOverrides] = useState(loadOverrides)
   const rootRef = useRef(null)
 
   const year = today.getFullYear()
@@ -47,10 +46,10 @@ export default function FastingCalendar({ family, today = new Date() }) {
 
   const data = useMemo(() => fastingYear(family, year, overrides), [family, year, overrides])
 
-  const answer = (next) => {
-    setOverrides(next)
-    saveOverrides(next)
-  }
+  // Handed up rather than stored here: the dates screen below writes to the
+  // same slots, and two copies of this state would let the prompt and the
+  // edit screen show different answers to the same question.
+  const answer = (next) => onOverridesChange?.(next)
 
   // key -> the day record, so the detail strip is a lookup rather than a scan.
   const byKey = useMemo(() => {
@@ -111,12 +110,18 @@ export default function FastingCalendar({ family, today = new Date() }) {
               ? 'One date this year is worth confirming'
               : `${data.confirmations.length} dates this year are worth confirming`}
           </h3>
+          {/* The reason sits on each row rather than in this paragraph,
+              because there are two reasons and they are not interchangeable.
+              A tithi-boundary date is a calculation that could go either way;
+              a provisional Islamic date is not a calculation at all — the
+              month begins when the crescent is sighted, locally. One
+              explanation covering both would be false about one of them. */}
           <p className="fc-confirm-why">
-            These fall on a tithi boundary tight enough that a quarter of an hour
-            either way moves them to the next day &mdash; far more than the
-            calculation could be wrong by, but enough that panchangs legitimately
-            differ. Every other date this year is settled. Check yours and tell
-            Thali; your answer overrides the calculation from then on.
+            Thali is confident about every other date this year. These are the
+            ones where your own panchang, your mosque or your temple knows
+            better than a calculation can. Whatever you answer outranks the
+            calculation from then on, and you can change it later under
+            &ldquo;Your dates&rdquo;.
           </p>
           <ul className="fc-confirm-list">
             {data.confirmations.map((o) => {
@@ -126,6 +131,17 @@ export default function FastingCalendar({ family, today = new Date() }) {
                   <span className="fc-confirm-what">
                     <strong>{o.name}</strong>
                     <span className="fc-confirm-date">{longIso(o.date)}</span>
+                    <span className="fc-confirm-reason">
+                      {o.confidence === CONFIDENCE.PROVISIONAL
+                        ? 'The Islamic month begins on a local sighting of the '
+                          + 'crescent, so this is a planning date and may be a '
+                          + 'day either side. Eid al-Adha 2026 fell on different '
+                          + 'days within India.'
+                        : 'This sits on a tithi boundary tight enough that a '
+                          + 'quarter of an hour either way moves it to the next '
+                          + 'day — far more than the calculation could be wrong '
+                          + 'by, but enough that panchangs legitimately differ.'}
+                    </span>
                   </span>
                   <span className="fc-confirm-actions">
                     <button type="button" className="fc-confirm-btn is-yes"
@@ -226,7 +242,7 @@ export default function FastingCalendar({ family, today = new Date() }) {
               {shown.observances.length > 0 && (
                 <span className="fc-detail-basis">
                   {[...new Set(shown.observances.map((o) => (o.source === 'override'
-                    ? 'Confirmed by your family'
+                    ? (o.addedByFamily ? 'You added this date' : 'You set this date')
                     : CONFIDENCE_LABEL[o.confidence] || o.confidence)))].join(' · ')}
                 </span>
               )}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { activeFastIdsOn } from '../lib/fastingRules.js'
-import { loadOverrides } from '../lib/observanceOverrides.js'
+import { loadOverrides, saveOverrides } from '../lib/observanceOverrides.js'
 import { loadFamily, saveFamily } from '../lib/family.js'
 import { familyIdWarnings } from '../lib/memberValidation.js'
 import { avatarTone, initials } from '../lib/avatar.js'
@@ -15,6 +15,7 @@ import {
   LIFE_STAGE_LABEL,
 } from '../data/memberOptions.js'
 import FastingCalendar from './FastingCalendar.jsx'
+import ObservanceDates from './ObservanceDates.jsx'
 import Clock from './Clock.jsx'
 import Disclaimer from './Disclaimer.jsx'
 import MemberModal from './MemberModal.jsx'
@@ -69,7 +70,14 @@ export default function FamilyProfile() {
   }, [family])
 
   const today = useMemo(() => new Date(), [])
-  const overrides = useMemo(() => loadOverrides(), [])
+  // One override state for the calendar and the dates screen below it: they
+  // write to the same slots, so two copies would let the confirmation prompt
+  // and the edit screen show different answers to the same question.
+  const [overrides, setOverrides] = useState(loadOverrides)
+  const answerDates = (next) => {
+    setOverrides(next)
+    saveOverrides(next)
+  }
 
   const stats = useMemo(() => {
     const activeIds = activeFastIdsOn(today, overrides)
@@ -169,7 +177,11 @@ export default function FamilyProfile() {
           </div>
         </section>
 
-        <FastingCalendar family={family} today={today} />
+        <FastingCalendar family={family} today={today}
+          overrides={overrides} onOverridesChange={answerDates} />
+
+        <ObservanceDates family={family} year={today.getFullYear()}
+          overrides={overrides} onChange={answerDates} />
 
         <section aria-labelledby="family-heading">
           <h2 id="family-heading" className="section-heading">Your family</h2>

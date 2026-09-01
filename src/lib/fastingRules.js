@@ -201,6 +201,7 @@ export function fastingMonth(family, year, month, overrides) {
         name: o.name,
         confidence: o.confidence,
         source: o.source,
+        addedByFamily: o.addedByFamily || false,
       })),
       // Only a date somebody here actually observes is worth interrupting for.
       needsConfirmation: observed.some((o) => o.confidence === CONFIDENCE.UNSTABLE),

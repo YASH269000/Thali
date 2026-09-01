@@ -64,6 +64,19 @@ Voice-guided cooking that turns Thali into a teacher for people who cannot cook.
 - INDB recipes (hasFullPreparation: false) offer AI-generated steps on request.
 - Keyboard: right arrow next, left arrow previous, space read aloud, Esc close.
 
+## User-Editable Dates
+`thali_observance_dates` holds a family's own answers, one slot per
+`observanceId@date`, and exactly one of four mutually exclusive answers:
+`confirmed` / `movedTo` / `removed` / `added`. `setAnswer` in
+`src/lib/observanceOverrides.js` is the single writer and replaces rather than
+merges — that is why a confirmation prompt and a manual edit cannot disagree.
+Never add a second store or a merging writer.
+- A user date overrides the DATE only. Name, religion, fast ids and food rules
+  are cloned from `templateFor(id)`, never supplied by the family.
+- The prompt asks about `computed_unstable` AND `provisional` dates, in
+  different words — a tithi boundary and a moon sighting are not the same doubt.
+- `ObservanceDates.jsx` on the family screen is the add/edit/remove surface.
+
 ## Per-Person Observance
 A tradition states the strictest baseline; a member varies it per fast, stored
 sparsely in `member.observances[fastId]` as `{ mealCount, alliumScope,

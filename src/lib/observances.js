@@ -20,6 +20,7 @@
 import { TITHI_RULES } from '../../panchanga/rules.js'
 import computed from '../data/observances.json' with { type: 'json' }
 import fastingData from '../data/fastingTraditions.json' with { type: 'json' }
+import { FAST_LABEL, slugify } from '../data/memberOptions.js'
 
 export const CONFIDENCE = {
   COMPUTED: 'computed',
@@ -164,31 +165,168 @@ const BASE = [
   ...curatedEntries(),
 ]
 
+/* ------------------------------------------------------------------ *
+ * Templates for dates the family adds                                 *
+ * ------------------------------------------------------------------ */
+
 /**
- * Apply a family's own corrections.
+ * What an observance IS, with every date-specific field stripped off.
  *
- * An override is keyed by the observance and the date the app originally
- * offered, so confirming or moving one occurrence never touches the other
- * twenty-three. `movedTo` relocates it; `confirmed` leaves the date alone and
- * only settles the confidence, which is what the confirmation prompt writes
- * when the family says the calculated day was right.
+ * A user date overrides the date and nothing else. That is a requirement and
+ * it is met by construction here: a family supplies a date, and the name,
+ * religion, fast ids and food guidance are cloned from the shipped record for
+ * that observance. There is no field a household can set that changes what the
+ * tradition means, only when they keep it.
+ *
+ * Sixteen of the forty-three traditions ship no date at all — Ekasana, Upvas
+ * and Varsitap are kept on a day the practitioner chooses, and the weekly
+ * vrats are derived from a weekday rather than tabulated — and those are
+ * exactly the ones a household most needs to add dates for. They fall back to
+ * the tradition row in the database, so every tradition somebody can select is
+ * one they can add a date for.
+ */
+function buildTemplates() {
+  const out = new Map()
+
+  // The shipped observances come first: they carry the real guidance text and
+  // the rule's own name.
+  for (const e of BASE) {
+    if (out.has(e.id)) continue
+    const rule = TITHI_RULES.find((r) => r.id === e.id)
+    out.set(e.id, {
+      id: e.id,
+      // The per-occurrence name is wrong for a date nobody shipped — "Aja
+      // Ekadashi" names one night in September, not the tradition.
+      name: rule?.name || (e.ekadashiName ? 'Ekadashi Vrat' : e.name),
+      religion: e.religion,
+      fastIds: e.fastIds,
+      guidance: e.guidance || null,
+      guidanceRow: e.guidanceRow || null,
+    })
+  }
+
+  // Then every tradition a member can actually select, for the ones above
+  // that produced nothing.
+  const claimed = new Set([...out.values()].flatMap((t) => t.fastIds))
+  for (const row of fastingData.masterIndex) {
+    const id = slugify(row.fastingTraditionName)
+    if (claimed.has(id) || out.has(id)) continue
+    out.set(id, {
+      id,
+      name: row.fastingTraditionName,
+      religion: row.religion.replace(/\s*\(.*\)\s*$/, '').trim() === 'Islam'
+        ? 'Muslim'
+        : row.religion.replace(/\s*\(.*\)\s*$/, '').trim(),
+      fastIds: [id],
+      guidance: GUIDANCE[id] || null,
+      guidanceRow: null,
+    })
+  }
+  return out
+}
+
+export const OBSERVANCE_TEMPLATES = buildTemplates()
+
+/** The template a date is added against — never anything the family typed. */
+export function templateFor(observanceId) {
+  return OBSERVANCE_TEMPLATES.get(observanceId) || null
+}
+
+/**
+ * Which observance id a fasting tradition adds its dates under.
+ *
+ * Two traditions can share an id in the other direction — Hariyali and
+ * Hartalika Teej both feed `teej_vrat_hariyali_hartalika` — so this picks the
+ * one that actually ships dates and falls back to the tradition's own slug.
+ */
+export function observanceIdForFast(fastId) {
+  for (const [id, t] of OBSERVANCE_TEMPLATES) {
+    if (t.fastIds.includes(fastId)) return id
+  }
+  return fastId
+}
+
+/* ------------------------------------------------------------------ *
+ * Precedence                                                          *
+ * ------------------------------------------------------------------ */
+
+/**
+ * Apply a family's own answers. This is the top of user > curated > computed.
+ *
+ * An answer is keyed by the observance and the date it is about, so settling
+ * one occurrence never touches the other twenty-three, and the four answers
+ * exclude each other in the store rather than being reconciled here:
+ *
+ *   confirmed  the shipped date stands, and stops being a question
+ *   movedTo    it stands one or more days away
+ *   removed    this household does not keep this occurrence
+ *   added      this household keeps it on a day nothing shipped
+ *
+ * The last of those is the only one that creates an entry, and it creates it
+ * from `templateFor` — so a user date carries the tradition's kind and its
+ * food rules unchanged, and overrides the date alone.
  */
 export function applyOverrides(entries, overrides) {
   if (!overrides || Object.keys(overrides).length === 0) return entries
-  return entries.map((e) => {
+
+  const out = []
+  for (const e of entries) {
     const o = overrides[`${e.id}@${e.date}`]
-    if (!o) return e
+    if (!o) {
+      out.push(e)
+      continue
+    }
+    if (o.removed) continue
     const shift = o.movedTo && o.movedTo !== e.date
       ? { date: o.movedTo, movedFrom: e.date }
       : {}
-    return {
+    out.push({
       ...e,
       ...shift,
       source: 'override',
       confidence: CONFIDENCE.CURATED,
       confirmedByFamily: true,
+    })
+  }
+
+  // A date already produced above wins over an added one saying the same
+  // thing, so the relocated occurrence keeps its provenance instead of being
+  // replaced by a bare "you added this". Keyed on the traditions an entry
+  // covers rather than on its id, because an added Maha Shivaratri is filed
+  // under the tradition slug and the shipped one under the engine's rule id —
+  // different ids, same day in the same kitchen.
+  const taken = new Set(out.map(coverageKey))
+
+  for (const [key, o] of Object.entries(overrides)) {
+    if (!o.added) continue
+    const at = key.lastIndexOf('@')
+    const id = key.slice(0, at)
+    const date = key.slice(at + 1)
+    const template = templateFor(id)
+    if (!template) continue
+
+    const entry = {
+      ...template,
+      date,
+      through: o.through || null,
+      source: 'override',
+      confidence: CONFIDENCE.CURATED,
+      confirmedByFamily: true,
+      addedByFamily: true,
+      resolvedBy: 'set by your family',
     }
-  })
+    if (taken.has(coverageKey(entry))) continue
+    taken.add(coverageKey(entry))
+    out.push(entry)
+  }
+
+  return out.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
+}
+
+/** What an entry occupies: the traditions it marks, on the day it marks them. */
+function coverageKey(e) {
+  const fasts = (e.fastIds || []).slice().sort().join(',')
+  return `${fasts || e.id}@${e.date}`
 }
 
 /**
@@ -231,12 +369,65 @@ export function observancesOn(date, overrides) {
   return cachedIndex(overrides).get(iso(date)) || []
 }
 
-/** Dates whose confidence asks the family to check them, in one year. */
+/**
+ * Dates that carry a question rather than an answer, in one year.
+ *
+ * Two kinds, and they are asked in different words because they are not the
+ * same doubt. A `computed_unstable` date sits on a tithi boundary tight enough
+ * that a quarter of an hour moves it. A `provisional` one is an Islamic date
+ * that no calculation settles at all: the month begins when the crescent is
+ * sighted, locally, and Eid al-Adha 2026 was kept on 27 May in Jammu & Kashmir
+ * and 28 May everywhere else in India.
+ *
+ * Answering either one writes to the same slot, so a family cannot end up
+ * holding two contradictory answers about one day.
+ */
+export const QUESTIONABLE = [CONFIDENCE.UNSTABLE, CONFIDENCE.PROVISIONAL]
+
 export function datesNeedingConfirmation(year, overrides) {
   return applyOverrides(BASE, overrides)
-    .filter((e) => e.confidence === CONFIDENCE.UNSTABLE && e.date.startsWith(String(year)))
+    .filter((e) => QUESTIONABLE.includes(e.confidence) && e.date.startsWith(String(year)))
     .sort((a, b) => a.date.localeCompare(b.date))
 }
+
+/**
+ * Every occurrence of one observance in a year, with its provenance.
+ *
+ * What the "your dates" screen lists. Includes dates the family removed, so
+ * that a removal is visible and reversible rather than a thing that silently
+ * happened once.
+ */
+export function occurrencesOf(observanceId, year, overrides) {
+  const shown = applyOverrides(BASE, overrides)
+    .filter((e) => e.id === observanceId && e.date.startsWith(String(year)))
+
+  const removed = Object.entries(overrides || {})
+    .filter(([key, o]) => o.removed && key.startsWith(`${observanceId}@`))
+    .map(([key]) => key.slice(key.lastIndexOf('@') + 1))
+    .filter((d) => d.startsWith(String(year)))
+    .map((date) => ({ ...templateFor(observanceId), date, source: 'removed', confidence: null }))
+
+  return [...shown, ...removed].sort((a, b) => a.date.localeCompare(b.date))
+}
+
+/** The observances a family's selected fasts actually correspond to. */
+export function observedObservanceIds(family) {
+  const fasts = new Set((family || []).flatMap((m) => m.fasts || []))
+  const ids = new Set()
+  for (const id of fasts) ids.add(observanceIdForFast(id))
+  return [...ids]
+    .filter((id) => templateFor(id))
+    .sort((a, b) => (templateFor(a).name).localeCompare(templateFor(b).name))
+}
+
+/** Every date the calendar already produces for one observance. */
+export function resolvedDatesFor(observanceId, overrides) {
+  return applyOverrides(BASE, overrides)
+    .filter((e) => e.id === observanceId)
+    .map((e) => e.date)
+}
+
+export { FAST_LABEL }
 
 /** Is this year inside the range the data covers? */
 export function yearIsCovered(year) {

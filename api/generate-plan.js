@@ -15,6 +15,10 @@ import {
 import { buildShoppingList } from '../src/lib/shoppingList.js'
 import { buildExplanation } from '../src/lib/explainPlan.js'
 import { additiveSuggestions, describeObservances } from '../src/lib/observanceProfile.js'
+// One validator for the store, shared with the browser: this decides whether
+// today is a fast, so client and server must not disagree about what a
+// malformed entry means.
+import { readOverrides } from '../src/lib/observanceOverrides.js'
 import { findRefContradictions, resolveComponents, resolveRecipeRef } from '../src/lib/recipeRefs.js'
 import { FAST_LABEL } from '../src/data/memberOptions.js'
 // Statically imported, never read from disk. A runtime readFileSync is not
@@ -313,30 +317,6 @@ for (const c of findRefContradictions(RECIPES)) {
     `preparation says "${c.preparationSays}" (${c.amounts.preparation.join(', ')}). ` +
     'Both are shown to the user; neither is applied.',
   )
-}
-
-/**
- * The family's calendar corrections, as sent by the browser.
- *
- * Validated rather than trusted: this arrives over the wire and is used to
- * decide whether today is a fast, which is the one decision the planner must
- * not get wrong. Anything not shaped like `observanceId@YYYY-MM-DD` mapping to
- * a confirmation is dropped, and the date the answer moves an observance TO
- * has to be a date.
- */
-function readOverrides(raw) {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {}
-  const out = {}
-  for (const [key, value] of Object.entries(raw).slice(0, 200)) {
-    if (!/^[a-z0-9_]+@\d{4}-\d{2}-\d{2}$/.test(key)) continue
-    if (!value || typeof value !== 'object') continue
-    const entry = { confirmed: value.confirmed === true }
-    if (typeof value.movedTo === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value.movedTo)) {
-      entry.movedTo = value.movedTo
-    }
-    out[key] = entry
-  }
-  return out
 }
 
 export default async function handler(req, res) {

@@ -320,3 +320,11 @@ button.fc-day.is-fasting:focus-visible,
   .fc-confirm-actions { width: 100%; }
   .fc-confirm-btn { flex: 1 1 auto; }
 }
+
+.fc-confirm-reason {
+  margin-top: 4px;
+  max-width: 58ch;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
