@@ -277,7 +277,9 @@ export function evaluateRecipe(recipe, constraints) {
     const f = recipe.flags?.[flag]
     if (!f) continue
     if (f.status === 'no') {
-      return { verdict: 'excluded', reasons: [`${flag}: ${f.note}`] }
+      // A note that only restated the status was blanked in the data, so the
+      // reason falls back to the flag alone rather than rendering "jainSafe: ".
+      return { verdict: 'excluded', reasons: [f.note ? `${flag}: ${f.note}` : flag] }
     }
     if (f.status === 'partial') {
       // A `partial` dish is edible for a strict member with a stated caution —
@@ -299,7 +301,7 @@ export function evaluateRecipe(recipe, constraints) {
     }
     if (f.status === 'conditional') {
       conditional = true
-      reasons.push(`${flag}: ${f.note}`)
+      reasons.push(f.note ? `${flag}: ${f.note}` : flag)
     }
   }
 

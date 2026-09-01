@@ -232,3 +232,43 @@ identity from `Sichuan peppercorns (toasted and ground)`, because the second
 mixes an instruction in and so reads as a step. Defensible — "(ground)" alone
 can mean buy it ground — but it is a distinction the source data did not
 intend to draw.
+
+
+## Flag notes were written in the nutrition table's dialect
+
+`flags[*].note` is the sentence a family reads when Thali explains why a dish
+does or does not suit them. The INDB notes named their ingredients the way
+ICMR-NIN names them:
+
+    No (Carrot, orange (Daucus carota), Onion, big (Allium cepa),
+        Potato, brown skin, big (Solanum tuberosum))
+
+`scripts/clean-flag-notes.mjs` rewrote 4,920 notes — statuses untouched, and it
+throws rather than writing if one moves. That line now reads
+`No - contains carrot, onion and potato`.
+
+The ingredient names are recovered by matching each note against the recipe's
+OWN ingredient list, not by splitting on commas. An INDB name contains commas
+of its own ("Chicken, whole, corn-fed, raw, meat and skin, weighed with bone"),
+so no comma reliably separates one ingredient from the next; matching against
+the source list parsed all 3,636 of them with nothing left over.
+
+Also done: 1,023 notes that only restated their status were blanked - the 700
+templates saying a cuisine "falls outside the Ekadashi fasting rules", which
+tell a reader what the cuisine label already did, and 323 bare "No"s that gave
+no reason at all. The 4,832 bare "Yes" notes are deliberately left: a redundant
+"Yes" is harmless, while a bare "No" invites "why not?" and answers nothing.
+And 261 International v2 Jain notes called onion and garlic root vegetables;
+they are bulbs, excluded under a different rule, and are now simply named.
+
+**None of this renders yet.** Only `conditional` notes (through
+`possibleSwaps`) and `diabeticFriendly: partial` notes (through
+`dish.caveats`) reach the screen today; `evaluateRecipe` computes the reason a
+recipe was excluded and `filterRecipes` throws it away. Those reasons are the
+material for a "why this meal" panel, which is why they are worth having in
+readable shape first.
+
+`diabeticFriendly: partial` is untouched. 257 records share one generic
+caution because the data carries no GI or carbohydrate figure to say anything
+sharper, and inventing specificity would be worse than repeating a true
+sentence. It belongs to the health-conditions data regeneration.
