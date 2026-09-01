@@ -16,6 +16,7 @@ import {
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { describeSavedAt, recallPlan, rememberPlan } from '../lib/planCache.js'
 import { loadFamily } from '../lib/family.js'
+import { FAST_LABEL } from '../data/memberOptions.js'
 import { familyIdWarnings } from '../lib/memberValidation.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import CookMode from './CookMode.jsx'
@@ -930,25 +931,6 @@ export default function MealPlan() {
                   <p className="cuisine-thin-note" role="status">{selectedThinNote}</p>
                 )}
 
-                {/* An addition to the meal, not a replacement for part of it.
-                    Disabled with the reason rather than hidden: "no dessert
-                    today" is worth knowing, and silently missing a course is
-                    the thing this is meant to stop. */}
-                {dessertInfo && (
-                  <div className="dessert-toggle">
-                    <label className={`dessert-check${dessertAvailable ? '' : ' is-off'}`}>
-                      <input type="checkbox"
-                        checked={includeDessert && dessertAvailable}
-                        disabled={!dessertAvailable}
-                        onChange={toggleDessert} />
-                      <span>Include a dessert</span>
-                    </label>
-                    {dessertAvailable
-                      ? <span className="dessert-hint">One sweet dish alongside the meal, not instead of one.</span>
-                      : <span className="dessert-hint">{dessertInfo.reason}</span>}
-                  </div>
-                )}
-
                 {unavailableNow.length > 0 && (
                   <div className="cuisine-unavailable">
                     <p className="cuisine-unavailable-title">
@@ -967,8 +949,32 @@ export default function MealPlan() {
 
             {cuisineInfo?.anyFasting && (
               <p className="cuisine-fasting-note">
-                {cuisineInfo.activeFasts.join(', ')} today &mdash; the meal stays traditional Indian.
+                {cuisineInfo.activeFasts.map((id) => FAST_LABEL[id] || id).join(', ')} today
+                &mdash; the meal stays traditional Indian.
               </p>
+            )}
+
+            {/* Outside the cuisine picker on purpose. That block is hidden
+                whole on a fast day, which took the dessert with it — and a
+                vrat restricts ingredients, not sweetness. Sabudana Kheer and
+                Singhare Ka Halwa exist to be eaten on exactly these days.
+
+                Disabled with the reason rather than hidden: "no dessert today"
+                is worth knowing, and a silently missing course is the thing
+                this is meant to prevent. */}
+            {dessertInfo && (
+              <div className="dessert-toggle">
+                <label className={`dessert-check${dessertAvailable ? '' : ' is-off'}`}>
+                  <input type="checkbox"
+                    checked={includeDessert && dessertAvailable}
+                    disabled={!dessertAvailable}
+                    onChange={toggleDessert} />
+                  <span>Include a dessert</span>
+                </label>
+                {dessertAvailable
+                  ? <span className="dessert-hint">One sweet dish alongside the meal, not instead of one.</span>
+                  : <span className="dessert-hint">{dessertInfo.reason}</span>}
+              </div>
             )}
 
             {plan && (

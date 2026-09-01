@@ -620,3 +620,34 @@ not a leak; the fast forbids certain ingredients, not sweetness.
 `dessertAvailability()` never returns a bare no. It distinguishes "no such
 dessert exists", "the fast rules them out", "they are all high-GI" and "none
 fits today", because a greyed-out toggle teaches nobody anything.
+
+
+## Dessert coverage gap: no low-GI or fast-safe international sweets
+
+Two facts about the dessert set, both worth knowing before the next import.
+
+**All 26 International v2 desserts are `diabeticFriendly: no`.** Not most —
+every one. Tiramisu, churros, mango sticky rice, baklava, mochi. So a single
+diabetic member removes dessert from all seven non-Indian cuisines at once, and
+the toggle can only explain itself rather than offer anything. The Indian
+catalogue keeps 24 of its 80 under the same constraint, because it contains
+things like fruit chaat and roasted makhana that the v2 set has no equivalent
+of.
+
+**All 17 desserts that survive a fast are Indian.** Makhana Kheer, Vrat Wale
+Chaawal Ki Kheer, Singhare Ka Halwa, Rajgira Ladoo, Peanut Ladoo (Vrat),
+Sabudana Kheer, Shrikhand. Every international dessert is `ekadashiSafe: no`
+and `navratriSafe: no`, which is correct — a tiramisu is not a vrat sweet —
+but it means the fast-day dessert experience is Indian-only by construction.
+
+Neither is a bug, and neither is worth patching in the data by hand: a
+`diabeticFriendly` flag flipped without a recipe behind it would be a lie. The
+fix is on the next dessert set, which should include some low-GI options —
+a fruit-based dessert, an unsweetened or jaggery-sweetened one, something
+portion-sized — so that "include a dessert" is answerable for a diabetic
+member eating Italian or Thai.
+
+Fast-safe international sweets are a harder ask and probably not worth
+chasing: the fasting rules are Indian rules, and a cuisine that has no concept
+of them has no dish that satisfies them. Indian-only on a vrat is the honest
+answer.
