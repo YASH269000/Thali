@@ -305,3 +305,29 @@ cereal". Dropping `unfortified` moved it from three trailing qualifiers to two,
 which is the threshold at which qualifiers move in front of the head instead of
 staying in source order. It affects 20 lines and the fix is a change to that
 threshold, which would churn names this cleanup has no other reason to touch.
+
+
+## `ingredientsAggregated` looks redundant and is not
+
+The shopping section's visibility is gated on `plan.ingredientsAggregated`,
+while the rows inside it are rebuilt in the browser from `plan.dishes`. The
+field's strings are never rendered, so it reads as dead weight — and deleting
+it would silently delete the entire shopping section.
+
+The two answer different questions, which is the whole point:
+
+    plan.ingredientsAggregated   did this meal need anything at all?
+    shopping.rows                what is left after the pantry?
+
+Only the unfiltered list can answer the first. Collapsing them into one test
+would make "Everything is already in your pantry" unreachable: a family who
+owns every ingredient would get no section rather than the one message that
+tells them they are done.
+
+Pinned by `test/shopping-visibility.test.js`, which asserts the section is
+hidden — not blank — when a meal needs nothing, and visible with the pantry
+message when the pantry covers everything. The tests assert the data
+conditions the JSX guard reads rather than the JSX itself; there is no DOM
+renderer in this project, and the conditions are where the meaning lives.
+
+`npm test` runs them through node:test. No test dependency was added.

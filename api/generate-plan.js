@@ -651,6 +651,12 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
     // both away, so this list disagreed with the one the browser rebuilds from
     // the same dishes — and a D002-style dish aggregated the literal words
     // "Refer to Recipe J007".
+    //
+    // LOAD-BEARING, and not for the reason its name suggests. The browser
+    // rebuilds this list itself, so nothing renders these strings — but the
+    // shopping section's visibility is gated on this field's length, and
+    // deleting it as redundant would silently delete the whole section.
+    // See the guard in MealPlan.jsx and test/shopping-visibility.test.js.
     ingredientsAggregated: buildShoppingList(dishes, headcount),
     planSummary: plan.planSummary || '',
     possibleSwaps,

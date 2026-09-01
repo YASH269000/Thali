@@ -966,6 +966,16 @@ export default function MealPlan() {
               </>
             )}
 
+            {/* Deliberately a different source from the rows below, and the two
+                answer different questions. This one asks "did this meal need
+                anything at all?", which only the unfiltered list can answer;
+                shopping.rows asks "what is left after the pantry?".
+
+                Collapsing them into one test would make "Everything is already
+                in your pantry" unreachable — a family who owns every
+                ingredient would get no section rather than the one message
+                that tells them they are done. Asserted in
+                test/shopping-visibility.test.js. */}
             {plan.ingredientsAggregated?.length > 0 && (
               <>
                 <h2 className="section-heading">
