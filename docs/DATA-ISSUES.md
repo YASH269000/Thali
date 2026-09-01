@@ -651,3 +651,44 @@ Fast-safe international sweets are a harder ask and probably not worth
 chasing: the fasting rules are Indian rules, and a cuisine that has no concept
 of them has no dish that satisfies them. Indian-only on a vrat is the honest
 answer.
+
+## Only two of the fasting traditions narrow the dish pool
+
+The "why this meal" panel made this visible, which is what it is for.
+
+A member's active fasts are shown as a constraint everywhere — the fast banner,
+the member chips, the panel's "what everyone needs today" — but only two of
+them narrow anything. `fastFlags()` in `src/lib/mealPlanRules.js` maps a fast id
+to a compliance flag by substring, and the recipe schema has exactly two:
+`ekadashiSafe` and `navratriSafe`. Every other tradition — the weekly vrats,
+Karwa Chauth, Chhath, Paryushana, Ramadan, Uposatha — reaches the model as
+prompt context and reaches the family as a banner, but the deterministic filter
+does not act on it.
+
+Measured on a vegetarian member, the whole catalogue of 1,464:
+
+| Active fast | Servable after filtering |
+| --- | --- |
+| Ekadashi Vrat | 185 |
+| Mangalvar Vrat (Tuesday Fast) | 1,132 — the same as no fast at all |
+
+The gap is a data gap, not a logic one, and it must not be closed by aliasing:
+mapping a Tuesday vrat onto `ekadashiSafe` would apply the wrong rules under
+the right name, and a Paryushana member is not served by being handed Navratri
+food. The honest fix is per-tradition flags on the recipes, added by someone
+who knows the tradition. Until then the panel reports what actually happened,
+which is that the fast narrowed nothing — better than implying work that was
+never done.
+
+## "Why this meal" is explanation, not advice
+
+The panel restates settings the family entered ("Sumitra needs low-GI food")
+and describes food ("contains unsalted butter"). It makes no claim about anyone's
+health, recommends nothing, and repeats the plan's disclaimer at its foot. The
+wording comes from `FLAG_PHRASE` and `DIET_PHRASE` in `mealPlanRules.js` — if a
+new flag is added without a phrase there it falls back to `needs <flagKey>`,
+which is a flag key on screen and should be caught in review.
+
+Counts in the panel are real totals; the dishes under each are a sample of three,
+spread evenly across the group so the sample is not all one source. The sampling
+is documented in `src/lib/explainPlan.js` and pinned by `test/explain-plan.test.js`.

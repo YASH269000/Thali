@@ -370,6 +370,59 @@ export function memberConstraints(member, activeFastIds) {
   }
 }
 
+/* ------------------------------------------------------------------ *
+ * Why a dish was not shown                                            *
+ *                                                                     *
+ * evaluateRecipe has always worked these out and filterRecipes has    *
+ * always thrown them away at the `break`. Keeping them costs one small *
+ * object per excluded recipe and no extra work: the "why this meal"    *
+ * panel is plumbing, not a second pass over the catalogue.             *
+ *                                                                     *
+ * A reason has to name the person it belongs to. "diabeticFriendly:    *
+ * no" is a fact about a column; "Sumitra needs low-GI food" is a fact  *
+ * about a family.                                                     *
+ * ------------------------------------------------------------------ */
+
+const FAST_FLAGS = new Set(['ekadashiSafe', 'navratriSafe'])
+
+const DIET_PHRASE = {
+  vegetarian: 'is vegetarian',
+  eggetarian: 'is eggetarian',
+  vegan: 'is vegan',
+  jain: 'eats Jain',
+  sattvic: 'eats sattvic',
+  non_veg: 'eats everything',
+}
+
+const FLAG_PHRASE = {
+  jainSafe: 'eats Jain',
+  onionGarlicFree: 'avoids onion and garlic',
+  vegan: 'is vegan',
+  diabeticFriendly: 'needs low-GI food',
+  lactoseFree: 'avoids lactose',
+  glutenFree: 'avoids gluten',
+  alcoholFree: 'avoids alcohol',
+}
+
+/** "is keeping Ekadashi", or what the flag stands for. */
+function flagPhrase(flag) {
+  if (FAST_FLAGS.has(flag)) {
+    return `is keeping ${flag === 'ekadashiSafe' ? 'Ekadashi' : 'Navratri'}`
+  }
+  return FLAG_PHRASE[flag] || `needs ${flag}`
+}
+
+/** The dish's own note, without the verdict word it starts with. */
+function cleanReason(note) {
+  const text = String(note || '').trim()
+  if (!text) return ''
+  return text
+    .replace(/^No\s*[—–-]\s*/i, '')
+    .replace(/^No\s*\((.*)\)$/i, '$1')
+    .replace(/^No\b[,:]?\s*/i, '')
+    .trim()
+}
+
 /**
  * Verdict for one recipe against one member.
  * @returns {{ verdict: 'ok'|'excluded'|'conditional', reasons: string[] }}
@@ -386,6 +439,13 @@ export function evaluateRecipe(recipe, constraints) {
     return {
       verdict: 'excluded',
       reasons: [`${dietKind(recipe)} dish, ${constraints.name} is ${constraints.diet}`],
+      rejection: {
+        kind: 'diet',
+        member: constraints.name,
+        memberId: constraints.id,
+        because: DIET_PHRASE[constraints.diet] || `eats ${constraints.diet}`,
+        detail: dietKind(recipe) === 'non_veg' ? 'contains meat or fish' : 'contains egg',
+      },
     }
   }
 
@@ -397,6 +457,13 @@ export function evaluateRecipe(recipe, constraints) {
     return {
       verdict: 'excluded',
       reasons: [`contains ${ALLERGEN_LABEL[allergen]}, ${constraints.name} has a ${ALLERGEN_LABEL[allergen]} allergy`],
+      rejection: {
+        kind: 'allergy',
+        member: constraints.name,
+        memberId: constraints.id,
+        because: `has a ${ALLERGEN_LABEL[allergen]} allergy`,
+        detail: `contains ${ALLERGEN_LABEL[allergen]}`,
+      },
     }
   }
 
@@ -406,7 +473,20 @@ export function evaluateRecipe(recipe, constraints) {
     if (f.status === 'no') {
       // A note that only restated the status was blanked in the data, so the
       // reason falls back to the flag alone rather than rendering "jainSafe: ".
-      return { verdict: 'excluded', reasons: [f.note ? `${flag}: ${f.note}` : flag] }
+      return {
+        verdict: 'excluded',
+        reasons: [f.note ? `${flag}: ${f.note}` : flag],
+        rejection: {
+          kind: FAST_FLAGS.has(flag) ? 'fast' : 'flag',
+          flag,
+          member: constraints.name,
+          memberId: constraints.id,
+          because: flagPhrase(flag),
+          // The dish's own note, cleaned up in the flag-note pass, says what
+          // is actually in it: "contains onion and garlic".
+          detail: cleanReason(f.note),
+        },
+      }
     }
     if (f.status === 'partial') {
       // A `partial` dish is edible for a strict member with a stated caution —
@@ -452,6 +532,10 @@ export function filterRecipes(recipes, family, activeFastIds) {
   // alongside the dish, never dropped.
   const caveats = new Map()
 
+  // Why each excluded recipe was excluded. Recorded rather than recomputed:
+  // evaluateRecipe already worked it out and this loop used to drop it.
+  const rejections = []
+
   for (const recipe of recipes) {
     let excluded = false
     let anyConditional = false
@@ -459,8 +543,22 @@ export function filterRecipes(recipes, family, activeFastIds) {
     const recipeCaveats = []
 
     for (const c of constraints) {
-      const { verdict, reasons, caveats: cv } = evaluateRecipe(recipe, c)
-      if (verdict === 'excluded') { excluded = true; break }
+      const { verdict, reasons, caveats: cv, rejection } = evaluateRecipe(recipe, c)
+      if (verdict === 'excluded') {
+        excluded = true
+        if (rejection) {
+          rejections.push({
+            recipeId: recipe.recipeId,
+            name: recipe.name,
+            region: recipe.region || '',
+            source: recipe.source || '',
+            ...rejection,
+          })
+        }
+        // The FIRST constraint that rejects it is the one reported. A dish can
+        // fail several at once and naming them all reads as piling on.
+        break
+      }
       if (cv?.length) recipeCaveats.push(...cv)
       if (verdict === 'conditional') {
         anyConditional = true
@@ -479,6 +577,7 @@ export function filterRecipes(recipes, family, activeFastIds) {
     swaps,
     constraints,
     caveats,
+    rejections,
     stats: {
       catalogue: recipes.length,
       mains: mains.length,

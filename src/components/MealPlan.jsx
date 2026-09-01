@@ -19,6 +19,7 @@ import { loadFamily } from '../lib/family.js'
 import { FAST_LABEL } from '../data/memberOptions.js'
 import { familyIdWarnings } from '../lib/memberValidation.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
+import WhyThisMeal from './WhyThisMeal.jsx'
 import CookMode from './CookMode.jsx'
 import Clock from './Clock.jsx'
 import Disclaimer from './Disclaimer.jsx'
@@ -1079,6 +1080,11 @@ export default function MealPlan() {
               )}
               {cachedFrom && <span className="cached-chip">Saved plan</span>}
             </p>
+
+            {/* Beside the header, not inside the cuisine picker: that block is
+                hidden whole on a fast day, and the explanation is most worth
+                reading on exactly the days the constraints bite hardest. */}
+            <WhyThisMeal explanation={plan.explanation} />
 
             {(plan.guestNotes || []).map((n) => (
               <div key={n.kind} className="guest-note">

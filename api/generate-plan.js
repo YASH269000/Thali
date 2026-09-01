@@ -13,6 +13,7 @@ import {
   isInternational, MEAL_TARGET, roleOf, selectCandidatesForMeal, SINGLETON_ROLES,
 } from '../src/lib/mealPlanRules.js'
 import { buildShoppingList } from '../src/lib/shoppingList.js'
+import { buildExplanation } from '../src/lib/explainPlan.js'
 import { findRefContradictions, resolveComponents, resolveRecipeRef } from '../src/lib/recipeRefs.js'
 import { FAST_LABEL } from '../src/data/memberOptions.js'
 // Statically imported, never read from disk. A runtime readFileSync is not
@@ -363,9 +364,8 @@ export default async function handler(req, res) {
 
   // ---- constraints and filtering (deterministic, before any model call) ----
   const activeFastIds = activeFastIdsOn(date)
-  const { mains, swaps, constraints, stats, caveats } = filterRecipes(
-    RECIPES, [...diners, ...guestMembers], activeFastIds,
-  )
+  const filtered = filterRecipes(RECIPES, [...diners, ...guestMembers], activeFastIds)
+  const { mains, swaps, constraints, stats, caveats } = filtered
 
   // A member carrying a fast id the app cannot read is the one case worth
   // refusing over. Everything else fails closed to the strictest reading and
@@ -768,7 +768,17 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
     .filter((c) => c.unknownIds?.length > 0)
     .map((c) => ({ memberId: c.id, name: c.name, ids: c.unknownIds }))
 
+  // The constraint work, made readable. Grouped and sampled from what
+  // evaluateRecipe already decided — see src/lib/explainPlan.js.
+  const explanation = buildExplanation(filtered, {
+    cuisine: selection.internationalCuisine || requestedCuisine,
+    mealType,
+    eligible: selection.eligible,
+    candidatesSent: candidates.length,
+  })
+
   return res.status(200).json({
+    explanation,
     unreadableSettings,
     // Set only when a dessert was asked for and could not be given, with the
     // reason. The UI shows it rather than quietly omitting the course.

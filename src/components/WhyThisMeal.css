@@ -1,0 +1,157 @@
+/* "Why this meal" — collapsed by default, opened from beside the plan header. */
+
+.why-panel {
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.why-toggle {
+  font-size: 14px;
+}
+
+.why-body {
+  margin-top: 12px;
+  padding: 16px 18px;
+  border: 0.5px solid #e5e5e0;
+  border-radius: 12px;
+  background: #fff;
+  text-align: left;
+}
+
+.why-lede {
+  margin: 0 0 18px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #1a1a1a;
+}
+
+.why-heading {
+  margin: 18px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b6b66;
+}
+
+.why-heading:first-of-type {
+  margin-top: 0;
+}
+
+.why-people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.why-people li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.why-name {
+  font-size: 15px;
+  color: #1a1a1a;
+}
+
+.why-guest {
+  color: #6b6b66;
+}
+
+.why-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.why-funnel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.why-funnel li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 0;
+  border-bottom: 0.5px solid #f0f0ec;
+}
+
+.why-funnel li:last-child {
+  border-bottom: none;
+}
+
+.why-funnel-n {
+  min-width: 4.5ch;
+  text-align: right;
+  font-weight: 600;
+  font-size: 15px;
+  color: #1a1a1a;
+}
+
+.why-funnel-label {
+  font-size: 14px;
+  color: #6b6b66;
+}
+
+.why-reasons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.why-reason-head {
+  margin: 0 0 4px;
+  font-size: 15px;
+  color: #1a1a1a;
+}
+
+.why-examples {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.why-examples li {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.why-dish {
+  color: #1a1a1a;
+}
+
+.why-detail {
+  color: #6b6b66;
+}
+
+.why-note,
+.why-empty {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b6b66;
+}
+
+.why-disclaimer {
+  margin: 18px 0 0;
+  padding-top: 12px;
+  border-top: 0.5px solid #e5e5e0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b6b66;
+}
