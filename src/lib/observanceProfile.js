@@ -292,11 +292,6 @@ const strictestBy = (order) => (values) => {
 export const strictestMealCount = strictestBy(MEAL_COUNT_ORDER)
 export const strictestAlliumScope = strictestBy(ALLIUM_ORDER)
 
-/** Is `a` strictly tighter than `b`? Used to decide who gets an addition. */
-export function isStricterAllium(a, b) {
-  return ALLIUM_ORDER.indexOf(a) < ALLIUM_ORDER.indexOf(b)
-}
-
 /**
  * Which meals this member is present for today, from their observances alone.
  *
@@ -312,6 +307,13 @@ export function mealsAttendedBy(member, activeFastIds) {
   if (observances.length === 0) return [...MEAL_TYPES]
 
   // The exemption is exactly an exemption from going without food.
+  //
+  // Note what it does not touch: `activeFasts` on the constraint, and so
+  // `anyFasting`, are left alone. The day is still Ekadashi for someone
+  // keeping it lightly — they are exempt from the fast's food rules on health
+  // grounds, not from the observance — so the cuisine picker stays on Indian
+  // and only the dish pool widens. Relaxing the day as well would offer them
+  // pasta on a fast day, which nobody asked for.
   const binding = observances.filter((o) => !o.observesLightly)
   if (binding.length === 0) return [...MEAL_TYPES]
 

@@ -179,6 +179,19 @@ test('a sole lightly-observing member does widen the pool, and that is correct',
   assert.ok(exempt > observing, `${exempt} should exceed ${observing}`)
 })
 
+test('the exemption relaxes the food rules, not the day itself', () => {
+  // `anyFasting` gates the cuisine picker down to Indian. Someone keeping
+  // Ekadashi lightly is still keeping Ekadashi, so the day stays a fast day
+  // and only their dish pool widens. Asserted in both directions so that a
+  // later change in either has to be a decision.
+  const lightly = { ...SUMITRA, observances: { ekadashi_vrat: { observesLightly: true } } }
+  const c = constraintsOf([lightly])[0]
+  assert.deepEqual(c.activeFasts, ['ekadashi_vrat'],
+    'the day stopped being a fast day, so the cuisine would open up')
+  assert.ok(!c.requiredFlags.includes('ekadashiSafe'),
+    'the food rules did not relax, so the exemption did nothing')
+})
+
 test('the exemption is offered on recorded grounds and withdrawn without them', () => {
   assert.equal(lightObservanceEligibility(SUMITRA).eligible, true)
   assert.equal(lightObservanceEligibility(VRINDA).eligible, false)

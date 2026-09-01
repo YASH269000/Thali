@@ -1155,6 +1155,22 @@ export default function MealPlan() {
               {cachedFrom && <span className="cached-chip">Saved plan</span>}
             </p>
 
+            {/* The who-is-eating screen said why somebody was unchecked; this
+                is where that reason would otherwise be lost. "Meal for 2 of 3"
+                reads as an oversight unless the third person's absence has a
+                cause, and a fast is a cause worth carrying forward. Only
+                people who are actually out of this plan are named — a family
+                that checked someone back in sees nothing. */}
+            {attendance.absent.filter((a) => !present.includes(a.memberId)).length > 0 && (
+              <p className="attendance-fast">
+                {attendance.absent
+                  .filter((a) => !present.includes(a.memberId))
+                  .map((a) => `${displayName(a.name)} is keeping ${a.reason.split(' — ')[0]}`)
+                  .join('; ')}
+                {' '}&mdash; not planned for this meal.
+              </p>
+            )}
+
             {/* Beside the header, not inside the cuisine picker: that block is
                 hidden whole on a fast day, and the explanation is most worth
                 reading on exactly the days the constraints bite hardest. */}
