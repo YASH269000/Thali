@@ -42,6 +42,19 @@ test('the app imports the engine — the wiring is real, not a copied table', as
     + 'generated dates are a hand-maintained table again and this whole file is theatre.')
 })
 
+// ~20 SECONDS, AND HERE IS WHY, so the next person does not rediscover it.
+//
+// The generator solves a year of tithis per city — eight cities, two years,
+// about 1.2 s each — because it records where a date falls on a different day
+// than it does in Delhi. That cross-city pass is the whole cost; a Delhi-only
+// regeneration is about 2.5 s.
+//
+// It is worth paying while it stays around this long. If it grows past roughly
+// a minute — a third year, or more cities — split the cross-city pass behind a
+// flag: generate with it always, and have this test compare only the Delhi
+// dates unless an env var asks for the full diff. The invariant that matters
+// most (the committed file is what the engine produces) survives that split;
+// only the variance table would go unchecked on an ordinary run.
 test('the committed observance table is exactly what the engine produces', async () => {
   const fresh = serialise(buildObservances())
   const onDisk = await readFile(new URL('../src/data/observances.json', import.meta.url), 'utf8')

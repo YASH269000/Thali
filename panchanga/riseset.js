@@ -144,6 +144,42 @@ export function moonRise(jdLocalMidnight, place) {
   return findCrossing(jdLocalMidnight, 24, alt, 1)
 }
 
+/**
+ * Fajr and Maghrib — the ends of a Ramadan fasting day.
+ *
+ * Maghrib IS sunset; there is no separate calculation and no convention to
+ * choose. Fajr is the moment the Sun reaches a stated depression below the
+ * horizon, and the stated angle is a convention rather than a fact:
+ *
+ *   18 deg    Umm al-Qura, Muslim World League, and the majority standard
+ *   15 deg    ISNA, mostly North America
+ *   19.5 deg  Egyptian General Authority
+ *
+ * Eighteen is the default because it is the most widely used, not because the
+ * others are wrong — the spread is ten to fifteen minutes in Delhi in
+ * February, which is enough to matter when it decides the end of suhoor. The
+ * angle is a parameter and the app prints which one it used, the same way it
+ * prints the city beside the time. See docs/DATA-ISSUES.md.
+ *
+ * The reuse is the point: this is `findCrossing` against a target altitude,
+ * which is exactly what sunrise already is with a different number.
+ *
+ * @returns {{ fajr: number|null, maghrib: number|null, angle: number }}
+ */
+export const FAJR_ANGLE = 18
+
+export function fajrMaghrib(jdLocalMidnight, place, angle = FAJR_ANGLE) {
+  const dawn = (jd) => ({ altitude: sunAltitude(jd, place.lat, place.lon), h0: -angle })
+  const day = (jd) => ({ altitude: sunAltitude(jd, place.lat, place.lon), h0: SUN_H0 })
+  return {
+    fajr: findCrossing(jdLocalMidnight, 24, dawn, 1),
+    // Named separately from sunset because it is a different question with the
+    // same answer, and a reader should not have to know that to find it.
+    maghrib: findCrossing(jdLocalMidnight, 24, day, -1),
+    angle,
+  }
+}
+
 /** Moonset for a local calendar day, or null. */
 export function moonSet(jdLocalMidnight, place) {
   const alt = (jd) => moonAltitude(jd, place.lat, place.lon)

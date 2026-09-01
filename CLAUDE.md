@@ -64,6 +64,18 @@ Voice-guided cooking that turns Thali into a teacher for people who cannot cook.
 - INDB recipes (hasFullPreparation: false) offer AI-generated steps on request.
 - Keyboard: right arrow next, left arrow previous, space read aloud, Esc close.
 
+## Timing Fasts
+Traditions that move the meals rather than narrowing the pool live in
+`src/lib/timingFasts.js`; times come from `src/lib/times.js`, computed live for
+the family's city.
+- mealCount answers HOW MANY times someone eats; a timing tradition answers
+  WHEN and what the slots are called. `nirjala`/`nirahar` already meant "none of
+  the standard three", so there is no tiebreaker and none should be added.
+- A slot is a mealType: it needs a `MEAL_TARGET` entry and a `SLOT_SHAPE`, or it
+  silently takes dinner's dish count and the whole pool.
+- An unknown mealType is a 400, never a coerced dinner.
+- Print the city beside every time. Never precompute a time for Delhi.
+
 ## Location
 `thali_location` holds one of the eight cities in `panchanga/locations.js`,
 default Delhi. `src/lib/location.js` is the only reader.

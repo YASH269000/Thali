@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   dinersLabel, guestHeadcount, loadGuests, normaliseGuests, saveGuests,
 } from '../lib/guests.js'
-import { displayName } from '../lib/names.js'
+import { displayName, joinNames } from '../lib/names.js'
 import { pickAlternatives, swapDish } from '../lib/dishSwap.js'
 import {
   applyPantry, buildShoppingEntries, buildShoppingList, componentBatches,
@@ -16,7 +16,10 @@ import {
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { describeSavedAt, recallPlan, rememberPlan } from '../lib/planCache.js'
 import { loadOverrides } from '../lib/observanceOverrides.js'
-import { suggestedAttendance } from '../lib/observanceProfile.js'
+import { observancesToday, suggestedAttendance } from '../lib/observanceProfile.js'
+import { slotsFor, windowsFor } from '../lib/timingFasts.js'
+import { loadLocationKey } from '../lib/location.js'
+import { isoDateOf } from '../lib/observances.js'
 import { activeFastIdsOn } from '../lib/fastingRules.js'
 import { loadFamily } from '../lib/family.js'
 import { FAST_LABEL } from '../data/memberOptions.js'
@@ -474,10 +477,58 @@ export default function MealPlan() {
   const today = useMemo(() => new Date(), [])
   const activeFastIds = useMemo(
     () => activeFastIdsOn(today, overrides), [today, overrides])
-  const attendance = useMemo(
+  const standardAttendance = useMemo(
     () => suggestedAttendance(family, mealType || 'dinner', activeFastIds),
     [family, mealType, activeFastIds],
   )
+
+  // Timing fasts: traditions that move the meals rather than narrowing them.
+  // A member on Karva Chauth eats nothing between sunrise and moonrise, so the
+  // three standard slots are not the question — sargi and the parana are.
+  // Resolved from the BINDING observances, so a health exemption removes the
+  // slots along with the fast, exactly as it removes the flags.
+  const locationKey = useMemo(() => loadLocationKey(), [])
+  const timing = useMemo(() => {
+    const iso = isoDateOf(today)
+    const binding = new Set()
+    for (const m of family) {
+      for (const o of observancesToday(m, activeFastIds)) {
+        if (!o.observesLightly) binding.add(o.fastId)
+      }
+    }
+    const ids = [...binding]
+    const slots = slotsFor(ids, iso, locationKey)
+    // Who each slot belongs to: the members keeping that tradition, and only
+    // them. A household where one person keeps Karva Chauth still eats dinner.
+    const observers = (fastId) => family.filter((m) => (m.fasts || []).includes(fastId)
+      && observancesToday(m, activeFastIds).some((o) => o.fastId === fastId && !o.observesLightly))
+    return {
+      windows: windowsFor(ids, iso, locationKey),
+      slots: slots.map((s) => ({ ...s, members: observers(s.fastId) })),
+    }
+  }, [family, activeFastIds, today, locationKey])
+
+  // The slot being planned, when one is. Its members are the ones at it: a
+  // sargi is eaten by whoever is keeping the fast, not by the whole family.
+  const activeSlot = timing.slots.find((s) => s.id === mealType) || null
+
+  // A slot's absence list is not the standard one. `suggestedAttendance` asks
+  // "does this member eat breakfast today", which is the wrong question about
+  // a sargi — it made everyone absent, including the person the slot is for.
+  // For a slot the answer is simply who keeps that tradition.
+  const attendance = useMemo(() => {
+    if (!activeSlot) return standardAttendance
+    const mine = new Set(activeSlot.members.map((m) => m.id))
+    return {
+      present: [...mine],
+      absent: family.filter((m) => !mine.has(m.id)).map((m) => ({
+        memberId: m.id,
+        name: m.name,
+        reason: `${activeSlot.tradition} — ${activeSlot.label} is for whoever is `
+          + 'keeping it. Everyone else eats their usual meals today.',
+      })),
+    }
+  }, [activeSlot, standardAttendance, family])
   //
   // Held as an OVERRIDE rather than as the list itself, so the suggestion is
   // derived during render and never has to be synchronised back into state.
@@ -485,7 +536,17 @@ export default function MealPlan() {
   // is the family's own answer and outranks it until the meal type changes.
   const [presentOverride, setPresentOverride] = useState(
     () => loadPresent(family, mealType))
-  const present = presentOverride || attendance.present
+  // Memoised, and it has to be. The generation effect lists `present` as a
+  // dependency and its cleanup aborts the request in flight; a fresh array
+  // identity on every render therefore aborted the call, and the guard just
+  // below the cleanup then saw an unchanged plan key and declined to start
+  // another. The screen loaded forever having sent one request and cancelled
+  // it. Deriving the list is right; deriving a NEW list every render is not.
+  const present = useMemo(
+    () => presentOverride
+      || (activeSlot ? activeSlot.members.map((m) => m.id) : attendance.present),
+    [presentOverride, activeSlot, attendance],
+  )
   const setPresent = setPresentOverride
   // 'meal' -> 'who' -> 'plan'. Nothing is generated before 'plan'.
   //
@@ -945,6 +1006,15 @@ export default function MealPlan() {
                   {t[0].toUpperCase() + t.slice(1)}
                 </button>
               ))}
+              {/* Today's slots belong in the toggle too, or a plan for a sargi
+                  sits under a row where nothing is selected. */}
+              {timing.slots.map((s) => (
+                <button key={s.id} type="button"
+                  className={`toggle-btn${mealType === s.id ? ' is-active' : ''}`}
+                  onClick={() => chooseMeal(s.id)} disabled={loading}>
+                  {s.label}
+                </button>
+              ))}
             </div>
             <div className="plan-links">
               <button type="button" className="link-btn change-meal"
@@ -957,6 +1027,27 @@ export default function MealPlan() {
               </button>
             </div>
           </div>
+        )}
+
+        {/* What the fast actually asks of them, in times, before any meal is
+            chosen. The city is on every line: a moonrise is 74 minutes apart
+            between Kolkata and Mumbai, and a nirjala fast ends at moonrise —
+            so a time without its city is not an answer. */}
+        {timing.windows.length > 0 && stage !== 'plan' && (
+          <section className="fast-window" aria-labelledby="fw-heading">
+            <h2 id="fw-heading" className="fast-window-head">
+              {timing.windows.length === 1
+                ? `${timing.windows[0].label} today`
+                : 'Timing fasts today'}
+            </h2>
+            {timing.windows.map((w) => (
+              <p key={w.fastId} className="fast-window-text">{w.text}</p>
+            ))}
+            <p className="fast-window-city">
+              All times computed for {timing.windows[0].city}. Change your city
+              on the family screen if that is not where you are.
+            </p>
+          </section>
         )}
 
         {stage === 'meal' && (
@@ -975,6 +1066,26 @@ export default function MealPlan() {
                   <span className="chooser-card-name">{t[0].toUpperCase() + t.slice(1)}</span>
                   <span className="chooser-card-hint">{MEAL_HINTS[t]}</span>
                   {mealType === t && plan && (
+                    <span className="chooser-card-tag">Already planned</span>
+                  )}
+                </button>
+              ))}
+              {/* Today's timing slots sit beside the three, not instead of
+                  them: a household where one person keeps Karva Chauth still
+                  eats dinner, and both need planning. Every one carries its
+                  own time and the city it was computed for. */}
+              {timing.slots.map((s) => (
+                <button key={s.id} type="button"
+                  className={`chooser-card is-slot${mealType === s.id ? ' is-current' : ''}`}
+                  onClick={() => chooseMeal(s.id)}>
+                  <span className="chooser-card-name">{s.label}</span>
+                  <span className="chooser-card-hint">
+                    {s.tradition} &middot; {s.at} in {timing.windows[0]?.city}
+                  </span>
+                  <span className="chooser-card-who">
+                    {joinNames(s.members.map((m) => displayName(m.name)))}
+                  </span>
+                  {mealType === s.id && plan && (
                     <span className="chooser-card-tag">Already planned</span>
                   )}
                 </button>
@@ -1147,6 +1258,12 @@ export default function MealPlan() {
 
         {stage === 'plan' && plan && planCurrent && !loading && (
           <>
+            {activeSlot && (
+              <p className="slot-note">
+                <strong>{activeSlot.label}</strong>
+                {' '}&mdash; {activeSlot.at} in {timing.windows[0]?.city}. {activeSlot.note}
+              </p>
+            )}
             <p className="attendance">
               {attendanceLabel}
               {plan.meta?.internationalCuisine && (
@@ -1163,11 +1280,21 @@ export default function MealPlan() {
                 that checked someone back in sees nothing. */}
             {attendance.absent.filter((a) => !present.includes(a.memberId)).length > 0 && (
               <p className="attendance-fast">
-                {attendance.absent
-                  .filter((a) => !present.includes(a.memberId))
-                  .map((a) => `${displayName(a.name)} is keeping ${a.reason.split(' — ')[0]}`)
-                  .join('; ')}
-                {' '}&mdash; not planned for this meal.
+                {activeSlot
+                  // A slot belongs to the tradition, not to the household, so
+                  // the others are not "keeping" anything — they are simply
+                  // eating their usual meals. Saying "Binod is keeping
+                  // Ramadan" of a man who keeps no fast is worse than silence.
+                  ? `${activeSlot.label} is for whoever is keeping `
+                    + `${activeSlot.tradition}. `
+                    + `${joinNames(attendance.absent
+                      .filter((a) => !present.includes(a.memberId))
+                      .map((a) => displayName(a.name)))} `
+                    + 'eat their usual meals today.'
+                  : `${attendance.absent
+                    .filter((a) => !present.includes(a.memberId))
+                    .map((a) => `${displayName(a.name)} is keeping ${a.reason.split(' — ')[0]}`)
+                    .join('; ')} — not planned for this meal.`}
               </p>
             )}
 

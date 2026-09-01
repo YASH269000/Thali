@@ -19,6 +19,7 @@ import { additiveSuggestions, describeObservances } from '../src/lib/observanceP
 // today is a fast, so client and server must not disagree about what a
 // malformed entry means.
 import { readOverrides } from '../src/lib/observanceOverrides.js'
+import { TIMING_SLOT_IDS } from '../src/lib/timingFasts.js'
 import { findRefContradictions, resolveComponents, resolveRecipeRef } from '../src/lib/recipeRefs.js'
 import { FAST_LABEL } from '../src/data/memberOptions.js'
 // Statically imported, never read from disk. A runtime readFileSync is not
@@ -319,6 +320,9 @@ for (const c of findRefContradictions(RECIPES)) {
   )
 }
 
+/** Everything a plan can be asked for: the three meals, plus today's slots. */
+const PLANNABLE_MEALS = [...MEAL_TYPES, ...TIMING_SLOT_IDS]
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -370,7 +374,19 @@ export default async function handler(req, res) {
   const guestSummary = describeGuests(guests)
   const headcount = diners.length + guestCount
 
-  const mealType = MEAL_TYPES.includes(body.mealType) ? body.mealType : 'dinner'
+  // Coercing an unrecognised meal to dinner was the same fail-open shape as
+  // the unrecognised-id bug: no error, no crash, just quietly the wrong meal.
+  // A request for sargi that silently returned a dinner would be worse here
+  // than anywhere — the whole point of a timing slot is that it is not dinner.
+  const mealType = body.mealType ?? 'dinner'
+  if (!PLANNABLE_MEALS.includes(mealType)) {
+    return res.status(400).json({
+      error: `Thali does not know a meal called "${mealType}".`,
+      hint: `It plans ${MEAL_TYPES.join(', ')}, and the timing-fast slots `
+        + `${TIMING_SLOT_IDS.join(', ')} on the days those fasts fall.`,
+      knownMeals: PLANNABLE_MEALS,
+    })
+  }
   // 'indian' (default) | a cuisine name | 'surprise'
   const requestedCuisine = typeof body.cuisine === 'string' ? body.cuisine : 'indian'
   const includeDessert = body.includeDessert === true

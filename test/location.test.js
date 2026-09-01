@@ -18,9 +18,11 @@ import {
   DEFAULT_LOCATION_KEY, LOCATION_OPTIONS, LOCATIONS, isDefaultLocation,
   locationName, placeFor,
 } from '../src/lib/location.js'
-import { CITIES, observancesOn, variantFor } from '../src/lib/observances.js'
+import {
+  CITIES, OBSERVANCE_FASTS, observancesOn, variantFor,
+} from '../src/lib/observances.js'
 import { fastingYear } from '../src/lib/fastingRules.js'
-import { moveDate } from '../src/lib/observanceOverrides.js'
+import { confirmDate, moveDate } from '../src/lib/observanceOverrides.js'
 import computed from '../src/data/observances.json' with { type: 'json' }
 
 const dateOf = (iso) => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d) }
@@ -138,5 +140,85 @@ test('the cross-city differences are recorded, and they are few', () => {
 test('Delhi is never listed as varying from itself', () => {
   for (const o of computed.observances) {
     assert.ok(!o.variesByCity?.delhi, `${o.id} lists Delhi as varying`)
+  }
+})
+
+/* ------------------------------------------------------------------ *
+ * The eleven that only vary by city                                   *
+ *                                                                     *
+ * Three of the fourteen were already prompted because they move under *
+ * a perturbed ephemeris. The rest are perfectly stable in Delhi and   *
+ * simply fall elsewhere in Kolkata, Mumbai or Ahmedabad — so they      *
+ * must reach a household in an affected city and NO other.            *
+ * ------------------------------------------------------------------ */
+
+const OBSERVING = [{
+  id: 'm1', name: 'Vrinda',
+  fasts: ['ekadashi_vrat', 'navratri_vrat', 'mahavir_jayanti', 'purnima_vrat'],
+}]
+
+test('a Delhi household is never asked about another city\'s date', () => {
+  // 2027 is the clean year: every 2027 variance is city-only, so a Delhi
+  // family should be asked nothing at all.
+  assert.deepEqual(fastingYear(OBSERVING, 2027, {}, 'delhi').confirmations, [])
+  assert.deepEqual(fastingYear(OBSERVING, 2027, {}, undefined).confirmations, [])
+
+  // While the cities that ARE affected are asked, each about their own.
+  const kolkata = fastingYear(OBSERVING, 2027, {}, 'kolkata').confirmations
+  assert.deepEqual(kolkata.map((c) => c.date), ['2027-03-03', '2027-07-29', '2027-09-30'])
+
+  // Mahavir Jayanti moves WEST — only Mumbai and Ahmedabad, and a day earlier.
+  for (const city of ['mumbai', 'ahmedabad']) {
+    const q = fastingYear(OBSERVING, 2027, {}, city).confirmations
+    assert.deepEqual(q.map((c) => c.date), ['2027-04-19'], city)
+    assert.equal(q[0].variant.date, '2027-04-18', 'it should move a day EARLIER')
+  }
+  // And nowhere else.
+  for (const city of ['chennai', 'bengaluru', 'ujjain']) {
+    assert.ok(!fastingYear(OBSERVING, 2027, {}, city).confirmations
+      .some((c) => c.id === 'mahavir_jayanti'), city)
+  }
+})
+
+test('answering a city-variance date settles it, and it does not come back', () => {
+  // The bug this guards against appeared on exactly this path: `variesByCity`
+  // still names the day the occurrence now sits on, so a check that only
+  // looked at the keyword would re-ask about the date it had just been given.
+  // Kamika is the case — stable in Delhi, 7-minute margin, Kolkata only.
+  for (const city of ['kolkata', 'mumbai', 'ahmedabad']) {
+    let overrides = {}
+    let asked = fastingYear(OBSERVING, 2027, overrides, city).confirmations
+    assert.ok(asked.length > 0, `${city} was asked nothing to begin with`)
+
+    // Answer every one of them with the city's own date.
+    for (const q of asked) {
+      assert.ok(q.variant, `${q.date} carries no variant`)
+      overrides = moveDate(overrides, q.id, q.date, q.variant.date)
+    }
+    asked = fastingYear(OBSERVING, 2027, overrides, city).confirmations
+    assert.deepEqual(asked, [], `${city} is still asking after being answered`)
+
+    // Answering the other way settles it too — a family that keeps Delhi's
+    // date has answered just as much as one that takes their own.
+    let keeping = {}
+    for (const q of fastingYear(OBSERVING, 2027, {}, city).confirmations) {
+      keeping = confirmDate(keeping, q.id, q.date)
+    }
+    assert.deepEqual(fastingYear(OBSERVING, 2027, keeping, city).confirmations, [],
+      `${city} keeps asking after being told the shipped date was right`)
+  }
+})
+
+test('three of the fourteen can never reach anybody, and that is known', () => {
+  // jain_chaturdashi, kalashtami and vinayaka_chaturthi map to no fasting
+  // tradition — deliberately, because the database has no row a member could
+  // select. So their city variance is real and unreachable. Recorded here so
+  // it is a known consequence rather than a silent one; adding a tradition row
+  // for any of them would make this test fail and that would be the signal.
+  const unreachable = ['jain_chaturdashi', 'kalashtami', 'vinayaka_chaturthi']
+  for (const id of unreachable) {
+    assert.deepEqual(OBSERVANCE_FASTS[id], [], `${id} is now reachable — good, drop it from this list`)
+    assert.ok(computed.observances.some((o) => o.id === id && o.variesByCity),
+      `${id} no longer varies by city`)
   }
 })

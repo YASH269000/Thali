@@ -873,7 +873,43 @@ const MIN_CUISINE_DISHES = 3
  * honest-small-plan wording below the floor, and the cuisine picker, which has
  * to warn about exactly the cuisines that will trigger it.
  */
-export const MEAL_TARGET = { breakfast: [2, 3], lunch: [4, 5], dinner: [3, 4] }
+export const MEAL_TARGET = {
+  breakfast: [2, 3],
+  lunch: [4, 5],
+  dinner: [3, 4],
+  // Timing-fast slots. Sargi and suhoor are eaten quickly and before dawn, so
+  // they are the size of a breakfast rather than a meal; the parana and iftar
+  // that break a day-long fast are a full one.
+  sargi: [2, 3],
+  suhoor: [2, 3],
+  parana: [3, 4],
+  iftar: [3, 4],
+}
+
+/**
+ * Which standard meal a timing slot most resembles, for choosing dishes.
+ *
+ * The role and category gating in `eligibleForMeal` is built around the three
+ * meal names, and a slot has no category of its own in the recipe data. Rather
+ * than inventing one — which would mean annotating 1,464 recipes for a
+ * fourth meal that most days do not have — a slot borrows the shape of the
+ * meal it sits at: sargi and suhoor are pre-dawn and eaten like a breakfast,
+ * parana and iftar break a fast in the evening and are eaten like a dinner.
+ *
+ * Stated here rather than buried in the selector, because it is an assumption
+ * and the screen says it out loud.
+ */
+export const SLOT_SHAPE = {
+  sargi: 'breakfast',
+  suhoor: 'breakfast',
+  parana: 'dinner',
+  iftar: 'dinner',
+}
+
+/** The meal shape to select dishes for: a slot borrows one, a meal is itself. */
+export function shapeOf(mealType) {
+  return SLOT_SHAPE[mealType] || mealType
+}
 
 /**
  * Roles a single meal may hold only once. A thali can carry two sabzis or two
@@ -1077,7 +1113,10 @@ export function selectCandidatesForMeal(
   } = {},
 ) {
   const exclude = new Set(excludeIds)
-  const eligible = mains.filter((r) => fitsMealType(r, mealType))
+  // A timing slot borrows the shape of the meal it sits at — see SLOT_SHAPE.
+  // Without this an unknown meal name fell through every category rule and
+  // took the whole pool, which is not a crash but is not a sargi either.
+  const eligible = mains.filter((r) => fitsMealType(r, shapeOf(mealType)))
 
   const trimmed = eligible.filter((r) => !exclude.has(r.recipeId))
   const MIN_POOL = 20
