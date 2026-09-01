@@ -9,13 +9,12 @@ export const GUEST_RESTRICTIONS = [
   { id: 'vegetarian', label: 'Vegetarian' },
   { id: 'jain', label: 'Jain' },
   { id: 'vegan', label: 'Vegan' },
-  { id: 'gluten_free', label: 'Gluten-free' },
+  { id: 'gluten_free', label: 'Gluten-free (coeliac / sensitivity)' },
   { id: 'diabetic', label: 'Diabetic' },
   { id: 'nut_allergy', label: 'Nut allergy' },
   { id: 'soy_allergy', label: 'Soy allergy' },
   { id: 'dairy_allergy', label: 'Dairy allergy' },
   { id: 'sesame_allergy', label: 'Sesame allergy' },
-  { id: 'gluten_allergy', label: 'Gluten allergy' },
 ]
 
 export const RESTRICTION_LABEL = GUEST_RESTRICTIONS.reduce((acc, r) => {
@@ -36,7 +35,6 @@ const RESTRICTION_TO_MEMBER = {
   soy_allergy: { diet: 'non_veg', health: ['soy_allergy'] },
   dairy_allergy: { diet: 'non_veg', health: ['dairy_allergy'] },
   sesame_allergy: { diet: 'non_veg', health: ['sesame_allergy'] },
-  gluten_allergy: { diet: 'non_veg', health: ['gluten_allergy'] },
 }
 
 export function guestHeadcount(guests) {

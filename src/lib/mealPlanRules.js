@@ -250,12 +250,12 @@ const RELIGION_FLAGS = {
 const HEALTH_FLAGS = {
   lactose_intolerant: 'lactoseFree',
   gluten_sensitive: 'glutenFree',
-  // Deliberately the same handling as gluten sensitivity, and NOT the
-  // hard-exclude the other allergies get. `glutenFree: conditional` in this
-  // data means one swappable product — soy sauce for tamari — which is a real
-  // path to a safe dish rather than a hopeful one. See DATA-ISSUES.md: this
-  // makes the two options behave identically, which is a product decision
-  // about what people call themselves, not an oversight.
+  // Legacy read path only — `gluten_allergy` was offered for one deploy and
+  // is gone from HEALTH_OPTIONS and GUEST_RESTRICTIONS. It stays mapped
+  // because a family who ticked it in that window has it in localStorage, and
+  // an unrecognised health id is silently ignored: dropping the entry would
+  // quietly stop filtering gluten for the one person it mattered to. Nothing
+  // writes it any more, so it costs a line and can never mis-filter.
   gluten_allergy: 'glutenFree',
   diabetes_t1: 'diabeticFriendly',
   diabetes_t2: 'diabeticFriendly',

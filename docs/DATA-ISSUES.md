@@ -445,15 +445,26 @@ containing dairy and the dish is excluded outright, not offered as a swap.
 This falls out of the design rather than being special-cased: the flag answers
 "does this contain dairy", and `conditional` means yes.
 
-### Gluten allergy behaves exactly like gluten sensitivity, on purpose
+### Gluten is one option, not two
 
 `glutenFree: conditional` in this data means one swappable product — soy sauce
 for tamari — which is a real path to a safe dish rather than a hopeful one, so
-it stays a swap suggestion with the note visible. That makes `gluten_allergy`
-and the existing `gluten_sensitive` identical in behaviour: same flag, same
-`requiredFlags` entry, same conditional handling. Both are offered because
-people describe themselves either way, not because they filter differently. If
-that reads as clutter, delete one — nothing else depends on there being two.
+it stays a swap suggestion with the note visible rather than becoming a hard
+exclusion the way the other allergies do.
+
+That is the whole behaviour, and `gluten_sensitive` already had it. A separate
+`gluten_allergy` option was shipped for one deploy and removed: two options
+reading the same flag and offering the same swap read as a bug the first time
+someone ticks both and nothing changes. The survivor is relabelled
+**"Gluten (coeliac / sensitivity)"** so it covers both self-descriptions, and
+the guest list's `gluten_free` — which already mapped to `gluten_sensitive`,
+and had quietly become a third door to the same room — is relabelled to match.
+
+`gluten_allergy` stays mapped in `HEALTH_FLAGS` as a read path only. An
+unrecognised health id is silently ignored by `memberConstraints`, so a family
+who ticked the option during that one deploy would have their gluten filter
+quietly dropped: 1,132 servable recipes instead of 657. Nothing writes the key
+any more, so the line costs nothing and can never mis-filter.
 
 ### Pool sizes
 

@@ -74,7 +74,7 @@ export const HEALTH_OPTIONS = [
   { id: 'pcod', label: 'PCOD / PCOS' },
   { id: 'thyroid', label: 'Thyroid', advisory: true },
   { id: 'lactose_intolerant', label: 'Lactose intolerant' },
-  { id: 'gluten_sensitive', label: 'Gluten sensitive' },
+  { id: 'gluten_sensitive', label: 'Gluten (coeliac / sensitivity)' },
   { id: 'kidney_issues', label: 'Kidney issues', advisory: true },
   { id: 'nut_allergy', label: 'Nut allergy' },
   // The `allergens` column records soy, gluten, dairy and sesame across the
@@ -82,10 +82,10 @@ export const HEALTH_OPTIONS = [
   { id: 'soy_allergy', label: 'Soy allergy' },
   { id: 'dairy_allergy', label: 'Dairy allergy' },
   { id: 'sesame_allergy', label: 'Sesame allergy' },
-  // Filters exactly as "Gluten sensitive" does — same flag, same swap
-  // suggestion where a dish is gluten-free with tamari. Both are offered
-  // because people describe themselves either way.
-  { id: 'gluten_allergy', label: 'Gluten allergy' },
+  // Gluten is deliberately NOT here as a fifth allergy. It is covered by
+  // "Gluten (coeliac / sensitivity)" above, which reads the same flag and
+  // offers the same tamari-for-soy-sauce swap. Two options doing one thing
+  // read as a bug the first time someone ticks both and nothing changes.
 ]
 
 /** Conditions recorded but never used to include or exclude a dish. */
