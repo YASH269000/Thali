@@ -401,11 +401,17 @@ export function occurrencesOf(observanceId, year, overrides) {
   const shown = applyOverrides(BASE, overrides)
     .filter((e) => e.id === observanceId && e.date.startsWith(String(year)))
 
-  const removed = Object.entries(overrides || {})
+  // A removal filed against a tradition the app no longer knows — withdrawn
+  // between deploys, say — has no template to describe it. The store checks
+  // that a key is slug-shaped, not that the slug is real, so this is the one
+  // path where stale storage would otherwise reach the screen and render a
+  // row with no name on it.
+  const template = templateFor(observanceId)
+  const removed = !template ? [] : Object.entries(overrides || {})
     .filter(([key, o]) => o.removed && key.startsWith(`${observanceId}@`))
     .map(([key]) => key.slice(key.lastIndexOf('@') + 1))
     .filter((d) => d.startsWith(String(year)))
-    .map((date) => ({ ...templateFor(observanceId), date, source: 'removed', confidence: null }))
+    .map((date) => ({ ...template, date, source: 'removed', confidence: null }))
 
   return [...shown, ...removed].sort((a, b) => a.date.localeCompare(b.date))
 }

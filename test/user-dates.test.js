@@ -276,6 +276,16 @@ test('moving a provisional Islamic date moves the fast, attendance and the pool'
   assert.equal(poolOn(from, ov), poolOn(to, {}), 'the old day did not go back to normal')
 })
 
+test('a removal filed against a tradition the app no longer knows is ignored', () => {
+  // The store checks that a key is slug-shaped, not that the slug is real, so
+  // a tradition withdrawn between deploys leaves an entry with no template
+  // behind it. It must not reach the screen as a row with no name.
+  const stale = { 'a_withdrawn_tradition@2026-03-01': { removed: true } }
+  assert.equal(templateFor('a_withdrawn_tradition'), null)
+  assert.deepEqual(occurrencesOf('a_withdrawn_tradition', 2026, stale), [])
+  assert.deepEqual(observedObservanceIds([{ fasts: ['a_withdrawn_tradition'] }]), [])
+})
+
 test('the traditions a family observes are the ones offered for editing', () => {
   const ids = observedObservanceIds([NASREEN])
   assert.deepEqual(ids, ['arafah'])
