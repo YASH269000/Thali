@@ -486,3 +486,39 @@ either way — while Indo-Chinese at 4 and Continental at 4 (dairy) get the thin
 warning. The warning also names the allergy now: an allergy carries no
 compliance flag, so without that it said a cuisine could not fill a lunch and
 gave no hint why, which is the one thing it exists to do.
+
+
+## Unrecognised member ids fail open — every kind of them
+
+`memberConstraints` skips a health id it does not recognise. That does not
+weaken a filter, it removes it, and nothing on screen says so. The same is true
+of every other id a member carries. Measured against a vegetarian member on a
+catalogue of 1,132 servable recipes, one character wrong in each:
+
+| id kind | correct | typo'd | effect |
+|---|---|---|---|
+| fasting | 185 | 1,132 | **+947 recipes** on a fast day |
+| diet | 472 | 1,132 | +660 (`jain` -> `jian` loses jainSafe and onionGarlicFree) |
+| religion | 601 | 1,132 | +531 (`Buddhist` -> `Budhist` loses onionGarlicFree and alcoholFree) |
+| health | 657 | 1,132 | +475 (a coeliac sees the whole catalogue) |
+| allergy | 987 | 1,132 | +145 (`soy_allergy` -> `soya_allergy`) |
+
+Fasting is the worst of the five: an unmatched fast id is filtered out against
+the day's active list before it can require anything, so an Ekadashi observer
+with a typo'd id gets an unrestricted catalogue on exactly the day it matters.
+
+One thing does fail safe. `DIET_ALLOWS[member.diet] || ['veg']` falls back to
+the strictest kind, so an unknown diet can never be served meat — it is the
+diet FLAGS (`jainSafe`, `onionGarlicFree`) that go missing, not the vegetarian
+gate.
+
+**Only the health case is addressed here**, with a warning naming the id
+against `HEALTH_OPTIONS`. The other four are a follow-up, and the fix is the
+same shape in each: validate against the list of ids the app offers, and say
+something rather than skipping. Warning is not filtering — a member with a
+bad id is still unprotected, and the log only means someone can find out.
+
+Ids reach these functions from localStorage, so they outlive any deploy that
+renames one. `src/lib/family.js` migrates renamed health ids on load and writes
+the repaired roster back, which is why `gluten_allergy` could be deleted
+outright rather than left mapped as an orphan.

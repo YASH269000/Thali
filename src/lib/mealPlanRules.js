@@ -9,6 +9,8 @@
 //                  constraint (in this data `partial` occurs solely on
 //                  diabeticFriendly, so: exclude for diabetics, allow otherwise)
 
+import { HEALTH_OPTIONS } from '../data/memberOptions.js'
+
 export const FLAG_KEYS = [
   'ekadashiSafe', 'navratriSafe', 'jainSafe', 'diabeticFriendly',
   'lactoseFree', 'vegan', 'onionGarlicFree', 'glutenFree', 'alcoholFree',
@@ -250,13 +252,6 @@ const RELIGION_FLAGS = {
 const HEALTH_FLAGS = {
   lactose_intolerant: 'lactoseFree',
   gluten_sensitive: 'glutenFree',
-  // Legacy read path only — `gluten_allergy` was offered for one deploy and
-  // is gone from HEALTH_OPTIONS and GUEST_RESTRICTIONS. It stays mapped
-  // because a family who ticked it in that window has it in localStorage, and
-  // an unrecognised health id is silently ignored: dropping the entry would
-  // quietly stop filtering gluten for the one person it mattered to. Nothing
-  // writes it any more, so it costs a line and can never mis-filter.
-  gluten_allergy: 'glutenFree',
   diabetes_t1: 'diabeticFriendly',
   diabetes_t2: 'diabeticFriendly',
   // PCOD/PCOS is insulin-resistance driven, so the dietary advice is the same
@@ -280,6 +275,31 @@ function fastFlags(activeFastIds) {
 }
 
 /**
+ * Every health id the app knows: filtered, advisory, or an allergy.
+ *
+ * Kept so an id that is none of these can be SAID rather than skipped. A
+ * health id this file does not recognise is silently ignored, which does not
+ * weaken a filter — it removes it. A stored `gluten_allergy` after that option
+ * was withdrawn opened 1,132 servable recipes where 657 are safe for a
+ * coeliac, and nothing on screen said so.
+ *
+ * The warning is not a fix. Unrecognised diet, religion, fast and allergy ids
+ * fail open the same way — see docs/DATA-ISSUES.md — and that is its own job.
+ */
+const KNOWN_HEALTH = new Set(HEALTH_OPTIONS.map((h) => h.id))
+const warnedHealth = new Set()
+
+function warnUnknownHealth(id, memberName) {
+  if (warnedHealth.has(id)) return
+  warnedHealth.add(id)
+  console.warn(
+    `[thali:member] unrecognised health id "${id}" on ${memberName || 'a member'} — ` +
+    'it matches no filter, no allergy and no advisory note, so it constrains ' +
+    'nothing. If it was renamed, migrate it in src/lib/family.js.',
+  )
+}
+
+/**
  * What one member requires today.
  * @returns {{ id, name, diet, allowedKinds, requiredFlags, strictFlags, activeFasts }}
  */
@@ -289,6 +309,7 @@ export function memberConstraints(member, activeFastIds) {
   for (const f of DIET_FLAGS[member.diet] || []) required.add(f)
   for (const f of RELIGION_FLAGS[member.religion] || []) required.add(f)
   for (const h of member.health || []) {
+    if (!KNOWN_HEALTH.has(h)) warnUnknownHealth(h, member.name)
     if (HEALTH_FLAGS[h]) required.add(HEALTH_FLAGS[h])
   }
 

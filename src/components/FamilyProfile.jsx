@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { activeFastIdsOn } from '../lib/fastingRules.js'
+import { loadFamily, saveFamily } from '../lib/family.js'
 import { avatarTone, initials } from '../lib/avatar.js'
 import { displayName } from '../lib/names.js'
 import {
@@ -17,31 +18,10 @@ import Disclaimer from './Disclaimer.jsx'
 import MemberModal from './MemberModal.jsx'
 import './FamilyProfile.css'
 
-const STORAGE_KEY = 'thali_family'
 
 /* ------------------------------------------------------------------ *
  * Persistence                                                         *
  * ------------------------------------------------------------------ */
-
-function loadFamily() {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    const parsed = raw ? JSON.parse(raw) : []
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    // Corrupt or unavailable storage (private mode, cleared data) — start empty
-    // rather than crash the screen.
-    return []
-  }
-}
-
-function saveFamily(family) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(family))
-  } catch {
-    // Storage full or blocked. The screen still works for this session.
-  }
-}
 
 /* ------------------------------------------------------------------ *
  * Presentation helpers                                                *

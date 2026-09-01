@@ -14,6 +14,7 @@ import {
   saveBuyEdits, saveBuyWindow, windowById,
 } from '../lib/buyQuantities.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
+import { loadFamily } from '../lib/family.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import CookMode from './CookMode.jsx'
 import Clock from './Clock.jsx'
@@ -26,7 +27,6 @@ import PerMemberDisplay from './PerMemberDisplay.jsx'
 import './FamilyProfile.css'
 import './MealPlan.css'
 
-const STORAGE_KEY = 'thali_family'
 const RECENT_KEY = 'thali_recent_meals'
 const MEAL_TYPE_KEY = 'thali_meal_type'
 const PRESENT_KEY = 'thali_present_members'
@@ -236,16 +236,6 @@ function PlayIcon() {
       <path d="M8 5.5l10 6.5-10 6.5z" fill="currentColor" />
     </svg>
   )
-}
-
-function loadFamily() {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    const parsed = raw ? JSON.parse(raw) : []
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
 }
 
 function DishCard({ dish, onStartCooking, alternates, onSwap, recentIds }) {
