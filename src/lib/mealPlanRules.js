@@ -10,6 +10,7 @@
 //                  diabeticFriendly, so: exclude for diabetics, allow otherwise)
 
 import { BLOCKING_KINDS, unknownMemberIds } from './memberValidation.js'
+import { observanceFor } from './observanceProfile.js'
 
 export const FLAG_KEYS = [
   'ekadashiSafe', 'navratriSafe', 'jainSafe', 'diabeticFriendly',
@@ -333,7 +334,30 @@ export function memberConstraints(member, activeFastIds) {
   if (unreadable.has('health')) for (const f of STRICTEST_HEALTH_FLAGS) required.add(f)
 
   const observed = (member.fasts || []).filter((id) => activeFastIds.has(id))
-  for (const f of fastFlags(observed)) required.add(f)
+
+  /* -------------------------------------------------------------- *
+   * How this member keeps today's fasts                             *
+   *                                                                 *
+   * The additive rule lives here and is enforced by shape rather    *
+   * than by care: `required` is a Set and only ever gets .add().    *
+   * A strict observance ADDS a flag; a loose one adds nothing. No   *
+   * branch below removes a flag, so a looser member joining the     *
+   * table cannot widen the plate of a stricter one who is already   *
+   * at it. Removing a flag would need a .delete() and there isn't   *
+   * one — see test/observance-additive.test.js, which asserts the   *
+   * pool is byte-identical with and without the looser member.      *
+   * -------------------------------------------------------------- */
+  const observances = observed.map((id) => observanceFor(member, id))
+
+  // The health exemption is the one setting that subtracts, and it subtracts
+  // only from this member's own contribution. Under a union that is safe
+  // while anybody else keeps the fast; when they are the sole observer the
+  // pool widens, which is the right answer and not a leak.
+  const binding = observances.filter((o) => !o.observesLightly)
+  for (const f of fastFlags(binding.map((o) => o.fastId))) required.add(f)
+
+  // Onion and garlic, all day, for anyone whose observance says so.
+  if (binding.some((o) => o.alliumScope === 'none_all_day')) required.add('onionGarlicFree')
 
   // Flags where `partial` is not good enough for this member.
   const strict = new Set()
@@ -360,6 +384,10 @@ export function memberConstraints(member, activeFastIds) {
     requiredFlags: [...required],
     strictFlags: [...strict],
     activeFasts: observed,
+    // How this member keeps each of them, resolved against the tradition's
+    // baseline. Carried so the additive suggestions and the prompt read the
+    // same resolution the filter used, rather than resolving it twice.
+    observances,
     health: member.health || [],
     likes: member.likes || '',
     dislikes: member.dislikes || '',

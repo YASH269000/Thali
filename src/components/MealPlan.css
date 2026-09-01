@@ -1042,3 +1042,34 @@
   line-height: 1.5;
   color: #6b6b66;
 }
+
+/* ------------------------------------------------------------------ *
+ * You may also add                                                    *
+ *                                                                     *
+ * A looser observer gets the same meal plus this, never a different
+ * meal. Styled as an addendum — same card as the per-member notes,
+ * no emphasis that would let it read as a second menu.                *
+ * ------------------------------------------------------------------ */
+
+.additions-intro {
+  margin: -4px 0 12px;
+  max-width: 64ch;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.additions-list {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.additions-why {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}

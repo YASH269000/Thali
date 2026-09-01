@@ -64,6 +64,21 @@ Voice-guided cooking that turns Thali into a teacher for people who cannot cook.
 - INDB recipes (hasFullPreparation: false) offer AI-generated steps on request.
 - Keyboard: right arrow next, left arrow previous, space read aloud, Esc close.
 
+## Per-Person Observance
+A tradition states the strictest baseline; a member varies it per fast, stored
+sparsely in `member.observances[fastId]` as `{ mealCount, alliumScope,
+observesLightly }`. See `src/lib/observanceProfile.js`.
+- The shared meal is generated against the STRICTEST observer present. Looser
+  members get additive suggestions on their own plate, never a relaxation of
+  the shared dishes. This is structural: `requiredFlags` in mealPlanRules is a
+  Set that only ever gets `.add()`, and there is no `.delete()` anywhere. Never
+  add one.
+- `mealCount` is attendance, not dish logic — it pre-selects the who's-eating
+  checkboxes and says why. The checkbox is still the manual override.
+- `observesLightly` is a health exemption the family records; it is only
+  offered where a condition or life stage warrants it, and it subtracts only
+  from its own member's contribution.
+
 ## Non-Negotiables
 - Every UI action must work on both mobile and desktop
 - Data persists in localStorage as 'thali_family'

@@ -14,6 +14,7 @@ import {
 } from '../src/lib/mealPlanRules.js'
 import { buildShoppingList } from '../src/lib/shoppingList.js'
 import { buildExplanation } from '../src/lib/explainPlan.js'
+import { additiveSuggestions, describeObservances } from '../src/lib/observanceProfile.js'
 import { findRefContradictions, resolveComponents, resolveRecipeRef } from '../src/lib/recipeRefs.js'
 import { FAST_LABEL } from '../src/data/memberOptions.js'
 // Statically imported, never read from disk. A runtime readFileSync is not
@@ -115,6 +116,7 @@ function buildPrompt({
   family, constraints, mealType, dateLabel, calendarNotes, foodRules, candidates,
   recentRecipeIds, guestSummary = [], guestCount = 0, guestNotes = [], headcount,
   anyFasting = false, internationalCuisine = null, internationalDishes = [],
+  observances = [], additions = [],
 }) {
   const members = constraints.map((c) => ({
     memberId: c.id,
@@ -162,6 +164,21 @@ quantities are calculated separately from the recipe data.
 
 ${guestBlock}${recentBlock}
 ${calendarNotes.length ? `TODAY'S CALENDAR CONTEXT:\n${JSON.stringify(calendarNotes, null, 2)}\n` : ''}
+${observances.length ? `HOW EACH PERSON KEEPS TODAY'S FASTS:
+${JSON.stringify(observances, null, 2)}
+
+Two people keeping the same fast do not always keep it the same way. The
+candidate list below has ALREADY been narrowed to the strictest observer at
+this table, so every dish is safe for all of them — you do not need to reason
+about who is stricter and you must not relax anything for anyone.
+` : ''}${additions.length ? `PER-PLATE ADDITIONS — these have already been worked out:
+${JSON.stringify(additions, null, 2)}
+
+These are things a looser observer may add to their OWN plate after serving.
+Do not build any dish around them, do not list them as dishes, and do not
+change the shared dishes because of them. If you mention them at all, mention
+them in that person's perMemberNotes as an addition they may make.
+` : ''}
 ${foodRules.length ? `FASTING FOOD RULES IN FORCE:\n${JSON.stringify(foodRules, null, 2)}\n` : ''}
 CANDIDATE RECIPES — every one of these has ALREADY been verified as safe for
 every member today. Choose ONLY from this list. Never invent a recipe and never
@@ -446,6 +463,13 @@ export default async function handler(req, res) {
   const activeLabels = [...new Set(constraints.flatMap((c) => c.activeFasts))]
     .map((id) => FAST_LABEL[id] || id)
 
+  // Worked out here rather than asked of the model. Who may add what is a
+  // consequence of the flags the plan already carries, and an instruction is
+  // not a guarantee: computing it keeps the shared dishes out of reach of the
+  // relaxation entirely.
+  const observanceSummary = describeObservances(constraints)
+  const additions = additiveSuggestions(constraints)
+
   const prompt = buildPrompt({
     family: diners, constraints, mealType, dateLabel, recentRecipeIds,
     guestSummary, guestCount, guestNotes, headcount,
@@ -456,6 +480,8 @@ export default async function handler(req, res) {
       .map((c) => `${c.name} (${c.category})`),
     calendarNotes: calendarNotesOn(date, overrides),
     foodRules: foodRulesFor(activeLabels),
+    observances: observanceSummary,
+    additions,
     candidates,
   })
 
@@ -826,6 +852,10 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
     date: date.toISOString(),
     dateLabel,
     activeFasts: activeLabels,
+    // How each diner keeps today's fasts, and what the looser ones may add on
+    // top. Deterministic — the model is shown these, never asked for them.
+    observances: observanceSummary,
+    additions,
     dishes,
     perMemberNotes: plan.perMemberNotes || {},
     prepTimeTotalMin: Number(plan.prepTimeTotalMin) || null,

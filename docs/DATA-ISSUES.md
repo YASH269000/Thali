@@ -680,6 +680,30 @@ who knows the tradition. Until then the panel reports what actually happened,
 which is that the fast narrowed nothing — better than implying work that was
 never done.
 
+### Partly closed by per-person observance — 601, not 1,132
+
+Per-person observance (`src/lib/observanceProfile.js`) narrowed the second row
+without aliasing anything. Every vrat's baseline is `alliumScope:
+'none_all_day'` — the strictest reading, and a true one: a vrat day is a
+sattvic day — so a Tuesday-fasting member now contributes `onionGarlicFree`
+and the same measurement gives:
+
+| Active fast | Servable | via |
+| --- | --- | --- |
+| Mangalvar Vrat, observed at the baseline | 601 | `onionGarlicFree` |
+| Mangalvar Vrat, member permits allium | 1,132 | contributes nothing |
+
+That is a real constraint under its own name rather than a borrowed one, and
+it is the member's to loosen. It does not close the gap: the tradition's
+*food* rules — what may be eaten, not what is avoided — still have no column
+in the recipe data, and a Paryushana member is no better served than before.
+
+The reason this is safe to state as a narrowing rather than as an alias: it
+only ever ADDS a flag. `requiredFlags` is a Set with no `.delete()`, so a
+member who permits allium cannot widen a plate that someone else narrowed.
+`test/observance-additive.test.js` asserts that by adding the looser member
+and checking the pool does not move.
+
 ## "Why this meal" is explanation, not advice
 
 The panel restates settings the family entered ("Sumitra needs low-GI food")

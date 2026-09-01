@@ -19,9 +19,18 @@ import './WhoIsEating.css'
  * Real families are not all present every night, and planning for absent
  * people wastes food. Everyone is checked by default because that is the
  * common case; unchecking is the exception.
+ *
+ * A fast is the other exception, and it arrives here rather than as a second
+ * mechanism: someone keeping one meal a day is not at breakfast, so Thali
+ * unchecks them and says which fast did it. The note matters as much as the
+ * uncheck — a two-meal observance is assumed to mean breakfast and dinner,
+ * which is a default and not a fact about anyone's household, and a family
+ * that takes theirs at lunch should be able to see the assumption rather than
+ * discover it. The checkbox is unchanged and is still the last word.
  */
 export default function WhoIsEating({
   family, mealType, selected, onChange, guests, onGuestsChange, onConfirm, onBack,
+  absentForFast = [],
 }) {
   const count = selected.length
   const guestCount = guestHeadcount(guests)
@@ -80,6 +89,26 @@ export default function WhoIsEating({
           </button>
         </div>
       </div>
+
+      {absentForFast.length > 0 && (
+        <div className="who-fast-note" role="note">
+          <p className="who-fast-head">
+            {absentForFast.length === 1
+              ? `${displayName(absentForFast[0].name)} is not planned for ${mealType} today`
+              : `${absentForFast.length} people are not planned for ${mealType} today`}
+          </p>
+          <ul className="who-fast-list">
+            {absentForFast.map((a) => (
+              <li key={a.memberId}>
+                <span className="who-fast-name">{displayName(a.name)}</span> &mdash; {a.reason}
+              </li>
+            ))}
+          </ul>
+          <p className="who-fast-hint">
+            Check them below if that is not how your family keeps it.
+          </p>
+        </div>
+      )}
 
       <ul className="who-list">
         {family.map((m) => {

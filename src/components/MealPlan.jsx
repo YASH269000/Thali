@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   dinersLabel, guestHeadcount, loadGuests, normaliseGuests, saveGuests,
@@ -16,6 +16,8 @@ import {
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { describeSavedAt, recallPlan, rememberPlan } from '../lib/planCache.js'
 import { loadOverrides } from '../lib/observanceOverrides.js'
+import { suggestedAttendance } from '../lib/observanceProfile.js'
+import { activeFastIdsOn } from '../lib/fastingRules.js'
 import { loadFamily } from '../lib/family.js'
 import { FAST_LABEL } from '../data/memberOptions.js'
 import { familyIdWarnings } from '../lib/memberValidation.js'
@@ -199,21 +201,30 @@ function saveExtraGuests(n) {
   try { window.sessionStorage.setItem(EXTRA_GUESTS_KEY, String(n)) } catch { /* not fatal */ }
 }
 
-function loadPresent(family) {
+/**
+ * A saved attendance list, and the meal it was saved for.
+ *
+ * The meal type is stored with it now that a fast can set attendance: a member
+ * on one meal a day is at dinner and not at breakfast, so restoring last
+ * night's list onto this morning's breakfast would silently contradict the
+ * fast Thali had just worked out. A list saved for another meal is ignored and
+ * the suggestion is recomputed.
+ */
+function loadPresent(family, mealType) {
   try {
     const raw = window.sessionStorage.getItem(PRESENT_KEY)
-    const ids = raw ? JSON.parse(raw) : null
-    if (!Array.isArray(ids)) return null
-    const valid = ids.filter((id) => family.some((m) => m.id === id))
+    const saved = raw ? JSON.parse(raw) : null
+    if (!saved || !Array.isArray(saved.ids) || saved.mealType !== mealType) return null
+    const valid = saved.ids.filter((id) => family.some((m) => m.id === id))
     return valid.length ? valid : null
   } catch {
     return null
   }
 }
 
-function savePresent(ids) {
+function savePresent(ids, mealType) {
   try {
-    window.sessionStorage.setItem(PRESENT_KEY, JSON.stringify(ids))
+    window.sessionStorage.setItem(PRESENT_KEY, JSON.stringify({ mealType, ids }))
   } catch {
     // Not fatal — attendance is asked again next session.
   }
@@ -455,8 +466,27 @@ export default function MealPlan() {
   const [family] = useState(loadFamily)
   const [mealType, setMealType] = useState(loadMealType)
   // Everyone is present by default — that is the common case; absence is the
-  // exception worth a tap.
-  const [present, setPresent] = useState(() => loadPresent(family) || family.map((m) => m.id))
+  // exception worth a tap. A fast is the other exception, and it sets
+  // attendance rather than being a second mechanism beside it: a member
+  // keeping one meal a day is not at breakfast, and Thali unchecks them and
+  // says why. The checkbox is still the last word.
+  const overrides = useMemo(() => loadOverrides(), [])
+  const today = useMemo(() => new Date(), [])
+  const activeFastIds = useMemo(
+    () => activeFastIdsOn(today, overrides), [today, overrides])
+  const attendance = useMemo(
+    () => suggestedAttendance(family, mealType || 'dinner', activeFastIds),
+    [family, mealType, activeFastIds],
+  )
+  //
+  // Held as an OVERRIDE rather than as the list itself, so the suggestion is
+  // derived during render and never has to be synchronised back into state.
+  // Null means "nobody has said otherwise" and the fast decides; anything else
+  // is the family's own answer and outranks it until the meal type changes.
+  const [presentOverride, setPresentOverride] = useState(
+    () => loadPresent(family, mealType))
+  const present = presentOverride || attendance.present
+  const setPresent = setPresentOverride
   // 'meal' -> 'who' -> 'plan'. Nothing is generated before 'plan'.
   //
   // Always starts at 'meal', even when this session already has a meal type
@@ -521,7 +551,7 @@ export default function MealPlan() {
       // A family that has corrected a calendar date has corrected it for the
       // planner too. The server holds no storage of its own, so the answers
       // travel with the request or the two disagree about what today is.
-      observanceOverrides: loadOverrides(),
+      observanceOverrides: overrides,
     })
 
     setLoading(true)
@@ -621,7 +651,7 @@ export default function MealPlan() {
         setRetrying(null)
       }
     }
-  }, [family])
+  }, [family, overrides])
 
   useEffect(() => {
     if (family.length === 0) {
@@ -666,14 +696,14 @@ export default function MealPlan() {
       body: JSON.stringify({
         family, presentMembers: present, guests: normaliseGuests(guests),
         date: new Date().toISOString(),
-        observanceOverrides: loadOverrides(),
+        observanceOverrides: overrides,
       }),
     })
       .then((r) => r.json())
       .then((d) => { if (!cancelled) setCuisineInfo(d) })
       .catch(() => { if (!cancelled) setCuisineInfo(null) })
     return () => { cancelled = true }
-  }, [stage, family, present, guests])
+  }, [stage, family, present, guests, overrides])
 
   // A cuisine saved from an earlier session can stop being offerable — someone
   // started a fast, a Jain guest joined. The chip already fell back to Indian
@@ -700,13 +730,17 @@ export default function MealPlan() {
   }
 
   const chooseMeal = (type) => {
+    // Attendance is meal-specific now that a fast can set it: a one-meal
+    // observer is absent at breakfast and present at dinner, so a list the
+    // family chose for one meal must not silently carry into another.
+    setPresentOverride(null)
     saveMealType(type)
     setMealType(type)
     setStage('who')
   }
 
   const confirmWho = () => {
-    savePresent(present)
+    savePresent(present, mealType)
     saveGuests(guests)
     setStage('plan')
   }
@@ -1039,6 +1073,7 @@ export default function MealPlan() {
             family={family}
             mealType={mealType || 'dinner'}
             selected={present}
+            absentForFast={attendance.absent}
             onChange={setPresent}
             guests={guests}
             onGuestsChange={(next) => { setGuests(next); saveGuests(next) }}
@@ -1167,6 +1202,40 @@ export default function MealPlan() {
                   onSwap={handleSwap} />
               ))}
             </ul>
+
+            {/* Additions, not a second plan.
+                The dishes above were chosen for whoever keeps today's fast
+                most strictly, and that is not negotiable at this point — it
+                happened in the filter, before the model saw anything. What a
+                looser observer gets is this: the same meal, plus what they may
+                put on their own plate. Placed after the dishes and before the
+                per-member notes so it reads as an addendum to the meal rather
+                than as an alternative to it. */}
+            {(plan.additions || []).length > 0 && (
+              <section className="additions" aria-labelledby="additions-heading">
+                <h2 id="additions-heading" className="section-heading">
+                  You may also add
+                </h2>
+                <p className="additions-intro">
+                  Everything above is cooked for the strictest fast at the table.
+                  These go on individually after serving &mdash; nothing is
+                  cooked twice, and nobody else&rsquo;s plate changes.
+                </p>
+                <ul className="notes-list">
+                  {plan.additions.map((a) => (
+                    <li key={a.memberId} className="note-card">
+                      <p className="note-name">{displayName(a.name)}</p>
+                      <ul className="additions-list">
+                        {a.additions.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                      {a.because && <p className="additions-why">Because {a.because}.</p>}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             {Object.keys(plan.perMemberNotes || {}).length > 0 && (
               <>

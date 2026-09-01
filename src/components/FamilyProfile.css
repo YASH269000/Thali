@@ -795,3 +795,80 @@
 .id-warning p + p {
   margin-top: 6px;
 }
+
+/* ------------------------------------------------------------------ *
+ * How one person keeps a fast                                         *
+ *                                                                     *
+ * A tradition is one row of checkboxes; an observance is a variation
+ * on it, so it is indented under the traditions rather than given its
+ * own section. Only selected fasts appear here.                       *
+ * ------------------------------------------------------------------ */
+
+.observances {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: var(--rule);
+}
+
+.observance-head {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.observance {
+  margin: 12px 0 0;
+  padding: 14px 16px;
+  border: 0.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--fast-bg);
+}
+
+.observance-name {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fast-ink);
+}
+
+.observance-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.observance-note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.observance-muted { font-style: italic; }
+
+.observance-light {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: var(--rule);
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* 20px box with room around it — this is a consequential setting and the
+   hit area should not be the smallest one on the screen. */
+.observance-light input {
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  flex: none;
+  accent-color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  .observance-fields { grid-template-columns: 1fr; }
+}

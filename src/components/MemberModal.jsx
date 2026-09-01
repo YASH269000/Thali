@@ -14,6 +14,10 @@ import {
   RELIGIONS,
   SPICE_LEVELS,
 } from '../data/memberOptions.js'
+import {
+  ALLIUM_SCOPES, MEAL_COUNTS, baselineFor, lightObservanceEligibility, observanceFor,
+} from '../lib/observanceProfile.js'
+import { displayName } from '../lib/names.js'
 import './FamilyProfile.css'
 
 /* ------------------------------------------------------------------ *
@@ -40,6 +44,9 @@ const BLANK = {
   diet: 'vegetarian',
   health: [],
   fasts: [],
+  // Sparse by design: a key appears only where this member departs from the
+  // tradition's strictest reading. See src/lib/observanceProfile.js.
+  observances: {},
   religion: 'none',
   cuisine: 'no_preference',
   spiceLevel: 2,
@@ -77,11 +84,40 @@ export default function MemberModal({ member, onSave, onCancel }) {
       ...f,
       religion,
       fasts: f.fasts.filter((id) => valid.has(id)),
+      // An observance is a variation on a fast; when the fast goes, so does it.
+      observances: Object.fromEntries(
+        Object.entries(f.observances || {}).filter(([id]) => valid.has(id))),
     }))
   }
 
   const lifeStage = detectLifeStage(form.age)
   const availableFasts = FASTS_BY_RELIGION[form.religion] || []
+  const selectedFasts = availableFasts.filter((f) => form.fasts.includes(f.id))
+  const shortName = displayName(form.name?.trim() || 'this member')
+
+  /**
+   * Record one field of one fast's observance.
+   *
+   * Stored sparsely: only what differs from the tradition's baseline is kept,
+   * so a family that never opens this carries no observance data at all and a
+   * later change to a baseline still reaches them. Writing the resolved values
+   * out in full would freeze today's reading into everyone's storage.
+   */
+  const setObservance = (fastId, patch) => {
+    setForm((f) => {
+      const base = baselineFor(fastId)
+      const next = { ...observanceFor(f, fastId), ...patch }
+      const sparse = {}
+      if (next.mealCount !== base.mealCount) sparse.mealCount = next.mealCount
+      if (next.alliumScope !== base.alliumScope) sparse.alliumScope = next.alliumScope
+      if (next.observesLightly) sparse.observesLightly = true
+
+      const observances = { ...(f.observances || {}) }
+      if (Object.keys(sparse).length === 0) delete observances[fastId]
+      else observances[fastId] = sparse
+      return { ...f, observances }
+    })
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -257,6 +293,93 @@ export default function MemberModal({ member, onSave, onCancel }) {
                     </label>
                   ))}
                 </div>
+
+                {/* How this person keeps each of them.
+                    A tradition states the strictest reading; two people
+                    keeping the same Ekadashi do not keep it identically, and
+                    before this the app said they did. Only fasts that are
+                    actually selected get an editor, and it starts on the
+                    baseline so a family that has no variation to record never
+                    has to touch it. */}
+                {selectedFasts.length > 0 && (
+                  <div className="observances">
+                    <h4 className="observance-head">How {shortName} keeps them</h4>
+                    <p className="section-help">
+                      Thali starts from the strictest reading of each tradition
+                      and cooks the shared meal for whoever is strictest at the
+                      table. Anything looser here becomes a suggested addition
+                      on {shortName}&rsquo;s own plate &mdash; it never changes
+                      what anyone else is served.
+                    </p>
+
+                    {selectedFasts.map((f) => {
+                      const resolved = observanceFor(form, f.id)
+                      const base = baselineFor(f.id)
+                      const light = lightObservanceEligibility(form)
+                      return (
+                        <fieldset key={f.id} className="observance">
+                          <legend className="observance-name">{f.label}</legend>
+
+                          <div className="observance-fields">
+                            <div className="field">
+                              <label htmlFor={`obs-meals-${f.id}`}>Meals that day</label>
+                              <select id={`obs-meals-${f.id}`} value={resolved.mealCount}
+                                onChange={(e) => setObservance(f.id, { mealCount: e.target.value })}>
+                                {MEAL_COUNTS.map((mc) => (
+                                  <option key={mc.id} value={mc.id}>
+                                    {mc.label}{mc.id === base.mealCount ? ' — usual for this fast' : ''}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div className="field">
+                              <label htmlFor={`obs-allium-${f.id}`}>Onion and garlic</label>
+                              <select id={`obs-allium-${f.id}`} value={resolved.alliumScope}
+                                onChange={(e) => setObservance(f.id, { alliumScope: e.target.value })}>
+                                {ALLIUM_SCOPES.map((a) => (
+                                  <option key={a.id} value={a.id}>
+                                    {a.label}{a.id === base.alliumScope ? ' — usual for this fast' : ''}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          <p className="observance-note">
+                            {MEAL_COUNTS.find((mc) => mc.id === resolved.mealCount)?.note}
+                          </p>
+
+                          {light.eligible ? (
+                            <label className="observance-light">
+                              <input type="checkbox" checked={resolved.observesLightly}
+                                onChange={(e) => setObservance(f.id, {
+                                  observesLightly: e.target.checked,
+                                })} />
+                              <span>
+                                Keeps this fast lightly on health grounds
+                                <span className="check-meta">
+                                  The fast&rsquo;s food rules stop applying to
+                                  {' '}{shortName}. Everyone else at the table is
+                                  still cooked for strictly. Thali offers this
+                                  because of {shortName}&rsquo;s recorded{' '}
+                                  {light.because}; it is your decision, not
+                                  Thali&rsquo;s advice.
+                                </span>
+                              </span>
+                            </label>
+                          ) : (
+                            <p className="observance-note observance-muted">
+                              A health exemption can be recorded here for a member
+                              with a condition or life stage that makes going
+                              without food risky.
+                            </p>
+                          )}
+                        </fieldset>
+                      )
+                    })}
+                  </div>
+                )}
               </>
             )}
           </section>

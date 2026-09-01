@@ -198,3 +198,43 @@
   .guest-name { flex: 1 1 100%; }
   .guest-diet { flex: 1 1 auto; }
 }
+
+/* ------------------------------------------------------------------ *
+ * Why somebody is not planned for this meal                           *
+ *                                                                     *
+ * A fast can uncheck a person, and an uncheck without a reason reads
+ * as a bug. Sits above the list so it is read before the boxes are.   *
+ * ------------------------------------------------------------------ */
+
+.who-fast-note {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 0.5px solid var(--fast-line);
+  border-radius: 12px;
+  background: var(--fast-bg);
+}
+
+.who-fast-head {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fast-ink);
+}
+
+.who-fast-list {
+  margin: 0;
+  padding: 0 0 0 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.who-fast-list li + li { margin-top: 4px; }
+.who-fast-name { color: var(--ink); font-weight: 500; }
+
+.who-fast-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
