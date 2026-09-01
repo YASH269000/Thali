@@ -331,3 +331,36 @@ conditions the JSX guard reads rather than the JSX itself; there is no DOM
 renderer in this project, and the conditions are where the meaning lives.
 
 `npm test` runs them through node:test. No test dependency was added.
+
+
+## An invented recipeId is a constraint failure, not a display bug
+
+The model is told never to use a recipeId outside the candidate list. When it
+does anyway, the dish arrives with no ingredients, no preparation and no
+compliance flags — which means it passed no diet, allergy, religion or fasting
+check on its way in. Every other dish on the plate was verified in code before
+the model ever saw it. Nothing filtered or flagged the invented one, so it sat
+beside them as though it had been checked, and quietly shortened the shopping
+list: a plan of five dishes whose list covered four, with nothing saying why.
+
+`api/generate-plan.js` now retries once, naming the invented id and restating
+that every dish must use an id appearing verbatim in the candidate list — the
+same shape as the duplicate-role retry. If the retry invents again the dish is
+dropped and `unknownNote` says so, in the role note's style and place. Nothing
+unknown can reach Cook Mode or the shopping list, because nothing unknown
+survives to the response; `known` on a returned dish is now always true, and is
+kept only so the guarantee stays checkable.
+
+Dropping every dish would leave a plan that is not a plan, and the client reads
+a dishless plan as nothing to show. That case returns 502 rather than an empty
+plan — see the empty-plan trace above.
+
+Both events log under `[thali:unknown]`, so the rate is measurable in
+production. Across the 27 plans generated live while building this — 92
+distinct dish ids — the model invented **zero**. The handling exists because
+the failure is severe, not because it is common.
+
+Pinned by `test/unknown-recipe.test.js`, which stubs the model at the fetch
+boundary so the retry is observed as a second real request: a good retry is
+accepted with no note, a repeat offence is dropped with a visible one, an
+all-invented plan is a 502, and a clean answer is never retried.

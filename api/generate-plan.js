@@ -457,6 +457,59 @@ export default async function handler(req, res) {
   // ---- rehydrate: the model only ever saw compact records ----
   const byId = new Map(RECIPES.map((r) => [r.recipeId, r]))
 
+  // ---- invented recipe ids ----
+  //
+  // The model is told never to use a recipeId outside the candidate list, and
+  // mostly does not. When it does, the dish is not a display problem: it has
+  // no ingredients, no preparation and no compliance flags, which means it
+  // passed no diet, allergy, religion or fasting check on its way here. Every
+  // other dish on the plate was verified in code before the model ever saw it.
+  // An invented one must never sit beside them as though it had been.
+  //
+  // It also silently shortened the shopping list — a plan of five dishes whose
+  // list covered four, with nothing saying why.
+  let unknownNote = null
+  const unknownIn = (list) => list.filter((d) => !byId.has(d.recipeId))
+
+  let unknown = unknownIn(plan.dishes)
+  const inventedIds = unknown.map((d) => `"${d.recipeId}"`).join(', ')
+  if (unknown.length > 0) {
+    const named = inventedIds
+    console.warn(`[thali:unknown] model returned ${unknown.length} recipe id(s) not in the catalogue: ${named}. Retrying once.`)
+    try {
+      const retry = await ask(`${prompt}
+
+YOUR PREVIOUS ANSWER WAS REJECTED
+${named} ${unknown.length === 1 ? 'is not a recipeId' : 'are not recipeIds'} in the candidate list. Every dish you return must use a recipeId that appears verbatim in the CANDIDATE RECIPES above. Do not invent one, do not adapt one, and do not guess. Return the plan again using only those ids. If you cannot fill the meal from them, return the shorter meal — fewer dishes is correct, an invented dish is not.`)
+      const second = parseModelJson(retry)
+      if (Array.isArray(second.dishes) && second.dishes.length > 0
+        && unknownIn(second.dishes).length === 0) {
+        plan = second
+        unknown = []
+      }
+    } catch {
+      // Falls through to dropping — a failed retry must not fail the plan.
+    }
+  }
+
+  if (unknown.length > 0) {
+    const drop = new Set(unknown)
+    plan = { ...plan, dishes: plan.dishes.filter((d) => !drop.has(d)) }
+    const names = unknown.map((d) => d.name || d.recipeId)
+    console.warn(`[thali:unknown] retry still invented; dropped ${names.join(', ')}`)
+    unknownNote = `${names.join(' and ')} ${names.length === 1 ? 'was' : 'were'} left out — ${names.length === 1 ? 'that dish is' : 'those dishes are'} not in Thali's recipe book, so ${names.length === 1 ? 'it has' : 'they have'} no ingredients or method and ${names.length === 1 ? 'was' : 'were'} never checked against anyone's diet.`
+
+    // Dropping every dish would leave a plan that is not a plan. The client
+    // treats a dishless plan as nothing to show, so say so honestly instead.
+    if (plan.dishes.length === 0) {
+      return res.status(502).json({
+        error: 'Gemini returned only recipes that do not exist.',
+        hint: 'Try again — this usually clears on a second attempt.',
+        detail: `Invented ids: ${inventedIds}`,
+      })
+    }
+  }
+
   // ---- role validation ----
   //
   // The role stored on a dish used to be `d.role` — the model's own claim,
@@ -548,6 +601,10 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
       role: roleOf(full || {}) || d.role || '',
       why: d.why || '',
       ...attribution(d),
+      // Always true now: a dish whose id is not in the catalogue is retried
+      // and then dropped above, so nothing unknown reaches this point. Kept in
+      // the response because it is the field a client would check, and it
+      // should stay checkable if that guarantee ever weakens.
       known: Boolean(full),
       hindiName: full?.hindiName || '',
       category: full?.category || '',
@@ -630,6 +687,9 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
     // dropped. The UI shows it rather than presenting the short plan as if
     // nothing had happened.
     roleNote,
+    // Same, for a dish the model invented. Shown in the same place and the
+    // same style; both can be set at once.
+    unknownNote,
     mealType,
     presentMembers: diners.map((m) => ({ memberId: m.id, name: m.name })),
     absentMembers: absent.map((m) => ({ memberId: m.id, name: m.name })),

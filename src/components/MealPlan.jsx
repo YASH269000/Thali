@@ -886,6 +886,14 @@ export default function MealPlan() {
           <p className="role-note" role="note">{plan.roleNote}</p>
         )}
 
+        {/* A dish the model invented. Dropped on the server, because it has no
+            ingredients, no method and no compliance flags — it passed none of
+            the checks every other dish on the plate passed. Said out loud for
+            the same reason the role note is. */}
+        {stage === 'plan' && plan?.unknownNote && planCurrent && !loading && (
+          <p className="role-note" role="note">{plan.unknownNote}</p>
+        )}
+
         {stage === 'plan' && plan && planCurrent && !loading && (
           <>
             <p className="attendance">
