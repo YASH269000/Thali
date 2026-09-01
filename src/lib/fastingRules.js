@@ -238,7 +238,7 @@ export function fastingMonth(family, year, month, overrides) {
  *
  * @returns {{ year, months, totalFastingDays, perMember, confirmations }}
  */
-export function fastingYear(family, year, overrides) {
+export function fastingYear(family, year, overrides, locationKey) {
   const months = []
   for (let month = 0; month < 12; month += 1) {
     months.push(fastingMonth(family, year, month, overrides))
@@ -262,7 +262,7 @@ export function fastingYear(family, year, overrides) {
   // The handful of dates that move when the ephemeris is perturbed, narrowed
   // to the ones this family keeps. A date nobody observes needs no answer.
   const observedIds = new Set(family.flatMap((m) => m.fasts || []))
-  const confirmations = datesNeedingConfirmation(year, overrides)
+  const confirmations = datesNeedingConfirmation(year, overrides, locationKey)
     .filter((o) => o.fastIds.some((id) => observedIds.has(id)))
 
   return {

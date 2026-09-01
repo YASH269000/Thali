@@ -7,6 +7,16 @@
     2026,
     2027
   ],
+  "cities": {
+    "delhi": "Delhi",
+    "mumbai": "Mumbai",
+    "kolkata": "Kolkata",
+    "chennai": "Chennai",
+    "bengaluru": "Bengaluru",
+    "ahmedabad": "Ahmedabad",
+    "varanasi": "Varanasi",
+    "ujjain": "Ujjain"
+  },
   "riskMinutes": 15,
   "stabilityShiftMinutes": 15,
   "observances": [
@@ -726,7 +736,13 @@
       "masa": "Vaishakha",
       "marginMinutes": 589,
       "startsAt": 2461159.057684,
-      "endsAt": 2461160.099217
+      "endsAt": 2461160.099217,
+      "variesByCity": {
+        "kolkata": "2026-04-29",
+        "chennai": "2026-04-29",
+        "bengaluru": "2026-04-29",
+        "varanasi": "2026-04-29"
+      }
     },
     {
       "id": "jain_chaturdashi",
@@ -833,7 +849,10 @@
       "marginMinutes": 18,
       "kshayaTithi": true,
       "startsAt": 2461175.626852,
-      "endsAt": 2461176.487802
+      "endsAt": 2461176.487802,
+      "variesByCity": {
+        "kolkata": "2026-05-16"
+      }
     },
     {
       "id": "amavasya",
@@ -948,7 +967,12 @@
       "marginMinutes": 351,
       "adhikaMasa": true,
       "startsAt": 2461195.161614,
-      "endsAt": 2461196.251333
+      "endsAt": 2461196.251333,
+      "variesByCity": {
+        "kolkata": "2026-06-04",
+        "chennai": "2026-06-04",
+        "bengaluru": "2026-06-04"
+      }
     },
     {
       "id": "kalashtami",
@@ -991,7 +1015,10 @@
       "marginMinutes": 585,
       "adhikaMasa": true,
       "startsAt": 2461204.088711,
-      "endsAt": 2461204.943578
+      "endsAt": 2461204.943578,
+      "variesByCity": {
+        "kolkata": "2026-06-13"
+      }
     },
     {
       "id": "jain_chaturdashi",
@@ -1141,7 +1168,11 @@
       "ekadashiName": "Yogini",
       "kshayaTithi": true,
       "startsAt": 2461231.616199,
-      "endsAt": 2461232.495522
+      "endsAt": 2461232.495522,
+      "variesByCity": {
+        "kolkata": "2026-07-11",
+        "varanasi": "2026-07-11"
+      }
     },
     {
       "id": "pradosh_vrat",
@@ -1713,7 +1744,11 @@
       "marginMinutes": 23,
       "kshayaTithi": true,
       "startsAt": 2461316.604351,
-      "endsAt": 2461317.515497
+      "endsAt": 2461317.515497,
+      "variesByCity": {
+        "kolkata": "2026-10-04",
+        "varanasi": "2026-10-04"
+      }
     },
     {
       "id": "ekadashi_vrat",
@@ -2047,7 +2082,13 @@
       "ekadashiName": "Devutthana",
       "kshayaTithi": true,
       "startsAt": 2461364.573581,
-      "endsAt": 2461365.542965
+      "endsAt": 2461365.542965,
+      "variesByCity": {
+        "kolkata": "2026-11-21",
+        "chennai": "2026-11-21",
+        "bengaluru": "2026-11-21",
+        "varanasi": "2026-11-21"
+      }
     },
     {
       "id": "pradosh_vrat",
@@ -2246,7 +2287,13 @@
       "marginMinutes": 12,
       "kshayaTithi": true,
       "startsAt": 2461397.720698,
-      "endsAt": 2461398.561486
+      "endsAt": 2461398.561486,
+      "variesByCity": {
+        "kolkata": "2026-12-24",
+        "chennai": "2026-12-24",
+        "bengaluru": "2026-12-24",
+        "varanasi": "2026-12-24"
+      }
     },
     {
       "id": "sankashti_chaturthi",
@@ -2259,7 +2306,11 @@
       "masa": "Margashirsha",
       "marginMinutes": 602,
       "startsAt": 2461401.108125,
-      "endsAt": 2461401.988797
+      "endsAt": 2461401.988797,
+      "variesByCity": {
+        "kolkata": "2026-12-27",
+        "varanasi": "2026-12-27"
+      }
     },
     {
       "id": "kalashtami",
@@ -2619,7 +2670,11 @@
       "ekadashiName": "Vijaya",
       "spansTwoSunrises": true,
       "startsAt": 2461467.468859,
-      "endsAt": 2461468.579815
+      "endsAt": 2461468.579815,
+      "variesByCity": {
+        "kolkata": "2027-03-04",
+        "varanasi": "2027-03-04"
+      }
     },
     {
       "id": "pradosh_vrat",
@@ -2937,7 +2992,11 @@
       "masa": "Chaitra",
       "marginMinutes": 17,
       "startsAt": 2461513.592167,
-      "endsAt": 2461514.527065
+      "endsAt": 2461514.527065,
+      "variesByCity": {
+        "mumbai": "2027-04-18",
+        "ahmedabad": "2027-04-18"
+      }
     },
     {
       "id": "purnima",
@@ -3510,7 +3569,10 @@
       "ekadashiName": "Kamika",
       "kshayaTithi": true,
       "startsAt": 2461615.586784,
-      "endsAt": 2461616.488725
+      "endsAt": 2461616.488725,
+      "variesByCity": {
+        "kolkata": "2027-07-30"
+      }
     },
     {
       "id": "pradosh_vrat",
@@ -3978,7 +4040,10 @@
       "through": "2027-10-09",
       "kshayaTithi": true,
       "startsAt": 2461678.608466,
-      "endsAt": 2461679.504007
+      "endsAt": 2461679.504007,
+      "variesByCity": {
+        "kolkata": "2027-10-01"
+      }
     },
     {
       "id": "vinayaka_chaturthi",
@@ -4376,7 +4441,10 @@
       "masa": "Margashirsha",
       "marginMinutes": 284,
       "startsAt": 2461740.756916,
-      "endsAt": 2461741.843222
+      "endsAt": 2461741.843222,
+      "variesByCity": {
+        "kolkata": "2027-12-02"
+      }
     },
     {
       "id": "masik_durgashtami",

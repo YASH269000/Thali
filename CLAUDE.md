@@ -64,6 +64,18 @@ Voice-guided cooking that turns Thali into a teacher for people who cannot cook.
 - INDB recipes (hasFullPreparation: false) offer AI-generated steps on request.
 - Keyboard: right arrow next, left arrow previous, space read aloud, Esc close.
 
+## Location
+`thali_location` holds one of the eight cities in `panchanga/locations.js`,
+default Delhi. `src/lib/location.js` is the only reader.
+- Sunrise, sunset and moonrise are local and must be computed for it — moonrise
+  differs by 74 minutes between Kolkata and Mumbai on Karva Chauth 2026.
+- TITHI DATES STAY DELHI'S. `observancesOn` takes no location and must never
+  learn to; a second source of dates is how two screens start disagreeing.
+  14 of 352 dates fall a day apart across the eight cities — the generator
+  records where, and the family is ASKED through the existing confirmation
+  prompt and the existing override slot.
+- Print the city beside any time: "Moonrise in Mumbai, 8:56 PM".
+
 ## Ingredient Rules
 Traditions the nine compliance flags cannot express carry keyword lists in
 `src/lib/ingredientRules.js` — Ekadashi/Navratri, Jain/Paryushana/Das Lakshana,

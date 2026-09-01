@@ -18,7 +18,7 @@
 
 import { writeFile } from 'node:fs/promises'
 import {
-  DEFAULT_LOCATION, hinduObservances, islamicObservances, RISK_MINUTES,
+  DEFAULT_LOCATION, hinduObservances, islamicObservances, LOCATIONS, RISK_MINUTES,
   solarIngresses, STABILITY_SHIFT_MINUTES,
 } from '../panchanga/index.js'
 import { isoDateAt } from '../panchanga/julian.js'
@@ -154,12 +154,64 @@ function islamic(year) {
     }))
 }
 
+/**
+ * Where a date lands on a different day than it does in Delhi.
+ *
+ * A tithi is the same instant everywhere; only the sunrise it is measured
+ * against is local, and Kolkata's is about fifty minutes earlier than Delhi's.
+ * That is enough to move 14 of 352 observances across 2026 and 2027 — most of
+ * them in Kolkata, the easternmost of the eight, and two of them WEST in
+ * Mumbai and Ahmedabad.
+ *
+ * The dates themselves stay Delhi's: the app ships one precomputed table and a
+ * live per-city recompute would cost a second a year in the browser. What
+ * travels instead is the knowledge that a date moves and where to, so a family
+ * outside Delhi is ASKED rather than silently given the wrong day. That is the
+ * confirmation-prompt path the five unstable dates already use, and it is the
+ * same slot in the same store.
+ *
+ * Keyed on the tithi's start instant rather than on its date, because the
+ * question is whether one occurrence lands elsewhere and an identity keyed on
+ * the date could not survive the move.
+ */
+// One year for one city is about a second of Newton iteration, and this pass
+// wants sixteen of them. Memoised so the Delhi year is not solved twice.
+const yearCache = new Map()
+function observancesAt(year, place) {
+  const key = `${year}|${place.name}`
+  if (!yearCache.has(key)) yearCache.set(key, hinduObservances(year, place))
+  return yearCache.get(key)
+}
+
+function variantDates(year) {
+  const key = (e) => `${e.id}|${e.startsAt.toFixed(3)}`
+  const home = new Map(observancesAt(year, DEFAULT_LOCATION).map((e) => [key(e), e.smarta]))
+  const varies = new Map()
+
+  for (const [city, place] of Object.entries(LOCATIONS)) {
+    if (place === DEFAULT_LOCATION) continue
+    for (const e of observancesAt(year, place)) {
+      const here = home.get(key(e))
+      if (!here || here === e.smarta) continue
+      if (!varies.has(key(e))) varies.set(key(e), {})
+      varies.get(key(e))[city] = e.smarta
+    }
+  }
+  return { key, varies }
+}
+
 export function buildObservances() {
   const observances = []
   for (const year of YEARS) {
-    const hindu = hinduObservances(year, DEFAULT_LOCATION)
+    const hindu = observancesAt(year, DEFAULT_LOCATION)
+    const { key, varies } = variantDates(year)
     observances.push(
-      ...hindu.map(record),
+      ...hindu.map((e) => {
+        const row = record(e)
+        const elsewhere = varies.get(key(e))
+        if (elsewhere) row.variesByCity = elsewhere
+        return row
+      }),
       ...sawanSomvar(hindu, year),
       ...makarSankranti(year),
     )
@@ -175,6 +227,9 @@ export function buildObservances() {
     place: DEFAULT_LOCATION.name,
     timezone: DEFAULT_LOCATION.tz,
     years: YEARS,
+    cities: Object.fromEntries(
+      Object.entries(LOCATIONS).map(([k, p]) => [k, p.name]),
+    ),
     riskMinutes: RISK_MINUTES,
     stabilityShiftMinutes: STABILITY_SHIFT_MINUTES,
     observances,
@@ -202,5 +257,7 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
   console.log(`${data.provisional.length} provisional Islamic dates`)
   console.log(`${unstable.length} need confirmation: ${unstable
     .map((o) => `${o.date} ${o.name}`).join(', ')}`)
+  const varying = data.observances.filter((o) => o.variesByCity)
+  console.log(`${varying.length} land on a different day in at least one of the eight cities`)
   console.table(counts)
 }

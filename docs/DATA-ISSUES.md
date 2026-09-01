@@ -845,6 +845,78 @@ authoritative. Someone will read `ekadashiSafe: yes` on a vinegar chutney,
 find that the app never serves it, and conclude the filter is broken. Both
 halves have to say the same thing.
 
+## Fourteen dates fall a day apart between the eight cities
+
+A tithi is the same instant everywhere; only the sunrise it is measured
+against is local. Kolkata's is about fifty minutes earlier than Delhi's, and
+that is enough to move an observance whose tithi boundary sits near dawn.
+
+Measured across 352 observances, 2026 and 2027, all eight cities in
+`panchanga/locations.js`:
+
+| Delhi's date | observance | margin | falls elsewhere on |
+| --- | --- | --- | --- |
+| 2026-04-28 | Pradosh Vrat | 552 min | Kolkata, Chennai, Bengaluru, Varanasi: 04-29 |
+| 2026-05-15 | Jain Chaturdashi | 16 min | Kolkata: 05-16 |
+| 2026-06-03 | Sankashti Chaturthi | 319 min | Kolkata, Chennai, Bengaluru: 06-04 |
+| 2026-06-12 | Pradosh Vrat | 554 min | Kolkata: 06-13 |
+| 2026-07-10 | Yogini Ekadashi | 24 min | Kolkata, Varanasi: 07-11 |
+| 2026-10-03 | Kalashtami | 23 min | Kolkata, Varanasi: 10-04 |
+| 2026-11-20 | Devutthana Ekadashi | 39 min | Kolkata, Chennai, Bengaluru, Varanasi: 11-21 |
+| 2026-12-23 | Purnima | 45 min | Kolkata, Chennai, Bengaluru, Varanasi: 12-24 |
+| 2026-12-26 | Sankashti Chaturthi | 609 min | Kolkata, Varanasi: 12-27 |
+| 2027-03-03 | Vijaya Ekadashi | 71 min | Kolkata, Varanasi: 03-04 |
+| 2027-04-19 | Mahavir Jayanti | 10 min | **Mumbai, Ahmedabad: 04-18** |
+| 2027-07-29 | Kamika Ekadashi | 7 min | Kolkata: 07-30 |
+| 2027-09-30 | Sharad Navratri | 8 min | Kolkata: 10-01 |
+| 2027-12-01 | Vinayaka Chaturthi | 340 min | Kolkata: 12-02 |
+
+Twelve of the fourteen are Kolkata, the easternmost of the eight. Two move the
+other way, in Mumbai and Ahmedabad, the westernmost — Mahavir Jayanti 2027
+falls a day EARLIER there. No observance is present in one city and absent in
+another; every difference is exactly one day.
+
+Note that margin does not predict this. Four of the fourteen have margins over
+five hours, which is not a tight boundary by any reading — the Pradosh and
+moonrise rows are resolved at sunset and moonrise, and the margin measures a
+distance to sunrise, which is not the quantity deciding them. That is the same
+lesson the perturbation analysis taught in the verification report.
+
+Three of the fourteen — 2026-07-10, 2026-12-23, 2026-12-26 — are already among
+the five dates that move under a perturbed ephemeris. The other eleven are
+stable in Delhi and simply different in Kolkata.
+
+### The dates stay Delhi's; the family is asked
+
+The app ships one precomputed table and a per-city recompute costs about a
+second a year in the browser. More to the point, a date that silently differed
+from the all-India panchang would be worse than one that asks. So the
+generator records where each date moves to, and a family outside Delhi is
+offered their own city's date beside Delhi's — through the same confirmation
+prompt, in the same override slot, as the perturbation-unstable dates. There
+is no second mechanism and no second source of dates.
+
+`test/location.test.js` asserts the invariant directly: `observancesOn` takes
+no location and must never learn to.
+
+## Fajr at 18 degrees, and the two other conventions
+
+Maghrib is sunset and needs no convention. Fajr does: it is the moment the sun
+reaches a stated depression below the horizon, and the stated angle differs.
+
+| convention | angle | used by |
+| --- | --- | --- |
+| **18°** | what Thali will use | Umm al-Qura, MWL, the majority standard |
+| 15° | ISNA (North America) | |
+| 19.5° | Egyptian General Authority | |
+
+The spread is real — 15° and 19.5° put Fajr about ten to fifteen minutes
+either side of 18° in Delhi in February — and it decides when suhoor ends. It
+will be printed as a stated assumption beside the time rather than hidden,
+the same way the two-meals guess is printed on the who-is-eating screen.
+Recorded here now so that the choice is a decision on the record rather than
+whatever the first implementation happened to pick.
+
 ## Lent, Easter and a religion the app does not offer
 
 The premise is every religion, and Christianity has no option. `RELIGIONS` is

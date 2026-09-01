@@ -21,6 +21,7 @@ import { TITHI_RULES } from '../../panchanga/rules.js'
 import computed from '../data/observances.json' with { type: 'json' }
 import fastingData from '../data/fastingTraditions.json' with { type: 'json' }
 import { FAST_LABEL, slugify } from '../data/memberOptions.js'
+import { DEFAULT_LOCATION_KEY, locationName } from './location.js'
 
 export const CONFIDENCE = {
   COMPUTED: 'computed',
@@ -39,6 +40,8 @@ export const CONFIDENCE_LABEL = {
 
 export const YEARS = computed.years
 export const PLACE = computed.place
+/** The cities the generator checked each date against. */
+export const CITIES = computed.cities || {}
 
 /**
  * Engine observance id -> the fasting-tradition ids a member can actually
@@ -384,9 +387,51 @@ export function observancesOn(date, overrides) {
  */
 export const QUESTIONABLE = [CONFIDENCE.UNSTABLE, CONFIDENCE.PROVISIONAL]
 
-export function datesNeedingConfirmation(year, overrides) {
+/**
+ * Does this date land on a different day in the family's city?
+ *
+ * The shipped dates are Delhi's and stay Delhi's — one precomputed table, and
+ * a per-city recompute costs a second a year in the browser. What the
+ * generator records instead is where each date moves to, so a family outside
+ * Delhi can be asked about the fourteen that move rather than handed the wrong
+ * one silently.
+ *
+ * @returns {{ city, date } | null}
+ */
+export function variantFor(entry, locationKey) {
+  if (!locationKey || locationKey === DEFAULT_LOCATION_KEY) return null
+  // A family that has answered has settled it, whatever prompted the question.
+  // Without this the row survives its own answer: moving Yogini Ekadashi to
+  // Kolkata's date leaves `variesByCity` naming the day it now sits on, and it
+  // would go on asking about a date it had already been given.
+  if (entry.source === 'override') return null
+  const date = entry.variesByCity?.[locationKey]
+  if (!date || date === entry.date) return null
+  return { city: locationName(locationKey), date }
+}
+
+/**
+ * Dates that carry a question rather than an answer, in one year.
+ *
+ * Three kinds now, and they are asked in different words because they are
+ * three different doubts. A `computed_unstable` date sits on a tithi boundary
+ * tight enough that a quarter of an hour moves it. A `provisional` one is an
+ * Islamic date no calculation settles — the month begins on a local sighting.
+ * And a date that MOVES for the family's own city is not in doubt at all in
+ * Delhi; it is simply a different day where they live, and the engine knows
+ * which day.
+ *
+ * All three write to the same slot, so a family cannot end up holding two
+ * contradictory answers about one occurrence.
+ */
+export function datesNeedingConfirmation(year, overrides, locationKey) {
   return applyOverrides(BASE, overrides)
-    .filter((e) => QUESTIONABLE.includes(e.confidence) && e.date.startsWith(String(year)))
+    .filter((e) => e.date.startsWith(String(year)))
+    .map((e) => {
+      const variant = variantFor(e, locationKey)
+      return variant ? { ...e, variant } : e
+    })
+    .filter((e) => QUESTIONABLE.includes(e.confidence) || e.variant)
     .sort((a, b) => a.date.localeCompare(b.date))
 }
 

@@ -33,7 +33,7 @@ const dayKey = (year, month, day) => `${year}-${month}-${day}`
  * grid edge.
  */
 export default function FastingCalendar({
-  family, today = new Date(), overrides = {}, onOverridesChange,
+  family, today = new Date(), overrides = {}, onOverridesChange, locationKey,
 }) {
   // Hover previews; a tap or click pins. The strip shows the preview when
   // there is one, otherwise whatever is pinned, otherwise today.
@@ -44,7 +44,10 @@ export default function FastingCalendar({
   const year = today.getFullYear()
   const todayMonth = today.getMonth()
 
-  const data = useMemo(() => fastingYear(family, year, overrides), [family, year, overrides])
+  const data = useMemo(
+    () => fastingYear(family, year, overrides, locationKey),
+    [family, year, overrides, locationKey],
+  )
 
   // Handed up rather than stored here: the dates screen below writes to the
   // same slots, and two copies of this state would let the prompt and the
@@ -132,21 +135,36 @@ export default function FastingCalendar({
                     <strong>{o.name}</strong>
                     <span className="fc-confirm-date">{longIso(o.date)}</span>
                     <span className="fc-confirm-reason">
-                      {o.confidence === CONFIDENCE.PROVISIONAL
-                        ? 'The Islamic month begins on a local sighting of the '
-                          + 'crescent, so this is a planning date and may be a '
-                          + 'day either side. Eid al-Adha 2026 fell on different '
-                          + 'days within India.'
-                        : 'This sits on a tithi boundary tight enough that a '
-                          + 'quarter of an hour either way moves it to the next '
-                          + 'day — far more than the calculation could be wrong '
-                          + 'by, but enough that panchangs legitimately differ.'}
+                      {o.variant
+                        ? `Thali's dates are calculated for ${PLACE}. A tithi is `
+                          + `the same instant everywhere, but the sunrise it is `
+                          + `measured against is not — and in ${o.variant.city} `
+                          + `this one falls on ${longIso(o.variant.date)}.`
+                        : (o.confidence === CONFIDENCE.PROVISIONAL
+                          ? 'The Islamic month begins on a local sighting of the '
+                            + 'crescent, so this is a planning date and may be a '
+                            + 'day either side. Eid al-Adha 2026 fell on different '
+                            + 'days within India.'
+                          : 'This sits on a tithi boundary tight enough that a '
+                            + 'quarter of an hour either way moves it to the next '
+                            + 'day — far more than the calculation could be wrong '
+                            + 'by, but enough that panchangs legitimately differ.')}
                     </span>
                   </span>
                   <span className="fc-confirm-actions">
-                    <button type="button" className="fc-confirm-btn is-yes"
+                    {/* A varying date is not a guess: the engine computed the
+                        family's own city and knows the answer, so that day is
+                        offered by name rather than as "day after". */}
+                    {o.variant && (
+                      <button type="button" className="fc-confirm-btn is-yes"
+                        onClick={() => answer(moveDate(overrides, o.id, o.date, o.variant.date))}>
+                        Use {o.variant.city}&rsquo;s date
+                      </button>
+                    )}
+                    <button type="button"
+                      className={`fc-confirm-btn${o.variant ? '' : ' is-yes'}`}
                       onClick={() => answer(confirmDate(overrides, o.id, o.date))}>
-                      That&rsquo;s right
+                      {o.variant ? `Keep ${PLACE}\u2019s` : 'That\u2019s right'}
                     </button>
                     <button type="button" className="fc-confirm-btn"
                       onClick={() => answer(moveDate(overrides, o.id, o.date, previous))}>

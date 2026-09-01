@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { activeFastIdsOn } from '../lib/fastingRules.js'
 import { loadOverrides, saveOverrides } from '../lib/observanceOverrides.js'
+import {
+  LOCATION_OPTIONS, isDefaultLocation, loadLocationKey, saveLocationKey,
+} from '../lib/location.js'
 import { loadFamily, saveFamily } from '../lib/family.js'
 import { familyIdWarnings } from '../lib/memberValidation.js'
 import { avatarTone, initials } from '../lib/avatar.js'
@@ -74,6 +77,14 @@ export default function FamilyProfile() {
   // write to the same slots, so two copies would let the confirmation prompt
   // and the edit screen show different answers to the same question.
   const [overrides, setOverrides] = useState(loadOverrides)
+  // Where the household is. Everything else about a panchanga is local, and
+  // for a timing fast it is not a nicety — the moon rises 74 minutes apart
+  // between Kolkata and Mumbai on Karva Chauth.
+  const [locationKey, setLocationKey] = useState(loadLocationKey)
+  const chooseLocation = (key) => {
+    setLocationKey(key)
+    saveLocationKey(key)
+  }
   const answerDates = (next) => {
     setOverrides(next)
     saveOverrides(next)
@@ -177,7 +188,37 @@ export default function FamilyProfile() {
           </div>
         </section>
 
-        <FastingCalendar family={family} today={today}
+        <section className="place" aria-labelledby="place-heading">
+          <div className="place-row">
+            <div>
+              <h2 id="place-heading" className="place-title">Where you are</h2>
+              <p className="place-sub">
+                Sunrise, sunset and moonrise are local, and a fast that breaks
+                at moonrise breaks at a different minute in each city.
+              </p>
+            </div>
+            <label className="place-field">
+              <span className="place-label">City</span>
+              <select value={locationKey} onChange={(e) => chooseLocation(e.target.value)}>
+                {LOCATION_OPTIONS.map((o) => (
+                  <option key={o.id} value={o.id}>{o.name}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {!isDefaultLocation(locationKey) && (
+            <p className="place-note">
+              Thali&rsquo;s lunar dates are calculated for Delhi, which is what
+              the all-India panchangs publish. A tithi is the same instant
+              everywhere, but the sunrise it is measured against is not &mdash;
+              so a handful of dates each year fall a day apart here. Those are
+              listed below with your city&rsquo;s date offered beside
+              Delhi&rsquo;s; everything else is the same day in both.
+            </p>
+          )}
+        </section>
+
+        <FastingCalendar family={family} today={today} locationKey={locationKey}
           overrides={overrides} onOverridesChange={answerDates} />
 
         <ObservanceDates family={family} year={today.getFullYear()}
