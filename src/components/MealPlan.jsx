@@ -15,6 +15,7 @@ import {
 } from '../lib/buyQuantities.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { loadFamily } from '../lib/family.js'
+import { familyIdWarnings } from '../lib/memberValidation.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
 import CookMode from './CookMode.jsx'
 import Clock from './Clock.jsx'
@@ -697,6 +698,9 @@ export default function MealPlan() {
   // first plan is still generating there is no plan to read, and on a
   // regeneration plan.guestCount is the previous plan's.
   const liveGuestCount = guestHeadcount(guests)
+  // Shown wherever the meal is, not only on the Family screen — this is the
+  // page where a narrower-than-expected plan would otherwise look arbitrary.
+  const idWarnings = familyIdWarnings(presentMembers)
   const familyPart = presentMembers.length === family.length
     ? `${family.length} (family)`
     : `${presentMembers.length} of ${family.length} family`
@@ -869,6 +873,14 @@ export default function MealPlan() {
             <button type="button" className="btn btn-solid" onClick={regenerate}>
               Try again
             </button>
+          </div>
+        )}
+
+        {stage !== 'meal' && idWarnings.length > 0 && (
+          <div className="id-warning" role="alert">
+            {idWarnings.map((w) => (
+              <p key={w.memberId}>{w.message}</p>
+            ))}
           </div>
         )}
 

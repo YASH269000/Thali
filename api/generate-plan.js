@@ -366,6 +366,24 @@ export default async function handler(req, res) {
     RECIPES, [...diners, ...guestMembers], activeFastIds,
   )
 
+  // A member carrying a fast id the app cannot read is the one case worth
+  // refusing over. Everything else fails closed to the strictest reading and
+  // plans anyway; a fast has no strictest reading to fall back to, because
+  // only Ekadashi and Navratri carry a compliance flag at all. Planning would
+  // mean guessing at a rule on the one day of the year it matters most.
+  const blocked = constraints.filter((c) => c.blocked)
+  if (blocked.length > 0) {
+    const detail = blocked.map((c) => `${c.name}: ${c.unknownIds
+      .filter((u) => u.kind === 'fasts')
+      .map((u) => `"${u.id}"`).join(', ')}`)
+    console.warn(`[thali:member] refusing to plan — unreadable fast id(s): ${detail.join('; ')}`)
+    return res.status(422).json({
+      error: `Thali cannot read a fasting setting for ${blocked.map((c) => c.name).join(' and ')}.`,
+      hint: 'Open Family and re-select their fasts. Thali will not plan a meal around a fast it cannot read — on a fast day that would quietly serve an unrestricted menu.',
+      unreadable: blocked.map((c) => ({ memberId: c.id, name: c.name, ids: c.unknownIds })),
+    })
+  }
+
   if (mains.length === 0 && swaps.length === 0) {
     return res.status(422).json({
       error: 'No recipe in the database satisfies every member today.',
@@ -682,7 +700,15 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
     modifications,
   }))
 
+  // Members whose settings could not all be read. Not blocking — the strictest
+  // rules were applied instead — but the meal is narrower than it should be
+  // and the family should be told why rather than left to wonder.
+  const unreadableSettings = constraints
+    .filter((c) => c.unknownIds?.length > 0)
+    .map((c) => ({ memberId: c.id, name: c.name, ids: c.unknownIds }))
+
   return res.status(200).json({
+    unreadableSettings,
     // Set only when a duplicate role survived the retry and a dish was
     // dropped. The UI shows it rather than presenting the short plan as if
     // nothing had happened.

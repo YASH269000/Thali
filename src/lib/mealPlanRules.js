@@ -9,7 +9,7 @@
 //                  constraint (in this data `partial` occurs solely on
 //                  diabeticFriendly, so: exclude for diabetics, allow otherwise)
 
-import { HEALTH_OPTIONS } from '../data/memberOptions.js'
+import { BLOCKING_KINDS, unknownMemberIds } from './memberValidation.js'
 
 export const FLAG_KEYS = [
   'ekadashiSafe', 'navratriSafe', 'jainSafe', 'diabeticFriendly',
@@ -275,27 +275,36 @@ function fastFlags(activeFastIds) {
 }
 
 /**
- * Every health id the app knows: filtered, advisory, or an allergy.
+ * What to require when an id cannot be read.
  *
- * Kept so an id that is none of these can be SAID rather than skipped. A
- * health id this file does not recognise is silently ignored, which does not
- * weaken a filter — it removes it. A stored `gluten_allergy` after that option
- * was withdrawn opened 1,132 servable recipes where 657 are safe for a
- * coeliac, and nothing on screen said so.
+ * Skipping it was the bug: a constraint nobody recognises is a constraint
+ * nobody applies, and the member ends up less protected than if they had
+ * selected nothing. So an unreadable id is treated as the strictest thing it
+ * could have been.
  *
- * The warning is not a fix. Unrecognised diet, religion, fast and allergy ids
- * fail open the same way — see docs/DATA-ISSUES.md — and that is its own job.
+ * `allowedKinds` is untouched — DIET_ALLOWS already falls back to `['veg']`,
+ * which is the strictest kind and the one thing here that always failed safe.
  */
-const KNOWN_HEALTH = new Set(HEALTH_OPTIONS.map((h) => h.id))
-const warnedHealth = new Set()
+// Every diet flag any diet asks for. Jain is the strictest and supplies both.
+const STRICTEST_DIET_FLAGS = [...new Set(Object.values(DIET_FLAGS).flat())]
+// Every religion flag any religion asks for.
+const STRICTEST_RELIGION_FLAGS = [...new Set(Object.values(RELIGION_FLAGS).flat())]
+// Every health flag that filters, plus every allergen: an unreadable health id
+// could have been any of them.
+const STRICTEST_HEALTH_FLAGS = [...new Set(Object.values(HEALTH_FLAGS))]
+const ALL_ALLERGENS = Object.keys(ALLERGENS)
 
-function warnUnknownHealth(id, memberName) {
-  if (warnedHealth.has(id)) return
-  warnedHealth.add(id)
+const warnedIds = new Set()
+
+function warnUnknownId(kind, id, memberName) {
+  const key = `${kind}:${id}`
+  if (warnedIds.has(key)) return
+  warnedIds.add(key)
   console.warn(
-    `[thali:member] unrecognised health id "${id}" on ${memberName || 'a member'} — ` +
-    'it matches no filter, no allergy and no advisory note, so it constrains ' +
-    'nothing. If it was renamed, migrate it in src/lib/family.js.',
+    `[thali:member] unrecognised ${kind} id "${id}" on ${memberName || 'a member'} — ` +
+    (BLOCKING_KINDS.has(kind)
+      ? 'refusing to plan around a fast that cannot be read.'
+      : 'applying the strictest rules instead of none. Re-select it, or migrate it in src/lib/family.js.'),
   )
 }
 
@@ -306,25 +315,36 @@ function warnUnknownHealth(id, memberName) {
 export function memberConstraints(member, activeFastIds) {
   const required = new Set()
 
+  // Anything the app cannot interpret is treated as the strictest thing it
+  // could have meant, never as nothing at all.
+  const unknown = unknownMemberIds(member)
+  for (const u of unknown) warnUnknownId(u.kind, u.id, member.name)
+  const unreadable = new Set(unknown.map((u) => u.kind))
+
   for (const f of DIET_FLAGS[member.diet] || []) required.add(f)
+  if (unreadable.has('diet')) for (const f of STRICTEST_DIET_FLAGS) required.add(f)
+
   for (const f of RELIGION_FLAGS[member.religion] || []) required.add(f)
+  if (unreadable.has('religion')) for (const f of STRICTEST_RELIGION_FLAGS) required.add(f)
+
   for (const h of member.health || []) {
-    if (!KNOWN_HEALTH.has(h)) warnUnknownHealth(h, member.name)
     if (HEALTH_FLAGS[h]) required.add(HEALTH_FLAGS[h])
   }
+  if (unreadable.has('health')) for (const f of STRICTEST_HEALTH_FLAGS) required.add(f)
 
   const observed = (member.fasts || []).filter((id) => activeFastIds.has(id))
   for (const f of fastFlags(observed)) required.add(f)
 
   // Flags where `partial` is not good enough for this member.
   const strict = new Set()
-  if ((member.health || []).some((h) => STRICT_HEALTH.includes(h))) {
+  if (unreadable.has('health')
+    || (member.health || []).some((h) => STRICT_HEALTH.includes(h))) {
     strict.add('diabeticFriendly')
   }
 
-  const allergens = (member.health || [])
-    .map((h) => HEALTH_ALLERGENS[h])
-    .filter(Boolean)
+  const allergens = unreadable.has('health')
+    ? [...ALL_ALLERGENS]
+    : (member.health || []).map((h) => HEALTH_ALLERGENS[h]).filter(Boolean)
 
   return {
     id: member.id,
@@ -332,6 +352,10 @@ export function memberConstraints(member, activeFastIds) {
     diet: member.diet,
     religion: member.religion || 'none',
     allergens: [...new Set(allergens)],
+    // Ids this member carries that the app cannot read, and whether any of
+    // them is one the planner refuses to guess around (a fast).
+    unknownIds: unknown,
+    blocked: unknown.some((u) => BLOCKING_KINDS.has(u.kind)),
     allowedKinds: DIET_ALLOWS[member.diet] || ['veg'],
     requiredFlags: [...required],
     strictFlags: [...strict],

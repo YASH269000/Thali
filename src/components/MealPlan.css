@@ -944,3 +944,24 @@
     width: 100%;
   }
 }
+
+/* A member setting Thali cannot interpret. Amber, like the fasting chips:
+   recoverable, and the user is the only one who can recover it. */
+.id-warning {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 0.5px solid #e5e0cd;
+  border-radius: 12px;
+  background: #fdfaf0;
+}
+
+.id-warning p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1a1a1a;
+}
+
+.id-warning p + p {
+  margin-top: 6px;
+}

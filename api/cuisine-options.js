@@ -71,6 +71,13 @@ export default async function handler(req, res) {
 
   const activeFastIds = activeFastIdsOn(date)
   const { mains, constraints } = filterRecipes(RECIPES, [...diners, ...guests], activeFastIds)
+
+  // Reported rather than refused here: this endpoint only tells the picker
+  // what is offerable, and the refusal belongs where a meal is actually
+  // planned. The UI shows the warning before the user gets that far.
+  const unreadableSettings = constraints
+    .filter((c) => c.unknownIds?.length > 0)
+    .map((c) => ({ memberId: c.id, name: c.name, ids: c.unknownIds, blocked: c.blocked }))
   const anyFasting = constraints.some((c) => c.activeFasts.length > 0)
 
   // Every flag anyone at the table requires today, so a warning can name the
@@ -116,6 +123,7 @@ export default async function handler(req, res) {
   }
 
   return res.status(200).json({
+    unreadableSettings,
     anyFasting,
     activeFasts: [...new Set(constraints.flatMap((c) => c.activeFasts))],
     byMeal,

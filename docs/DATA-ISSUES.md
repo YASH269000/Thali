@@ -512,11 +512,35 @@ the strictest kind, so an unknown diet can never be served meat — it is the
 diet FLAGS (`jainSafe`, `onionGarlicFree`) that go missing, not the vegetarian
 gate.
 
-**Only the health case is addressed here**, with a warning naming the id
-against `HEALTH_OPTIONS`. The other four are a follow-up, and the fix is the
-same shape in each: validate against the list of ids the app offers, and say
-something rather than skipping. Warning is not filtering — a member with a
-bad id is still unprotected, and the log only means someone can find out.
+**Fixed.** `src/lib/memberValidation.js` checks every id against the set the
+app offers, and `memberConstraints` treats one it cannot read as the strictest
+thing it could have been rather than as nothing at all:
+
+| kind | correct | unreadable, before | unreadable, now |
+|---|---|---|---|
+| fasting | 185 | 1,132 | **refuses** |
+| diet | 472 | 1,132 | 155 |
+| religion | 601 | 1,132 | 601 |
+| health | 657 | 1,132 | 185 |
+| allergy | 987 | 1,132 | 185 |
+
+An unreadable diet requires every diet flag any diet asks for, so it lands
+stricter than Jain — the union includes `vegan`. An unreadable health id
+requires every filtering health flag AND assumes all four allergies, since it
+could have been any of them.
+
+Fasting refuses, and it is the only kind that does. The others have a
+meaningful strictest reading; fasting does not. Only Ekadashi and Navratri
+carry a compliance flag at all, so requiring "both flags" would look like
+caution while covering none of Ramadan, Paryushana or the weekly vrats the
+member might have meant. There is no strict reading to fall back to, only a
+guess, on the one day of the year it matters most. `generate-plan` returns 422
+naming the member and the id.
+
+Both screens say so: the Family Profile flags the member, and the plan header
+repeats it, because that is where a narrower-than-expected meal would
+otherwise look arbitrary. Non-blocking ids reach the client as
+`unreadableSettings` on both the plan and the cuisine-options response.
 
 Ids reach these functions from localStorage, so they outlive any deploy that
 renames one. `src/lib/family.js` migrates renamed health ids on load and writes

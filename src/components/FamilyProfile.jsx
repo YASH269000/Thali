@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { activeFastIdsOn } from '../lib/fastingRules.js'
 import { loadFamily, saveFamily } from '../lib/family.js'
+import { familyIdWarnings } from '../lib/memberValidation.js'
 import { avatarTone, initials } from '../lib/avatar.js'
 import { displayName } from '../lib/names.js'
 import {
@@ -55,6 +56,9 @@ export default function FamilyProfile() {
   // Lazy initialiser: reads storage once, before first paint. A useEffect that
   // saves on every change would otherwise overwrite saved data with [] on mount.
   const [family, setFamily] = useState(loadFamily)
+  // A setting Thali cannot interpret constrains nothing, so it is said out
+  // loud here rather than left to quietly widen someone's meal.
+  const idWarnings = familyIdWarnings(family)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [pendingDelete, setPendingDelete] = useState(null)
@@ -134,6 +138,14 @@ export default function FamilyProfile() {
       </header>
 
       <main className="content">
+        {idWarnings.length > 0 && (
+          <div className="id-warning" role="alert">
+            {idWarnings.map((w) => (
+              <p key={w.memberId}>{w.message}</p>
+            ))}
+          </div>
+        )}
+
         <section className="stats" aria-label="Family summary">
           <div className="stat-card">
             <span className="stat-value">{stats.members}</span>
