@@ -275,6 +275,21 @@ export const TITHI_RULES = [
     masa: 'Chaitra',
     note: 'Computable from tithi, unlike the sect-specific Jain observances \u2014 Paryushana, Das Lakshana and Navpad Oli \u2014 whose dates each order sets.',
   },
+  // THE THREE THERAVADA OBSERVANCES BELOW ARE PROVISIONAL, AND VESAK WAS
+  // WRONGLY NOT.
+  //
+  // Each is a purnima the engine resolves to the minute, and each was
+  // therefore marked `computed` — the same confidence as an Ekadashi checked
+  // 24 of 24 against Drik Panchang. That is not equivalent evidence. The
+  // astronomy is not in question; the CALENDAR is. These are Theravada
+  // observances and the Theravada calendars are not modelled here, so nothing
+  // has ever checked which month the engine's Ashadha corresponds to in
+  // Bangkok or Colombo.
+  //
+  // 2026 is the year that makes the point. It carries Adhika Jyeshtha, an
+  // intercalary month sitting immediately before Ashadha, so a calendar that
+  // does not insert a month there puts Asalha Puja around 30 June rather than
+  // 29 July. A month apart, from one difference in an intercalation rule.
   {
     id: 'buddha_purnima',
     name: 'Buddha Purnima / Vesak',
@@ -282,6 +297,27 @@ export const TITHI_RULES = [
     tithi: 15,
     paksha: 'shukla',
     masa: 'Vaishakha',
+    provisional: 'The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.',
+  },
+  {
+    id: 'asalha_puja',
+    name: 'Asalha Puja',
+    religion: 'Buddhist',
+    tithi: 15,
+    paksha: 'shukla',
+    masa: 'Ashadha',
+    provisional: 'The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.',
+    note: 'The Ashadha full moon, marking the first sermon. Vassa begins the day after.',
+  },
+  {
+    id: 'magha_puja',
+    name: 'Magha Puja',
+    religion: 'Buddhist',
+    tithi: 15,
+    paksha: 'shukla',
+    masa: 'Magha',
+    provisional: 'The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.',
+    note: 'The Magha full moon, marking the spontaneous assembly of 1,250 arahants.',
   },
   {
     id: 'jain_chaturdashi',

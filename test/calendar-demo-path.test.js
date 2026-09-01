@@ -119,7 +119,10 @@ test('a family that confirms a date settles it; one that moves it moves it', () 
 
 test('user override outranks curated, which outranks computed', () => {
   // Computed: nothing curated claims an Ekadashi, so the engine decides.
-  const [ekadashi] = observancesOn(new Date(2026, 8, 7))
+  // Found by id rather than taken as the first of the day — Vassa is a
+  // three-month retreat and spans 89 dates, so "the observance on this day"
+  // stopped being a single thing.
+  const ekadashi = observancesOn(new Date(2026, 8, 7)).find((o) => o.id === 'ekadashi_vrat')
   assert.equal(ekadashi.source, 'computed')
   assert.equal(ekadashi.confidence, CONFIDENCE.COMPUTED)
 
@@ -130,10 +133,11 @@ test('user override outranks curated, which outranks computed', () => {
   assert.equal(paryushana.source, 'curated')
   assert.equal(paryushana.confidence, CONFIDENCE.CURATED)
 
-  // Override: on top of either.
+  // Override: on top of either. Asserted on the observance rather than on the
+  // day's count, for the same reason as above — Vassa is also on both dates.
   const moved = moveDate({}, 'ekadashi_vrat', '2026-09-07', '2026-09-08')
-  assert.equal(observancesOn(new Date(2026, 8, 7), moved).length, 0)
-  const [shifted] = observancesOn(new Date(2026, 8, 8), moved)
+  assert.ok(!observancesOn(new Date(2026, 8, 7), moved).some((o) => o.id === 'ekadashi_vrat'))
+  const shifted = observancesOn(new Date(2026, 8, 8), moved).find((o) => o.id === 'ekadashi_vrat')
   assert.equal(shifted.source, 'override')
   assert.equal(shifted.movedFrom, '2026-09-07')
 })
@@ -181,10 +185,10 @@ const GUIDANCE_FREE_DAYS = [
 
 test('the prompt is told what day it is, with no empty fields', () => {
   const notes = calendarNotesOn(new Date(2026, 8, 7))
-  assert.equal(notes.length, 1)
-  assert.equal(notes[0].observance, 'Aja Ekadashi')
-  assert.equal(notes[0].confidence, CONFIDENCE.COMPUTED)
-  assert.ok(notes[0].impact.includes('sendha namak'))
+  const ekadashi = notes.find((n) => n.observance === 'Aja Ekadashi')
+  assert.ok(ekadashi, 'the day is not named')
+  assert.equal(ekadashi.confidence, CONFIDENCE.COMPUTED)
+  assert.ok(ekadashi.impact.includes('sendha namak'))
   for (const note of notes) {
     for (const [key, value] of Object.entries(note)) {
       assert.ok(value !== null && value !== undefined && value !== '',

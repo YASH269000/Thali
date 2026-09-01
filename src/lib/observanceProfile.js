@@ -204,6 +204,13 @@ export const BASELINE_OVERRIDES = {
   // breakfast and dinner, and dinner is the meal these traditions exclude.
   uposatha_observance: { mealCount: 'before_noon' },
   vesak_buddha_purnima: { mealCount: 'before_noon' },
+  // The Eight Precepts include no solid food after midday, which is the same
+  // shape as Uposatha and for the same reason.
+  asalha_puja: { mealCount: 'before_noon' },
+  magha_puja: { mealCount: 'before_noon' },
+  // Vassa is three months of added restraint rather than a fasting day: the
+  // meals stand, and what changes is what is in them.
+  vassa_rains_retreat: { mealCount: 'unrestricted' },
   // A year-long practice with alternate-day fasting; the day itself is not
   // predictable from a calendar, so it changes nothing on its own.
   varsitap: { mealCount: 'unrestricted' },

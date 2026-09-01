@@ -180,6 +180,10 @@ export function resolveTithiRule(rule, year, place = DEFAULT_LOCATION) {
         endsAt: span.endJd,
         margin,
         observedAt: rule.observedAt || 'sunrise',
+        // Carried through so the generator can mark a date provisional for a
+        // reason the ephemeris knows nothing about — see the Theravada note
+        // in rules.js.
+        provisional: rule.provisional || null,
       }
       entry.atRisk = entry.margin < RISK_MINUTES
       // A tight margin is a reason to check, not a reason to doubt. This is

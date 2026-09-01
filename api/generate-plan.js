@@ -474,7 +474,10 @@ export default async function handler(req, res) {
     internationalDishes: candidates
       .filter((c) => isInternational(c))
       .map((c) => `${c.name} (${c.category})`),
-    calendarNotes: calendarNotesOn(date, overrides),
+    // The traditions anyone at this table actually keeps, so a three-month
+    // retreat nobody here observes does not get named in the brief.
+    calendarNotes: calendarNotesOn(date, overrides,
+      new Set(constraints.flatMap((c) => c.activeFasts))),
     foodRules: foodRulesFor(activeLabels),
     observances: observanceSummary,
     additions,

@@ -685,6 +685,48 @@
       "popularity": "M",
       "whoTypicallyObserves": "Chhath vratis",
       "briefDescription": "The fourth day. The arghya to the rising sun, after which the fast is broken with prasad — thekua, seasonal fruit and the kheer offered the day before."
+    },
+    {
+      "sNo": 50,
+      "fastingTraditionName": "Asalha Puja",
+      "nameInOriginalScript": "อาสาฬหบูชา",
+      "religion": "Buddhist",
+      "deityOrPurpose": "The first sermon (Dhammacakkappavattana)",
+      "frequency": "Once per year",
+      "durationPerOccurrence": "1 day",
+      "calendarSystem": "Buddhist Lunar (Theravada)",
+      "fastStrictnessLevel": "Light (Eight Precepts for observant laity)",
+      "popularity": "L",
+      "whoTypicallyObserves": "Theravada Buddhists; monastics and observant laity",
+      "briefDescription": "The Ashadha full moon, marking the Buddha’s first sermon. Observant laity keep the Eight Precepts, which include no solid food after midday. Vassa begins the following day."
+    },
+    {
+      "sNo": 51,
+      "fastingTraditionName": "Magha Puja",
+      "nameInOriginalScript": "มาฆบูชา",
+      "religion": "Buddhist",
+      "deityOrPurpose": "The assembly of 1,250 arahants",
+      "frequency": "Once per year",
+      "durationPerOccurrence": "1 day",
+      "calendarSystem": "Buddhist Lunar (Theravada)",
+      "fastStrictnessLevel": "Light (Eight Precepts for observant laity)",
+      "popularity": "L",
+      "whoTypicallyObserves": "Theravada Buddhists; monastics and observant laity",
+      "briefDescription": "The Magha full moon, marking the spontaneous gathering of 1,250 enlightened disciples. Kept with temple visits and the Eight Precepts; no solid food after midday for those observing."
+    },
+    {
+      "sNo": 52,
+      "fastingTraditionName": "Vassa (Rains Retreat)",
+      "nameInOriginalScript": "วันเข้าพรรษา",
+      "religion": "Buddhist",
+      "deityOrPurpose": "Monastic rains retreat",
+      "frequency": "Once per year",
+      "durationPerOccurrence": "About three lunar months",
+      "calendarSystem": "Buddhist Lunar (Theravada)",
+      "fastStrictnessLevel": "Moderate (varies; many laity abstain from meat or alcohol throughout)",
+      "popularity": "L",
+      "whoTypicallyObserves": "Theravada Buddhists; monastics and observant laity",
+      "briefDescription": "The three-month retreat from the day after Asalha Puja to the Ashwin full moon. Monastics remain in one place; laity commonly take on an additional restraint for the duration — frequently vegetarian food or abstaining from alcohol."
     }
   ],
   "foodRules": [
@@ -1344,6 +1386,18 @@
     "chhath_usha_arghya": {
       "dietaryImpactSummary": "Fast broken after the morning arghya; thekua, fruit and prasad",
       "appAction": "Plan the parana after sunrise — light, and no onion or garlic"
+    },
+    "asalha_puja": {
+      "dietaryImpactSummary": "Vegetarian; no solid food after midday for those keeping the Eight Precepts",
+      "appAction": "Plan breakfast and lunch only for observers, and show the madhyahna cutoff"
+    },
+    "magha_puja": {
+      "dietaryImpactSummary": "Vegetarian; no solid food after midday for those keeping the Eight Precepts",
+      "appAction": "Plan breakfast and lunch only for observers, and show the madhyahna cutoff"
+    },
+    "vassa": {
+      "dietaryImpactSummary": "Three months of added restraint — commonly vegetarian, commonly no alcohol",
+      "appAction": "Keep meals vegetarian and alcohol-free for observers throughout the retreat"
     }
   },
   "appLogicRules": [

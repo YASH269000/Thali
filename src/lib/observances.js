@@ -81,6 +81,12 @@ export const OBSERVANCE_FASTS = {
   chhath_usha_arghya: ['chhath_puja_vrat', 'chhath_usha_arghya'],
   mahavir_jayanti: ['mahavir_jayanti'],
   buddha_purnima: ['vesak_buddha_purnima'],
+  // The Theravada three. Each has a row of its own rather than being computed
+  // and unobservable, which is the position jain_chaturdashi and Vinayaka
+  // Chaturthi were in until this week.
+  asalha_puja: ['asalha_puja'],
+  magha_puja: ['magha_puja'],
+  vassa: ['vassa_rains_retreat'],
   sawan_somvar: ['sawan_somvar_vrat'],
   makar_sankranti: ['makar_sankranti_pongal'],
 

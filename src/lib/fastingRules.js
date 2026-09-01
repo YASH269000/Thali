@@ -83,8 +83,22 @@ export function observancesFor(date, overrides) {
  * put a page of blanks in front of the model, so guidance appears only where
  * it exists and the note itself still names the day.
  */
-export function calendarNotesOn(date, overrides) {
-  return observancesOn(date, overrides).map((o) => {
+export function calendarNotesOn(date, overrides, observedFastIds = null) {
+  return observancesOn(date, overrides)
+    // A long observance is context on its first day and noise on the other
+    // eighty-eight. Vassa is the case that forced this: a three-month retreat
+    // named in every prompt from July to October, to households with no
+    // Buddhist member in them. Where the caller knows which traditions are
+    // actually kept, a multi-week observance has to be one of them; where it
+    // does not, nothing is filtered and the behaviour is what it was.
+    .filter((o) => {
+      if (!observedFastIds) return true
+      const span = o.through && o.through > o.date
+        ? (Date.parse(o.through) - Date.parse(o.date)) / 86400000 : 0
+      if (span < 14) return true
+      return (o.fastIds || []).some((id) => observedFastIds.has(id))
+    })
+    .map((o) => {
     const guidance = o.guidance || o.guidanceRow || null
     const note = {
       date: o.date,

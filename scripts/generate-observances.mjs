@@ -52,12 +52,18 @@ export const CONFIDENCE = {
 
 /** One observance, reduced to what the app needs. Field order is the file's. */
 function record(e) {
+  // A rule can declare itself provisional whatever the ephemeris says. That is
+  // the Theravada case: the astronomy is exact and the calendar it belongs to
+  // is not modelled here, so a confident-looking date would be claiming
+  // evidence that does not exist.
   const out = {
     id: e.id,
     name: e.id === 'ekadashi_vrat' && e.ekadashiName ? `${e.ekadashiName} Ekadashi` : e.name,
     religion: e.religion,
     date: e.smarta,
-    confidence: e.needsConfirmation ? CONFIDENCE.unstable : CONFIDENCE.computed,
+    confidence: e.provisional
+      ? CONFIDENCE.provisional
+      : (e.needsConfirmation ? CONFIDENCE.unstable : CONFIDENCE.computed),
     resolvedBy: e.resolvedBy,
     tithi: `${e.tithi.paksha} ${e.tithi.name}`,
     masa: e.masa,
@@ -75,6 +81,7 @@ function record(e) {
   if (e.spansTwoSunrises) out.spansTwoSunrises = true
   if (e.dashamiViddha) out.dashamiViddha = true
   if (e.kaalNote) out.kaalNote = e.kaalNote
+  if (e.provisional) out.provisionalReason = e.provisional
   out.startsAt = round(e.startsAt)
   out.endsAt = round(e.endsAt)
   return out
@@ -115,6 +122,46 @@ function sawanSomvar(hindu, year) {
     })
   }
   return out
+}
+
+/**
+ * Vassa — the three-month rains retreat.
+ *
+ * Derived rather than ruled, for the same reason Sawan Somvar is: it spans
+ * lunar months, and a tithi rule resolves one tithi inside one of them. It
+ * begins the day after Asalha Puja and ends on the Ashwin full moon, which the
+ * engine already computes — three lunar months, and the span comes out at 89
+ * days in both years, which is the arithmetic checking itself.
+ *
+ * Provisional for the same reason as the other three: the astronomy is exact
+ * and the calendar it belongs to is not modelled here.
+ */
+function vassa(hindu, year, reason) {
+  const purnimas = hindu.filter((e) => e.id === 'purnima')
+  const asalha = purnimas.find((e) => e.masa === 'Ashadha')
+  const close = purnimas.find((e) => e.masa === 'Ashwin')
+  if (!asalha || !close) return []
+
+  const begins = new Date(`${asalha.smarta}T00:00:00Z`)
+  begins.setUTCDate(begins.getUTCDate() + 1)
+  const from = begins.toISOString().slice(0, 10)
+  if (!from.startsWith(String(year))) return []
+
+  return [{
+    id: 'vassa',
+    name: 'Vassa (rains retreat)',
+    religion: 'Buddhist',
+    date: from,
+    confidence: CONFIDENCE.provisional,
+    resolvedBy: 'the day after Asalha Puja, to the Ashwin full moon',
+    tithi: null,
+    masa: 'Ashadha to Ashwin',
+    marginMinutes: null,
+    from,
+    through: close.smarta,
+    derivedFrom: 'Ashadha Purnima + 1 day, through Ashwin Purnima',
+    provisionalReason: reason,
+  }]
 }
 
 /** Makar Sankranti is a solar ingress, not a tithi — the engine's other half. */
@@ -213,6 +260,7 @@ export function buildObservances() {
         return row
       }),
       ...sawanSomvar(hindu, year),
+      ...vassa(hindu, year, hindu.find((e) => e.provisional)?.provisional || null),
       ...makarSankranti(year),
     )
   }

@@ -944,6 +944,75 @@ making one reachable should make it fail. It did. The assertion is now the
 other way round: every observance that varies by city must be reachable by
 somebody, or nobody is ever asked about it.
 
+## Theravada intercalation is not modelled, and four dates depend on it
+
+Vesak, Asalha Puja and Magha Puja are full moons, and Vassa runs three lunar
+months from one. The engine resolves a purnima to the minute, so all four were
+— or would have been — marked `computed`, the same confidence as an Ekadashi
+checked 24 of 24 against Drik Panchang.
+
+**That is not equivalent evidence, and the difference is not the astronomy.**
+These are Theravada observances. The Thai, Burmese and Sri Lankan calendars
+intercalate on a different rule from the Indian one: this engine implements
+"a lunar month containing no solar ingress", while the Thai calendar inserts a
+second Ashadha on a fixed cycle. Nothing in this repository models the
+Theravada reckoning, so nothing has ever checked which month the engine's
+Ashadha corresponds to in Bangkok or Colombo.
+
+### The worked example: 2026
+
+2026 carries Adhika Jyeshtha — an intercalary month sitting **immediately
+before Ashadha**, which is the worst possible position for this.
+
+| | Indian reckoning (what the engine gives) | a calendar that does not intercalate there |
+| --- | --- | --- |
+| Asalha Puja 2026 | 29 July | **roughly 30 June** |
+
+A month apart, from one difference in an intercalation rule. Not the day-either-
+side uncertainty that a tithi boundary produces — a different lunation.
+
+All four are therefore `provisional`, carry `provisionalReason` on the row, and
+are override-able through the same prompt and the same slot as the Islamic
+dates. The structural cause is identical: a calendar the engine does not model
+decides the real answer.
+
+**Vesak was already shipping at `computed` before this.** It is the one that
+mattered, because it was live data claiming evidence it did not have. A future
+fix — modelling Thai or Burmese intercalation — addresses all four together;
+they have one cause, not four.
+
+### The derived dates, for the record
+
+| | 2026 | 2027 | derived from |
+| --- | --- | --- | --- |
+| Magha Puja | 1 Feb | 20 Feb | Magha Purnima |
+| Vesak | 1 May | 20 May | Vaishakha Purnima |
+| Asalha Puja | 29 Jul | 18 Jul | Ashadha Purnima |
+| Vassa | 30 Jul – 26 Oct | 19 Jul – 15 Oct | day after Asalha, to Ashwin Purnima |
+
+Vassa comes out at 89 days in both years, which is three lunar months and is
+the arithmetic checking itself. It is derived in the generator rather than
+written as a tithi rule, for the same reason Sawan Somvar is: it spans lunar
+months, and a tithi rule resolves one tithi inside one of them.
+
+### A note on provenance
+
+These three were not found in this repository, and no Buddhist date here was
+ever marked MED. They were carried in from an external research document. The
+only `MED` in the codebase is a source-confidence column in
+`test/reference/ekadashi2026.js`, on Parama Ekadashi 2026-06-11 — a Hindu date
+from a single source rather than a cross-checked one. Recorded so that nobody
+later reads "the three MED-confidence Buddhist dates" as something that was
+once true of this code.
+
+### A long observance is context on its first day and noise after it
+
+Vassa spans 89 days, and naming it in the meal-plan brief on every one of them
+— to households with no Buddhist member — is a page the model reads past.
+`calendarNotesOn` now takes the traditions actually kept at the table, and an
+observance running two weeks or more has to be one of them to be mentioned.
+Shorter ones are unfiltered, so Navratri and Paryushana behave as before.
+
 ## Fajr at 18 degrees, and the two other conventions
 
 Maghrib is sunset and needs no convention. Fajr does: it is the moment the sun

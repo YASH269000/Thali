@@ -82,6 +82,12 @@ the family's city.
   Ekadashi both do. A tradition with a real fast and no meal (Sandhya Arghya)
   belongs in `WINDOW_ONLY_FASTS` rather than being given an invented occasion.
 
+## Theravada Dates
+Vesak, Asalha Puja, Magha Puja and Vassa are `provisional`, not `computed`.
+The astronomy is exact; the Theravada calendars intercalate differently from
+the Indian rule and are not modelled here, so the divergence is a MONTH. Never
+raise their confidence without modelling that calendar — see DATA-ISSUES.md.
+
 ## Location
 `thali_location` holds one of the eight cities in `panchanga/locations.js`,
 default Delhi. `src/lib/location.js` is the only reader.

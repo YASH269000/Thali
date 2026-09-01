@@ -148,6 +148,24 @@ const JAIN = {
 }
 
 /**
+ * Vassa — three months in which laity commonly take on one more restraint.
+ *
+ * Not a fast: the meals stand and what changes is what is in them. Most
+ * commonly that is vegetarian food and no alcohol for the duration, which is
+ * the part this can act on. Anything beyond that varies by household and by
+ * country and is not something to invent a rule for.
+ */
+const VASSA = {
+  id: 'vassa',
+  label: 'Vassa',
+  flags: ['alcoholFree'],
+  vegetarianOnly: true,
+  forbidden: ['wine', 'beer', 'rum', 'brandy', 'vodka', 'whisky'],
+  swaps: [],
+  permitted: [],
+}
+
+/**
  * Chhath, which is satvik throughout and not only a matter of hours.
  *
  * Nahay-Khay is the day this bites hardest — one meal, and the tradition names
@@ -224,12 +242,13 @@ export const TRADITION_RULES = {
   chhath_kharna: CHHATH,
   chhath_sandhya_arghya: CHHATH,
   chhath_usha_arghya: CHHATH,
+  vassa_rains_retreat: VASSA,
 }
 
 /** The Jain diet is an identity, not a fast, and carries the same rules. */
 export const DIET_RULES = { jain: JAIN }
 
-export const ALL_RULES = [VRAT, JAIN, SAWAN, CHHATH]
+export const ALL_RULES = [VRAT, JAIN, SAWAN, CHHATH, VASSA]
 
 /* ------------------------------------------------------------------ *
  * Matching                                                           *

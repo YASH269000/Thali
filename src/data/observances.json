@@ -219,6 +219,20 @@
       "endsAt": 2461072.516355
     },
     {
+      "id": "magha_puja",
+      "name": "Magha Puja",
+      "religion": "Buddhist",
+      "date": "2026-02-01",
+      "confidence": "provisional",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Purnima",
+      "masa": "Magha",
+      "marginMinutes": 76,
+      "provisionalReason": "The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.",
+      "startsAt": 2461072.516355,
+      "endsAt": 2461073.423441
+    },
+    {
       "id": "purnima",
       "name": "Purnima",
       "religion": "Hindu",
@@ -762,11 +776,12 @@
       "name": "Buddha Purnima / Vesak",
       "religion": "Buddhist",
       "date": "2026-05-01",
-      "confidence": "computed",
+      "confidence": "provisional",
       "resolvedBy": "sunrise",
       "tithi": "shukla Purnima",
       "masa": "Vaishakha",
       "marginMinutes": 406,
+      "provisionalReason": "The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.",
       "startsAt": 2461161.155518,
       "endsAt": 2461162.225122
     },
@@ -1281,6 +1296,20 @@
       "endsAt": 2461250.034411
     },
     {
+      "id": "asalha_puja",
+      "name": "Asalha Puja",
+      "religion": "Buddhist",
+      "date": "2026-07-29",
+      "confidence": "provisional",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Purnima",
+      "masa": "Ashadha",
+      "marginMinutes": 575,
+      "provisionalReason": "The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.",
+      "startsAt": 2461250.034411,
+      "endsAt": 2461251.10827
+    },
+    {
       "id": "purnima",
       "name": "Purnima",
       "religion": "Hindu",
@@ -1292,6 +1321,21 @@
       "marginMinutes": 575,
       "startsAt": 2461250.034411,
       "endsAt": 2461251.10827
+    },
+    {
+      "id": "vassa",
+      "name": "Vassa (rains retreat)",
+      "religion": "Buddhist",
+      "date": "2026-07-30",
+      "confidence": "provisional",
+      "resolvedBy": "the day after Asalha Puja, to the Ashwin full moon",
+      "tithi": null,
+      "masa": "Ashadha to Ashwin",
+      "marginMinutes": null,
+      "from": "2026-07-30",
+      "through": "2026-10-26",
+      "derivedFrom": "Ashadha Purnima + 1 day, through Ashwin Purnima",
+      "provisionalReason": "The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against."
     },
     {
       "id": "sankashti_chaturthi",
@@ -2653,6 +2697,21 @@
       "endsAt": 2461456.604401
     },
     {
+      "id": "magha_puja",
+      "name": "Magha Puja",
+      "religion": "Buddhist",
+      "date": "2027-02-20",
+      "confidence": "provisional",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Purnima",
+      "masa": "Magha",
+      "marginMinutes": 65,
+      "kshayaTithi": true,
+      "provisionalReason": "The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.",
+      "startsAt": 2461456.604401,
+      "endsAt": 2461457.474749
+    },
+    {
       "id": "purnima",
       "name": "Purnima",
       "religion": "Hindu",
@@ -3198,11 +3257,12 @@
       "name": "Buddha Purnima / Vesak",
       "religion": "Buddhist",
       "date": "2027-05-20",
-      "confidence": "computed",
+      "confidence": "provisional",
       "resolvedBy": "sunrise",
       "tithi": "shukla Purnima",
       "masa": "Vaishakha",
       "marginMinutes": 635,
+      "provisionalReason": "The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.",
       "startsAt": 2461544.93995,
       "endsAt": 2461545.95777
     },
@@ -3526,6 +3586,20 @@
       "endsAt": 2461604.054756
     },
     {
+      "id": "asalha_puja",
+      "name": "Asalha Puja",
+      "religion": "Buddhist",
+      "date": "2027-07-18",
+      "confidence": "provisional",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Purnima",
+      "masa": "Ashadha",
+      "marginMinutes": 500,
+      "provisionalReason": "The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against.",
+      "startsAt": 2461604.054756,
+      "endsAt": 2461605.156351
+    },
+    {
       "id": "purnima",
       "name": "Purnima",
       "religion": "Hindu",
@@ -3551,6 +3625,21 @@
       "from": "2027-07-18",
       "through": "2027-08-17",
       "derivedFrom": "Mondays between Ashadha Purnima and Shravana Purnima"
+    },
+    {
+      "id": "vassa",
+      "name": "Vassa (rains retreat)",
+      "religion": "Buddhist",
+      "date": "2027-07-19",
+      "confidence": "provisional",
+      "resolvedBy": "the day after Asalha Puja, to the Ashwin full moon",
+      "tithi": null,
+      "masa": "Ashadha to Ashwin",
+      "marginMinutes": null,
+      "from": "2027-07-19",
+      "through": "2027-10-15",
+      "derivedFrom": "Ashadha Purnima + 1 day, through Ashwin Purnima",
+      "provisionalReason": "The Theravada calendars — Thai, Burmese, Sri Lankan — intercalate on a different rule from the Indian one. The engine implements the Indian rule (a lunar month with no solar ingress); the Thai calendar inserts a second Ashadha on a fixed cycle. When the two disagree the gap is a MONTH, not a day, and nothing in this repository models the Theravada reckoning to check against."
     },
     {
       "id": "sankashti_chaturthi",
