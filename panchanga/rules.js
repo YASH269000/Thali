@@ -43,8 +43,8 @@ export const TITHI_RULES = [
     paksha: PAKSHA_BOTH,
     masa: null,
     observedAt: 'sunset',
-    resolveAt: 'sunset',
-    note: 'Kept in the twilight window from sunset; the tithi at sunset decides it.',
+    resolveAt: 'pradosh',
+    note: 'Kept in the twilight window from sunset; Trayodashi need only overlap it.',
   },
   {
     id: 'sankashti_chaturthi',

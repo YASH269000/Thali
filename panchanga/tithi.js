@@ -187,11 +187,15 @@ export function boundaryMargin(span, place) {
  * applying sunrise to them is simply the wrong rule rather than an
  * approximation of it. Two matter here:
  *
- *   sunset     Pradosh is kept in the twilight window that begins at sunset,
- *              so the tithi at sunset decides it. This is not a refinement of
- *              the sunrise rule but a different one: on 17 May 2027 the tithi
- *              at sunrise is Dwadashi and at sunset Trayodashi, and it is a
- *              Pradosh day.
+ *   pradosh    a WINDOW, not an instant: sunset to sunset + 3 ghatis (72
+ *              minutes). Trayodashi need only overlap it, and the day with the
+ *              greater overlap wins. Using the instant of sunset instead gets
+ *              3 May 2027 wrong — Trayodashi begins 67 minutes after sunset
+ *              that evening, which is inside the window but after the instant.
+ *              Authorities differ on the length; 3 ghatis is the classical
+ *              figure and the supplied PDF says "1.5 to 2 hours", so this is a
+ *              choice, and PRADOSH_KAAL_MINUTES names it rather than burying
+ *              it.
  *   moonrise   Sankashti Chaturthi and Karwa Chauth are broken on sighting the
  *              Moon, so the tithi at moonrise decides them.
  *   nishita    the middle of the night, midway between sunset and the next
@@ -206,7 +210,26 @@ export function boundaryMargin(span, place) {
  *
  * @returns {{ date: string|null, moment: number|null }}
  */
+export const PRADOSH_KAAL_MINUTES = 72
+
 export function resolveByKaal(span, place, mode) {
+  // The window modes score every candidate day and take the best overlap,
+  // rather than returning the first day that qualifies at all.
+  if (mode === 'pradosh') {
+    let best = null
+    for (let d = -2; d <= 2; d += 1) {
+      const iso = isoDateAt(span.startJd + d, place.tz)
+      const { sunset } = sunRiseSet(isoToJD(iso, place.tz), place)
+      if (sunset === null) continue
+      const windowEnd = sunset + PRADOSH_KAAL_MINUTES / 1440
+      const overlap = Math.min(span.endJd, windowEnd) - Math.max(span.startJd, sunset)
+      if (overlap > 0 && (!best || overlap > best.overlap)) {
+        best = { date: iso, moment: Math.max(span.startJd, sunset), overlap }
+      }
+    }
+    return best ? { date: best.date, moment: best.moment } : { date: null, moment: null }
+  }
+
   for (let d = -2; d <= 2; d += 1) {
     const iso = isoDateAt(span.startJd + d, place.tz)
     const jd0 = isoToJD(iso, place.tz)

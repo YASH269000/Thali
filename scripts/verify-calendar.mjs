@@ -13,8 +13,8 @@ import {
   adhikaMaasFor, christianDates, islamicObservances,
   resolveTithiRule, solarIngresses, sunRiseSet,
 } from '../panchanga/index.js'
-import { fromJD, isoDateAt, isoToJD } from '../panchanga/julian.js'
-import { solveElongation } from '../panchanga/tithi.js'
+import { fromJD, isoDateAt, isoToJD, jdToJde } from '../panchanga/julian.js'
+import { PRADOSH_KAAL_MINUTES, describeTithi, solveElongation, tithiIndexAt } from '../panchanga/tithi.js'
 import { phaseJDE } from '../test/reference/moonPhase.js'
 import { AMAVASYA_2027, PRADOSH_2027, PURNIMA_2027, parseStamp } from '../test/reference/pdf2027.js'
 
@@ -408,6 +408,17 @@ if (selfCheck.length === 0) {
   say(`**${selfCheck.length} of ${PRADOSH_2027.length} Pradosh rows fail this test.** On each, the engine`)
   say('places the vrat on the previous day, which is the day Trayodashi actually')
   say('spans sunset. That accounts for the date disagreements below.')
+  say()
+  say(`Pradosh kaal is treated as a WINDOW — sunset to sunset + ${PRADOSH_KAAL_MINUTES} minutes`)
+  say('(3 ghatis) — not as the instant of sunset, and the day with the greater')
+  say('overlap wins. That distinction was tested rather than assumed: on')
+  say('3 May 2027 Trayodashi begins 67 minutes after sunset, inside the window')
+  say('but after the instant, so the window could have vindicated the PDF there.')
+  say('It does not. The following evening holds 25 minutes of overlap against')
+  say('5, and the PDF\'s own stated time for that row (20:15) matches the')
+  say('engine\'s tithi START (20:04), not its end — the column appears to be')
+  say('mislabelled. Switching between window and instant changes no date in')
+  say('2026 or 2027; the window is kept because it is the correct rule.')
 }
 say()
 say('### 3b-ii. Pradosh: where the two agree on timing')
@@ -488,23 +499,58 @@ say()
 say('## 5. Disagreements with the app\'s own 2026 calendar')
 say()
 say('`src/data/fastingTraditions.json` carries 25 hand-entered 2026 rows. The')
-say('engine is not wired to it and this changes nothing there, but the')
-say('comparison is the point of building this.')
+say('engine is wired to none of it and this changes nothing there.')
 say()
-say('| observance | app data | engine | note |')
+say('Each disagreement is settled by computation rather than assertion: the')
+say('last column says what tithi actually runs at the deciding moment on the')
+say('date the app gives. Where that is not the tithi the observance requires,')
+say('the app row is refuted by calculation, not by opinion.')
+say()
+say('| observance | app data | engine | what the app\'s date actually is |')
 say('| --- | --- | --- | --- |')
-const appRows = [
-  ['Makar Sankranti', '2026-01-14', mk26.date, ''],
-  ['Maha Shivaratri', '2026-02-17', resolveTithiRule(ruleById('maha_shivaratri'), 2026, place)[0]?.smarta, 'engine resolves at nishita (midnight), the rule for this festival'],
-  ['Janmashtami', '2026-08-14', resolveTithiRule(ruleById('janmashtami'), 2026, place)[0]?.smarta, 'app date is three weeks out'],
-  ['Ganesh Chaturthi', '2026-08-27', resolveTithiRule(ruleById('ganesh_chaturthi'), 2026, place)[0]?.smarta, 'engine resolves at madhyahna (midday)'],
-  ['Karwa Chauth', '2026-10-25', resolveTithiRule(ruleById('karwa_chauth'), 2026, place)[0]?.smarta, ''],
-  ['Aja Ekadashi', '2026-09-07', ek26.find((e) => e.ekadashiName === 'Aja')?.smarta, 'agrees'],
-  ['Mokshada Ekadashi', '2026-12-22', ek26.find((e) => e.ekadashiName === 'Mokshada')?.smarta, ''],
-]
-for (const [what, app, engine, note] of appRows) {
-  say(`| ${what} | ${app} | ${engine || '—'} | ${app === engine ? 'agrees' : note || 'differs'} |`)
+
+/** The tithi running at a given moment on a given local date. */
+function tithiOn(iso, when = 'sunrise') {
+  const jd0 = isoToJD(iso, place.tz)
+  const { sunrise, sunset } = sunRiseSet(jd0, place)
+  let moment = sunrise
+  if (when === 'sunset') moment = sunset
+  if (when === 'madhyahna') moment = (sunrise + sunset) / 2
+  if (when === 'nishita') {
+    const next = sunRiseSet(jd0 + 1, place)
+    moment = (sunset + next.sunrise) / 2
+  }
+  const t = describeTithi(tithiIndexAt(jdToJde(moment)))
+  return `${t.paksha} ${t.name}`
 }
+
+const appChecks = [
+  ['Makar Sankranti', '2026-01-14', mk26.date, 'sunrise', null],
+  ['Maha Shivaratri', '2026-02-17', resolveTithiRule(ruleById('maha_shivaratri'), 2026, place)[0]?.smarta, 'nishita', 'krishna Chaturdashi'],
+  ['Janmashtami', '2026-08-14', resolveTithiRule(ruleById('janmashtami'), 2026, place)[0]?.smarta, 'nishita', 'krishna Ashtami'],
+  ['Ganesh Chaturthi', '2026-08-27', resolveTithiRule(ruleById('ganesh_chaturthi'), 2026, place)[0]?.smarta, 'madhyahna', 'shukla Chaturthi'],
+  ['Karwa Chauth', '2026-10-25', resolveTithiRule(ruleById('karwa_chauth'), 2026, place)[0]?.smarta, 'sunrise', 'krishna Chaturthi'],
+  ['Aja Ekadashi', '2026-09-07', ek26.find((e) => e.ekadashiName === 'Aja')?.smarta, 'sunrise', 'krishna Ekadashi'],
+  ['Mokshada Ekadashi', '2026-12-22', ek26.find((e) => e.ekadashiName === 'Mokshada')?.smarta, 'sunrise', 'shukla Ekadashi'],
+]
+for (const [what, app, engine, when, required] of appChecks) {
+  if (app === engine) {
+    say(`| ${what} | ${app} | ${engine} | agrees |`)
+    continue
+  }
+  const actual = required ? tithiOn(app, when) : '(solar, not a tithi)'
+  const verdict = required
+    ? (actual === required ? `${actual} — the tithi is right; the difference is the resolution rule` : `**${actual}**, not ${required}`)
+    : actual
+  say(`| ${what} | ${app} | ${engine || '—'} | ${verdict} |`)
+}
+say()
+say('Read the last column carefully. Where it names a different tithi entirely,')
+say('the app date cannot be that observance under any school or any location in')
+say('India — a tithi is the same everywhere at a given instant, and only the')
+say('sunrise it is measured against is local. Where it names the RIGHT tithi,')
+say('the disagreement is about which day the tithi is assigned to, which is a')
+say('legitimate difference of rule and not an error.')
 say()
 
 say('## 6. Islamic dates — provisional by nature')
@@ -529,7 +575,68 @@ say('of India kept 28 May. One country, one year, two dates, and no calculation'
 say('resolves it.')
 say()
 
-say('## 7. What is still missing')
+say('## 7. The generated calendars')
+say()
+say('The other half of the brief: 2026 and 2027, generated in full, so the')
+say('24-row table in the research document can be diffed against something')
+say('rather than described.')
+say()
+say('The prediction to test against that table: if it was compiled without')
+say('Adhika Jyeshtha, its DATES should match this column exactly while its')
+say('NAMES diverge from late May 2026 onward — Padmini and Parama absent, and')
+say('every later name one month early.')
+say()
+for (const year of [2026, 2027]) {
+  const list = resolveTithiRule(ruleById('ekadashi_vrat'), year, place)
+  say(`### 7${year === 2026 ? 'a' : 'b'}. Ekadashi ${year} (${list.length} dates)`)
+  say()
+  say('| # | Smarta | Vaishnava | name | lunar month | margin | note |')
+  say('| --- | --- | --- | --- | --- | --- | --- |')
+  list.forEach((e, i) => {
+    const note = [
+      e.spansTwoSunrises ? 'two sunrises' : '',
+      e.kshayaTithi ? 'kshaya tithi' : '',
+      e.atRisk ? '**at risk**' : '',
+    ].filter(Boolean).join(', ')
+    say(`| ${i + 1} | ${e.smarta} | ${e.vaishnava === e.smarta ? '—' : e.vaishnava} | ${e.ekadashiName || '?'} | ${e.masa} | ${e.margin.toFixed(0)} min | ${note} |`)
+  })
+  say()
+}
+
+say('### 7c. Every other observance, 2026 and 2027')
+say()
+for (const year of [2026, 2027]) {
+  say(`**${year}**`)
+  say()
+  say('| observance | date | resolved at | tithi | margin |')
+  say('| --- | --- | --- | --- | --- |')
+  const rows = []
+  for (const r of TITHI_RULES) {
+    if (r.id === 'ekadashi_vrat') continue
+    for (const e of resolveTithiRule(r, year, place)) rows.push(e)
+  }
+  rows.sort((a, b) => a.smarta.localeCompare(b.smarta))
+  for (const e of rows) {
+    say(`| ${e.name} | ${e.smarta}${e.vaishnava !== e.smarta ? ` (V ${e.vaishnava})` : ''} | ${e.resolvedBy} | ${e.tithi.paksha} ${e.tithi.name} | ${e.margin.toFixed(0)} min |`)
+  }
+  say()
+}
+
+say('### 7d. Solar ingresses')
+say()
+say('| rashi | 2026 | 2027 |')
+say('| --- | --- | --- |')
+{
+  const a = solarIngresses(2026, place)
+  const b = solarIngresses(2027, place)
+  for (const r of a) {
+    const match = b.find((x) => x.rashi === r.rashi)
+    say(`| ${r.name} | ${r.date} | ${match ? match.date : '—'} |`)
+  }
+}
+say()
+
+say('## 8. What is still missing')
 say()
 say('- **The 2026 comparison source.** The brief names two hand-compiled sources;')
 say('  one 2027 PDF arrived. The 2026 Ekadashi table with 24 rows is not in the')

@@ -6,7 +6,8 @@ import {
 } from '../panchanga/index.js'
 import { hijriToJD, jdToHijri } from '../panchanga/hijri.js'
 import { sunRiseSet } from '../panchanga/riseset.js'
-import { isoToJD, fromJD } from '../panchanga/julian.js'
+import { isoToJD, fromJD, jdToJde } from '../panchanga/julian.js'
+import { describeTithi, tithiIndexAt } from '../panchanga/tithi.js'
 
 const place = DEFAULT_LOCATION
 const rule = (id) => TITHI_RULES.find((r) => r.id === id)
@@ -157,4 +158,42 @@ test('a margin is a distance and is never negative', () => {
       }
     }
   }
+})
+
+test('Pradosh is decided by a window after sunset, not the instant of it', () => {
+  // 3 May 2027: Trayodashi begins 67 minutes after sunset, so the instant and
+  // the window disagree about whether that evening qualifies at all. The
+  // following evening holds more overlap and wins either way — this pins the
+  // outcome so a change to PRADOSH_KAAL_MINUTES cannot move it silently.
+  const p = dates('pradosh_vrat', 2027)
+  assert.ok(p.includes('2027-05-04'), 'the evening with the greater overlap')
+  assert.ok(!p.includes('2027-05-03'), 'the evening Trayodashi barely clips')
+})
+
+test('every Pradosh day has Trayodashi overlapping its pradosh kaal', () => {
+  // The defining property. If a computed date fails this, the rule is not
+  // being applied, whatever the date happens to look like.
+  for (const year of [2026, 2027]) {
+    for (const e of resolveTithiRule(rule('pradosh_vrat'), year, place)) {
+      const { sunset } = sunRiseSet(isoToJD(e.smarta, place.tz), place)
+      const windowEnd = sunset + 72 / 1440
+      const overlap = Math.min(e.endsAt, windowEnd) - Math.max(e.startsAt, sunset)
+      assert.ok(overlap > 0,
+        `${e.smarta}: Trayodashi does not reach pradosh kaal`)
+      assert.equal(e.tithi.number, 13, `${e.smarta} is not a Trayodashi`)
+    }
+  }
+})
+
+test('the app\'s disputed 2026 dates are the wrong tithi, not a rule difference', () => {
+  // Refutation by computation rather than by assertion — the claim made in
+  // section 5 of the report. Each app date carries a tithi that cannot be the
+  // observance under any school, because a tithi is the same instant everywhere.
+  const at = (iso) => {
+    const { sunrise } = sunRiseSet(isoToJD(iso, place.tz), place)
+    return describeTithi(tithiIndexAt(jdToJde(sunrise)))
+  }
+  assert.notEqual(at('2026-08-14').name, 'Ashtami', 'app Janmashtami date')
+  assert.notEqual(at('2026-12-22').name, 'Ekadashi', 'app Mokshada date')
+  assert.notEqual(at('2026-10-25').number, 4, 'app Karwa Chauth date')
 })
