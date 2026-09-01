@@ -390,3 +390,24 @@ contribute one usable slot between them, not two. Indo-Chinese went from 0
 usable Jain lunch dishes to 1 and Thai from 1 to 2, both still under the
 3-dish floor at which a cuisine becomes offerable. A Jain guest is still told
 those two cuisines cannot fill a lunch, which remains true.
+
+
+## Worcestershire sauce is treated as non-vegetarian
+
+Classic Worcestershire is fermented with anchovy. Vegetarian versions are
+common in India, but the app cannot know which bottle is in a reader's
+kitchen, so the sauce is treated as non-veg. It costs one vegetarian row -
+BFP096 barbeque sauce, the only recipe in the catalogue that uses it - and the
+alternative is serving fish to a vegetarian who bought the classic bottle.
+
+Reversing it is deleting `worcestershire` from `MEAT_RE` in
+`src/lib/mealPlanRules.js`.
+
+No user-facing surface carries this today, and none can: the reason a recipe
+was excluded is computed by `evaluateRecipe` and thrown away by
+`filterRecipes`, so a vegetarian family simply never sees the dish and is
+never told why. That is the right behaviour for now - the sentence has nowhere
+to go that a reader would encounter it. It belongs in the "why this meal"
+panel, where the exclusion reason for this row would otherwise read
+"non_veg dish, Asha is vegetarian" against a barbecue sauce, which is
+baffling without the explanation.
