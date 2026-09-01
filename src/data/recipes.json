@@ -2770,8 +2770,8 @@
         "note": ""
       },
       "jainSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — lists \"ginger\". Unqualified ginger in an Indian recipe is the fresh root, which is underground. Corrected 2026-09; was \"yes\"."
       },
       "diabeticFriendly": {
         "status": "no",
@@ -5010,8 +5010,8 @@
         "note": ""
       },
       "jainSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — lists \"ginger (grated)\", which is the fresh root. Corrected 2026-09; was \"yes\"."
       },
       "diabeticFriendly": {
         "status": "yes",
@@ -5514,8 +5514,8 @@
         "note": ""
       },
       "jainSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — lists \"ginger\". Unqualified ginger in an Indian recipe is the fresh root. Corrected 2026-09; was \"yes\"."
       },
       "diabeticFriendly": {
         "status": "yes",
@@ -5682,8 +5682,8 @@
         "note": ""
       },
       "jainSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — lists \"ginger\". Unqualified ginger in an Indian recipe is the fresh root. Corrected 2026-09; was \"yes\"."
       },
       "diabeticFriendly": {
         "status": "yes",
@@ -31042,8 +31042,8 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — lists \"Peas, fresh (Pisum sativum)\". Peas are a pulse, and no pulse is eaten on Ekadashi. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
         "status": "yes",
@@ -40738,8 +40738,8 @@
         "note": "Yes"
       },
       "jainSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — arbi (colocasia) is a corm and the dish is named for it. Corrected 2026-09; was \"yes\"."
       },
       "diabeticFriendly": {
         "status": "partial",
@@ -53618,8 +53618,8 @@
         "note": "No — contains semolina wheat"
       },
       "jainSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — lists \"Shallots, raw\", an underground allium. Corrected 2026-09; was \"yes\"."
       },
       "diabeticFriendly": {
         "status": "partial",
@@ -56186,16 +56186,16 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — lists \"Shallots, raw\". Allium is excluded on Ekadashi. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
         "status": "yes",
         "note": "Yes"
       },
       "jainSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "No — lists \"Shallots, raw\", an underground allium. Corrected 2026-09; was \"yes\"."
       },
       "diabeticFriendly": {
         "status": "yes",

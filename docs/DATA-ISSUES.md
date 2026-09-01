@@ -686,23 +686,145 @@ Per-person observance (`src/lib/observanceProfile.js`) narrowed the second row
 without aliasing anything. Every vrat's baseline is `alliumScope:
 'none_all_day'` — the strictest reading, and a true one: a vrat day is a
 sattvic day — so a Tuesday-fasting member now contributes `onionGarlicFree`
-and the same measurement gives:
+and the same measurement gives 601 rather than 1,132.
 
-| Active fast | Servable | via |
+### Closed by ingredient rules — FIXED
+
+`src/lib/ingredientRules.js` gives a tradition keyword lists instead of a
+tenth compliance flag, evaluated against the ingredient text by the PANTRY
+matcher — `splitIngredients` → `parseIngredient` → `matchPantryLine`, the same
+three functions in the same order that decide whether a family already has
+something in the kitchen. No second matcher exists, which is what keeps
+`potato` off `sweet potato`, `onion` off `spring onion`, and `salt` off
+`sendha namak`.
+
+Measured on a vegetarian member against 1,132 servable:
+
+| tradition | before | after | what does it |
+| --- | --- | --- | --- |
+| Ekadashi | 185 | **177** | no grains, pulses, allium, vinegar |
+| Navratri | 215 | **200** | the same rules |
+| Paryushana | **1,132** | **460** | jainSafe + onionGarlicFree + alcoholFree, plus roots, brinjal, honey |
+| Das Lakshana | **1,132** | **460** | the same rules |
+| Sawan Somvar | 601 | **558** | leafy greens and brinjal, for the month |
+| Jain diet, year round | 472 | **460** | the roots the flag alone missed |
+
+Paryushana and Das Lakshana are the headline: they required nothing at all, so
+a Jain member observing them was served exactly what an unfasting member was.
+
+The gap is not fully closed. Ramadan, Karwa Chauth, Chhath, Uposatha and the
+weekly vrats still have no ingredient rules, and the honest reason is the same
+as before — writing them needs someone who knows the tradition, not someone
+who can write a keyword list.
+
+### Sendha namak is a swap, not an exclusion — and the measurement that decided it
+
+"Only sendha namak" is the rule Ekadashi is best known for, and enforcing it
+literally would have been wrong. Of 1,464 recipes:
+
+| | count | source |
 | --- | --- | --- |
-| Mangalvar Vrat, observed at the baseline | 601 | `onionGarlicFree` |
-| Mangalvar Vrat, member permits allium | 1,132 | contributes nothing |
+| names sendha or rock salt | 19 | 100% Thali Original |
+| says bare `salt` | 985 | overwhelmingly INDB |
+| names another salt | 13 | mixed |
+| no salt at all | 447 | mixed |
 
-That is a real constraint under its own name rather than a borrowed one, and
-it is the member's to loosen. It does not close the gap: the tradition's
-*food* rules — what may be eaten, not what is avoided — still have no column
-in the recipe data, and a Paryushana member is no better served than before.
+The split is a partition, not a tendency. Every recipe naming sendha namak is
+hand-written; the bare-`salt` rows are machine imports whose ingredient
+strings read `plain: 100g; salt: 0.17tsp` and `sunflower: 0.5tsp; salt:
+0.25tsp; water`. That is a nutrition table listing sodium chloride as an
+analysed component, not a cook choosing a salt — and of the 78 bare-salt
+Ekadashi recipes, **none** names sendha namak in `preparation` or `tips`
+either.
 
-The reason this is safe to state as a narrowing rather than as an alias: it
-only ever ADDS a flag. `requiredFlags` is a Set with no `.delete()`, so a
-member who permits allium cannot widen a plate that someone else narrowed.
-`test/observance-additive.test.js` asserts that by adding the looser member
-and checking the pool does not move.
+Excluding on bare `salt` would have taken the Ekadashi pool from 185 to 106,
+and the demo family's from 83 to 24. So bare salt attaches a swap note — "use
+sendha namak (rock salt)" — and only an explicitly named table or iodised salt
+excludes. Honey splits the same way: `honey (optional)` and `honey or jaggery`
+get a swap; Honey Noodles and Baklava do not.
+
+### Turmeric and ginger are deliberately absent from the Jain rules
+
+Both are underground and both are genuinely excluded fresh. But
+`pantryIdentity('fresh turmeric').base` is `turmeric`, because the
+canonicaliser strips `fresh` as a qualifier — correctly, everywhere else it
+fires. So a `fresh turmeric` keyword matches the plain "turmeric" that means
+powdered haldi, which Jain cooking uses freely, and it excluded **31** recipes
+that were correctly flagged `jainSafe`.
+
+**Do not special-case the canonicaliser to fix this.** A recipe that says only
+"turmeric" carries no information about which one it means, and no matcher can
+recover what the text does not contain; stripping `fresh` is right for every
+other ingredient it touches. The keywords are dropped and the four recipes
+where bare "ginger" really was the fresh root were corrected at the flag
+instead. This paragraph exists so that a later "improvement" to the
+canonicaliser does not quietly reintroduce 31 wrong exclusions.
+
+## Nine compliance flags corrected — FIXED
+
+Found by running the new ingredient rules against the flags and reporting
+every disagreement. Each is a recipe whose flag said one thing and whose own
+ingredient list said another; in these nine the flag was wrong.
+
+| recipe | flag | was | evidence |
+| --- | --- | --- | --- |
+| ASC480 Vegetable soup | `ekadashiSafe` | yes | `Peas, fresh (Pisum sativum)` — a pulse |
+| OSR056 Small onion pickle | `ekadashiSafe` | yes | `Shallots, raw` — allium |
+| OSR056 Small onion pickle | `jainSafe` | yes | `Shallots, raw` — underground allium |
+| OSR009 Semolina milk drink | `jainSafe` | yes | `Shallots, raw` |
+| BFP264 Masala arbi | `jainSafe` | yes | arbi is a corm, and the dish is named for it |
+| W008 Urad Dal Vada | `jainSafe` | yes | `ginger` |
+| B014 Curd Rice | `jainSafe` | yes | `ginger (grated)` |
+| D003 Moong Dal Chilla | `jainSafe` | yes | `ginger` |
+| D006 Brown Rice Khichdi | `jainSafe` | yes | `ginger` |
+
+The four ginger rows turn on a reading: unqualified "ginger" in an Indian
+recipe is the fresh root, not dry sonth. Each correction carries its evidence
+in the flag's own `note`, and `test/ingredient-rules.test.js` asserts the nine
+stay corrected and stay explained.
+
+### Eight more the rules surfaced, not yet approved
+
+Reported rather than changed, because the nine above were approved
+individually and these were not. The filter already excludes all eight — the
+ingredient rule is stricter than the flag, so nobody is served them — but the
+flag and the rule disagree and one of them should move.
+
+| recipe | flag | what the rule catches |
+| --- | --- | --- |
+| N004 Samo Rice Pulao | `ekadashiSafe`, `navratriSafe` | `green peas` |
+| ASC512 Plum chutney | `ekadashiSafe` | `Vinegar` |
+| ASC513 Raw mango chutney | `ekadashiSafe` | `Vinegar, distilled` |
+| BFP163 Green chilli sauce | `ekadashiSafe` | `Vinegar` |
+| BFP306 Jellied sunshine fruit salad | `ekadashiSafe` | `Vinegar` |
+| BFP310 French dressing | `ekadashiSafe` | `Vinegar` |
+| BFP312 Mayonnaise without eggs | `ekadashiSafe` | `Vinegar` |
+| OSR058 Pickled cabbage | `ekadashiSafe` | `Vinegar` |
+
+**N004 is the one worth an argument.** It is a hand-written Thali Original
+written *for* Navratri, and it is excluded by the same peas rule that
+condemned ASC480. Its author hedged in the ingredient list itself — "carrot
+equivalent — use bottle gourd (lauki) cubed instead if strict" — so they knew
+they were near the line. Either fresh green peas are vrat food and both flags
+stand, or they are a pulse and both recipes are wrong. They cannot differ.
+
+## Lent, Easter and a religion the app does not offer
+
+The premise is every religion, and Christianity has no option. `RELIGIONS` is
+`Hindu, Jain, Muslim, Sikh, Buddhist, none`; the tradition database has zero
+Christian rows; no member can select one.
+
+The dates already exist and nothing consumes them. `panchanga/computus.js`
+exports `easter` and `christianDates`, and the verification report checks
+Easter 2026 and 2027 against known values and passes. Lenten Friday, Ash
+Wednesday and Good Friday would need a religion option, tradition rows, food
+rules and calendar wiring.
+
+Ingredient rules for those were written and measured — no meat, mammal or
+poultry, fish permitted; it removes 27 of 1,464 for a non-vegetarian — and
+then deliberately NOT shipped. Half of a religion is worse than none of it: a
+family would find Lenten food rules with no way to say anyone is Christian.
+This is its own step.
 
 ## "Why this meal" is explanation, not advice
 

@@ -10,7 +10,9 @@
 //                  diabeticFriendly, so: exclude for diabetics, allow otherwise)
 
 import { BLOCKING_KINDS, unknownMemberIds } from './memberValidation.js'
+import { FAST_LABEL } from '../data/memberOptions.js'
 import { observanceFor } from './observanceProfile.js'
+import { ruleSwaps, ruleViolations, rulesFor } from './ingredientRules.js'
 
 export const FLAG_KEYS = [
   'ekadashiSafe', 'navratriSafe', 'jainSafe', 'diabeticFriendly',
@@ -359,6 +361,19 @@ export function memberConstraints(member, activeFastIds) {
   // Onion and garlic, all day, for anyone whose observance says so.
   if (binding.some((o) => o.alliumScope === 'none_all_day')) required.add('onionGarlicFree')
 
+  // A tradition's own compliance flags, which until now only Ekadashi and
+  // Navratri had. Paryushana and Das Lakshana required nothing at all, so a
+  // Jain member observing them was served exactly what an unfasting member
+  // was — the gap docs/DATA-ISSUES.md named.
+  const ingredientRules = rulesFor(
+    member.diet,
+    binding.map((o) => o.fastId),
+    (id) => FAST_LABEL[id] || id,
+  )
+  for (const rule of ingredientRules) {
+    for (const f of rule.flags || []) required.add(f)
+  }
+
   // Flags where `partial` is not good enough for this member.
   const strict = new Set()
   if (unreadable.has('health')
@@ -380,7 +395,12 @@ export function memberConstraints(member, activeFastIds) {
     // them is one the planner refuses to guess around (a fast).
     unknownIds: unknown,
     blocked: unknown.some((u) => BLOCKING_KINDS.has(u.kind)),
-    allowedKinds: DIET_ALLOWS[member.diet] || ['veg'],
+    // A tradition that is kept vegetarian narrows the KINDS rather than
+    // adding a flag: there is no "vegetarianSafe" column and there should not
+    // be one, because `dietKind` already reads it off the dish.
+    allowedKinds: ingredientRules.some((r) => r.vegetarianOnly)
+      ? (DIET_ALLOWS[member.diet] || ['veg']).filter((k) => k === 'veg')
+      : (DIET_ALLOWS[member.diet] || ['veg']),
     requiredFlags: [...required],
     strictFlags: [...strict],
     activeFasts: observed,
@@ -388,6 +408,11 @@ export function memberConstraints(member, activeFastIds) {
     // baseline. Carried so the additive suggestions and the prompt read the
     // same resolution the filter used, rather than resolving it twice.
     observances,
+    // What today's traditions forbid in the pot, which the nine compliance
+    // flags cannot express — see src/lib/ingredientRules.js. Resolved from the
+    // BINDING observances only, so the health exemption reaches these the same
+    // way it reaches the flags rather than being a second thing to remember.
+    ingredientRules,
     health: member.health || [],
     likes: member.likes || '',
     dislikes: member.dislikes || '',
@@ -438,6 +463,24 @@ function flagPhrase(flag) {
     return `is keeping ${flag === 'ekadashiSafe' ? 'Ekadashi' : 'Navratri'}`
   }
   return FLAG_PHRASE[flag] || `needs ${flag}`
+}
+
+/**
+ * How to name the traditions that brought an ingredient rule in.
+ *
+ * Falls back to the rule's label only when nothing named it — a diet-only
+ * rule with no fast behind it.
+ */
+function keptPhrase(rule) {
+  // "Ekadashi Vrat" is the database's name for the tradition; "Ekadashi" is
+  // what a family calls the day, and it is what flagPhrase above already says.
+  // The two wordings sit side by side in the same panel, so they match.
+  const kept = (rule.keptAs || [])
+    .filter(Boolean)
+    .map((label) => String(label).replace(/\s*\(.*?\)/g, '').replace(/\s+vrat$/i, '').trim())
+  if (kept.length === 0) return rule.label
+  if (kept.length === 1) return kept[0]
+  return `${kept.slice(0, -1).join(', ')} and ${kept.at(-1)}`
 }
 
 /** The dish's own note, without the verdict word it starts with. */
@@ -495,6 +538,31 @@ export function evaluateRecipe(recipe, constraints) {
     }
   }
 
+  // A tradition's ingredient rules, which the flags cannot express. Placed
+  // beside the allergy check rather than among the flags because it is the
+  // same kind of thing: a fact read off the ingredient list, not a column
+  // somebody annotated. An exclusion here is hard — a vrat that admits a
+  // pulse is not a vrat.
+  for (const rule of constraints.ingredientRules || []) {
+    const hit = ruleViolations(recipe, [rule])[0]
+    if (!hit) continue
+    return {
+      verdict: 'excluded',
+      reasons: [`contains ${hit.term}, which ${rule.label} excludes`],
+      rejection: {
+        kind: 'fast',
+        flag: `ingredient:${hit.term}`,
+        member: constraints.name,
+        memberId: constraints.id,
+        // The tradition this member is keeping, not the rule set's own name:
+        // one rule set serves Ekadashi and Navratri both, and a family keeping
+        // one of them is not keeping the other.
+        because: `is keeping ${keptPhrase(rule)}`,
+        detail: `contains ${hit.ingredient}`,
+      },
+    }
+  }
+
   for (const flag of constraints.requiredFlags) {
     const f = recipe.flags?.[flag]
     if (!f) continue
@@ -537,6 +605,22 @@ export function evaluateRecipe(recipe, constraints) {
     if (f.status === 'conditional') {
       conditional = true
       reasons.push(f.note ? `${flag}: ${f.note}` : flag)
+    }
+  }
+
+  // The other half of the ingredient rules. A dish that says "salt" is not
+  // wrong for a vrat — it is right with sendha namak, and the note says so
+  // rather than the dish being dropped for an import artefact. Carried like a
+  // caveat: the dish is servable and the modification travels with it.
+  for (const rule of constraints.ingredientRules || []) {
+    for (const swap of ruleSwaps(recipe, [rule])) {
+      caveats.push({
+        member: constraints.name,
+        memberId: constraints.id,
+        flag: `swap:${rule.id}`,
+        note: swap.note,
+        swap: true,
+      })
     }
   }
 

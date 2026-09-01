@@ -64,6 +64,19 @@ Voice-guided cooking that turns Thali into a teacher for people who cannot cook.
 - INDB recipes (hasFullPreparation: false) offer AI-generated steps on request.
 - Keyboard: right arrow next, left arrow previous, space read aloud, Esc close.
 
+## Ingredient Rules
+Traditions the nine compliance flags cannot express carry keyword lists in
+`src/lib/ingredientRules.js` — Ekadashi/Navratri, Jain/Paryushana/Das Lakshana,
+Sawan. Evaluated with the PANTRY matcher (`splitIngredients` →
+`parseIngredient` → `matchPantryLine`); never write a second matcher.
+- `forbidden` excludes; `swaps` annotates a servable dish. Bare "salt" is a
+  swap, not an exclusion — most bare-salt rows are nutrition-database imports.
+- No rule may name turmeric or ginger: the canonicaliser strips `fresh`, so
+  the keyword matches powdered haldi. See docs/DATA-ISSUES.md before touching
+  that — it excluded 31 correctly-flagged recipes.
+- A rejection names the tradition the MEMBER keeps (`keptAs`), not the rule
+  set's label — one rule set serves Ekadashi and Navratri both.
+
 ## User-Editable Dates
 `thali_observance_dates` holds a family's own answers, one slot per
 `observanceId@date`, and exactly one of four mutually exclusive answers:
