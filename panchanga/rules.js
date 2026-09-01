@@ -33,6 +33,7 @@ export const TITHI_RULES = [
     tithi: 11,
     paksha: PAKSHA_BOTH,
     masa: null,
+    viddha: 'arunodaya',
     note: 'Twice a lunar month. An Adhik Maas adds a third pair, Padmini and Parama.',
   },
   {

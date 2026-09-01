@@ -9,14 +9,15 @@
 
 import { writeFileSync } from 'node:fs'
 import {
-  DEFAULT_LOCATION, RISK_MINUTES, TITHI_RULES,
+  DEFAULT_LOCATION, TITHI_RULES,
   adhikaMaasFor, christianDates, islamicObservances,
-  resolveTithiRule, solarIngresses, sunRiseSet,
+  resolveTithiRule, solarIngresses, sunRiseSet, STABILITY_SHIFT_MINUTES,
 } from '../panchanga/index.js'
 import { fromJD, isoDateAt, isoToJD, jdToJde } from '../panchanga/julian.js'
 import { PRADOSH_KAAL_MINUTES, describeTithi, solveElongation, tithiIndexAt } from '../panchanga/tithi.js'
 import { phaseJDE } from '../test/reference/moonPhase.js'
 import { AMAVASYA_2027, PRADOSH_2027, PURNIMA_2027, parseStamp } from '../test/reference/pdf2027.js'
+import { EKADASHI_2026, normaliseName } from '../test/reference/ekadashi2026.js'
 
 const place = DEFAULT_LOCATION
 const out = []
@@ -277,33 +278,50 @@ say('  the Lahiri ayanamsa model, checked at the Calendar Reform Committee\'s')
 say('  defining point (23°15′00″ on 21 March 1956) where it reads 23°14′43″ —')
 say('  about 17″ low, or 7 minutes in the timing of an ingress.')
 say()
-say('### Dates at risk in 2026–2027')
+say('### Which dates would actually move')
 say()
-say(`A date is at risk when a small error would move it. The margin is the`)
-say('closest approach between any nearby sunrise and either end of the tithi:')
-say(`below **${RISK_MINUTES} minutes**, combined ephemeris and refraction error could flip the day.`)
+say('A tight margin says a boundary is CLOSE. It does not say the date is in')
+say('doubt, and treating the two as the same thing turned out to be wrong in')
+say('both directions. So every date is now re-resolved with the whole tithi')
+say(`shifted by ±${STABILITY_SHIFT_MINUTES} minutes — far larger than the measured ephemeris error`)
+say('and the refraction uncertainty combined. If the answer does not move under')
+say('that, the date is not in question however close the boundary looks.')
 say()
-say('| date | observance | margin | why |')
-say('| --- | --- | --- | --- |')
-const risky = []
+const allRows = []
 for (const year of [2026, 2027]) {
   for (const rule of TITHI_RULES) {
-    for (const e of resolveTithiRule(rule, year, place)) {
-      if (e.margin < RISK_MINUTES) risky.push(e)
-    }
+    for (const e of resolveTithiRule(rule, year, place)) allRows.push(e)
   }
 }
-risky.sort((a, b) => a.smarta.localeCompare(b.smarta))
-for (const e of risky) {
-  const why = e.kshayaTithi
-    ? 'kshaya tithi — a sunrise nearly falls inside'
-    : (e.spansTwoSunrises ? 'spans two sunrises — the split nearly vanishes' : 'sunrise nearly outside the tithi')
+const tight = allRows.filter((e) => e.atRisk).sort((a, b) => a.smarta.localeCompare(b.smarta))
+const unstable = allRows.filter((e) => e.needsConfirmation).sort((a, b) => a.smarta.localeCompare(b.smarta))
+
+say(`**${unstable.length} of ${allRows.length} observances across 2026–2027 move under that shift.**`)
+say('These are the dates that would carry a confirmation prompt:')
+say()
+say('| date | observance | margin | why it is delicate |')
+say('| --- | --- | --- | --- |')
+for (const e of unstable) {
+  const why = e.kshayaTithi ? 'kshaya tithi — no sunrise falls inside it'
+    : (e.spansTwoSunrises ? 'current at two sunrises' : `resolved at ${e.resolvedBy}, near its window edge`)
   say(`| ${e.smarta} | ${e.name}${e.ekadashiName ? ` (${e.ekadashiName})` : ''} | ${e.margin.toFixed(0)} min | ${why} |`)
 }
 say()
-say(`${risky.length} of the ${
-  [2026, 2027].reduce((n, y) => n + TITHI_RULES.reduce((m, r) => m + resolveTithiRule(r, y, place).length, 0), 0)
-} computed observances across the two years are inside the risk margin.`)
+say('And the tight margins that are nonetheless safe — this is the half a')
+say('margin-only report gets wrong:')
+say()
+say('| date | observance | margin | verdict |')
+say('| --- | --- | --- | --- |')
+for (const e of tight) {
+  say(`| ${e.smarta} | ${e.name}${e.ekadashiName ? ` (${e.ekadashiName})` : ''} | ${e.margin.toFixed(0)} min | ${e.stable ? '**stable** — both sides of the boundary give the same day' : 'moves — listed above'} |`)
+}
+say()
+say('Note what this corrects. Of the seven observances inside the fifteen-minute')
+say(`margin, ${tight.filter((e) => e.stable).length} are stable; and ${unstable.filter((e) => !e.atRisk).length} dates that the margin never flagged do move.`)
+say('The margin was the wrong signal on its own — for anything resolved at')
+say('sunset or moonrise it measures a distance to sunrise, which is not the')
+say('quantity deciding the outcome. Stability is measured against the rule that')
+say('actually applies.')
 say()
 
 say('## 2. Does an Adhik Maas occur in 2026?')
@@ -328,6 +346,94 @@ for (const m of adhika26.months) {
 say()
 say(`2027 carries ${adhika27.adhika.length === 0 ? 'no intercalary month' : adhika27.adhika.map((a) => a.name).join(', ')}, as expected: they recur about every 2.7 years.`)
 say()
+
+say('### Diff against the supplied 2026 table')
+say()
+say(`${EKADASHI_2026.length} rows, Delhi/IST, compiled from Drik Panchang, ISKCON Bangalore and`)
+say('Indian panchang media.')
+say()
+{
+  const mine = resolveTithiRule(ruleById('ekadashi_vrat'), 2026, place)
+  const dateHits = EKADASHI_2026.filter((d, i) => mine[i] && mine[i].smarta === d.date).length
+  const nameHits = EKADASHI_2026.filter((d, i) => mine[i]
+    && normaliseName(mine[i].ekadashiName || '') === normaliseName(d.name)).length
+  say(`| | agreement |`)
+  say('| --- | --- |')
+  say(`| dates | **${dateHits} of ${EKADASHI_2026.length}** |`)
+  say(`| names | **${nameHits} of ${EKADASHI_2026.length}** |`)
+  say()
+  const dateDiffs = EKADASHI_2026.filter((d, i) => mine[i] && mine[i].smarta !== d.date)
+  if (dateDiffs.length === 0) {
+    say('No date disagreements. No name disagreements.')
+  } else {
+    say('| doc | engine | name |')
+    say('| --- | --- | --- |')
+    for (const d of dateDiffs) {
+      const m = mine[EKADASHI_2026.indexOf(d)]
+      say(`| ${d.date} | ${m.smarta} | ${d.name} |`)
+    }
+  }
+  say()
+  say('**A prediction of mine was falsified and it is worth recording.** I')
+  say('predicted that a 24-row table would show matching dates with names')
+  say('shifted a month from late May, on the theory that it had been compiled')
+  say('without the leap month. It contains Padmini and Parama and every one of')
+  say('the 24 names is right. The table was not compiled leap-month-blind and')
+  say('the hypothesis was wrong.')
+  say()
+  say('**One observation about the source, which changes no date.** The dark')
+  say('fortnight is labelled inconsistently. Purnimanta naming is used from')
+  say('April onward — the document\'s "Krishna, Vaishakha" is the engine\'s')
+  say('Chaitra Krishna, and the two schemes differ by exactly one month for')
+  say('krishna paksha only. But January to March and the Adhika month are')
+  say('labelled amanta. Both conventions are correct; using both in one table')
+  say('is not. The Ekadashi NAMES are right throughout under either reading,')
+  say('so nothing downstream is affected.')
+  say()
+  say('| | rows |')
+  say('| --- | --- |')
+  say('| krishna rows labelled purnimanta (Apr–Dec) | Varuthini, Apara, Yogini, Kamika, Aja, Indira, Rama, Utpanna |')
+  say('| krishna rows labelled amanta (Jan–Mar, Adhika) | Shattila, Vijaya, Papmochani, Parama |')
+  say('| shukla rows | identical in both schemes — all 12 agree |')
+  say()
+}
+
+say('### Padmini: window versus convention')
+say()
+say('The one date that needed reconciling, and the answer is unambiguous once')
+say('the two questions are separated.')
+say()
+say('| | tithi begins | tithi ends |')
+say('| --- | --- | --- |')
+say(`| Drik Panchang (New Delhi) | 26 May 05:10 | 27 May 06:21 |`)
+{
+  const padmini = resolveTithiRule(ruleById('ekadashi_vrat'), 2026, place)
+    .find((e) => e.ekadashiName === 'Padmini')
+  say(`| this engine | ${stamp(padmini.startsAt).slice(5)} | ${stamp(padmini.endsAt).slice(5)} |`)
+  say(`| difference | 2 min | 1 min |`)
+  say()
+  say('**The astronomy agrees. The disagreement was entirely convention** — which')
+  say('is what the question asked me to determine, and it is the good outcome:')
+  say('a two-minute window difference could not have been argued away, whereas a')
+  say('convention can be named and implemented.')
+  say()
+  say('The convention is this. Ekadashi is present at BOTH sunrises here, so')
+  say('"udaya tithi" alone does not decide it — the plain two-sunrise rule gave')
+  say('Smarta the 26th. But Dashami ran until 05:12 against a sunrise of 05:25,')
+  say('thirteen minutes inside arunodaya kaal (the last four ghatis of night),')
+  say('so the 26th is Dashami-viddha and the vrat moves to the 27th. The engine')
+  say('now implements that rule, and the agreement above is the result: it was')
+  say('23 of 24 before, and 24 of 24 after.')
+  say()
+  say(`**Would I ship it?** Yes. Its margin is ${padmini.margin.toFixed(0)} minutes, which looks alarming,`)
+  say('but the date is stable: shift the whole tithi either way by a quarter of')
+  say('an hour and it is still 27 May. Both branches lead there — either the')
+  say('tithi touches two sunrises and the first is viddha, or it touches only')
+  say('the second. It also now matches the cited authority exactly. It is a')
+  say('tight boundary, not an uncertain date, and the engine distinguishes')
+  say('those.')
+  say()
+}
 
 say('### The 24 vs 26 question')
 say()

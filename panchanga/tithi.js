@@ -121,6 +121,31 @@ export function datesForSpan(span, place) {
   return { sunrises, kind, runsThrough: isoDateAt(span.startJd, place.tz) }
 }
 
+/** The last four ghatis before sunrise — 96 minutes — the arunodaya kaal. */
+export const ARUNODAYA_MINUTES = 96
+
+/**
+ * Is the first of two candidate days contaminated by the preceding tithi?
+ *
+ * The Ekadashi rule is stricter than the plain sunrise rule and this is where
+ * the difference bites. An Ekadashi that begins during arunodaya kaal — the
+ * last four ghatis of night — leaves Dashami running into the dawn, and that
+ * day is Dashami-viddha: the vrat moves to the following day.
+ *
+ * This is exactly the case of Padmini Ekadashi 2026. The tithi runs 26 May
+ * 05:12 to 27 May 06:22 and is present at both sunrises, so the plain rule
+ * would give Smarta the 26th. But Dashami ran until 05:12 against a sunrise of
+ * 05:25, thirteen minutes inside arunodaya, so the 26th is viddha and the vrat
+ * is kept on the 27th — which is what Drik Panchang, ISKCON and the panchang
+ * media all publish.
+ */
+export function isDashamiViddha(span, place, iso) {
+  const { sunrise } = sunRiseSet(isoToJD(iso, place.tz), place)
+  if (sunrise === null) return false
+  const arunodaya = sunrise - ARUNODAYA_MINUTES / 1440
+  return span.startJd > arunodaya && span.startJd <= sunrise
+}
+
 /**
  * Smarta and Vaishnava dates for one occurrence of a tithi.
  *
@@ -129,21 +154,31 @@ export function datesForSpan(span, place) {
  * the second. Where it is current at one, both keep that day. Where it is
  * current at none — a kshaya tithi — both keep the day it runs through.
  *
- * This is the operational form of a longer argument about viddha (a tithi
- * "contaminated" by the preceding one). It is not the whole of either
- * tradition's reasoning, and it is stated here as the engine's rule so that
- * a disagreement with a published calendar can be attributed rather than
- * argued about.
+ * With `viddha` set, one refinement applies on top: if the first day is
+ * Dashami-viddha the Smarta date moves to the second day as well, and the two
+ * schools converge. The split therefore appears only when the tithi began
+ * before arunodaya — cleanly, with the whole of the dawn to itself.
+ *
+ * This is the operational form of a longer argument. It is stated here as the
+ * engine's rule so that a disagreement with a published calendar can be
+ * attributed rather than argued about.
  */
-export function resolveObservance(span, place) {
+export function resolveObservance(span, place, viddha = null) {
   const { sunrises, kind, runsThrough } = datesForSpan(span, place)
   if (kind === 'two') {
-    return { smarta: sunrises[0], vaishnava: sunrises[1], kind, sunrises }
+    const contaminated = viddha === 'arunodaya' && isDashamiViddha(span, place, sunrises[0])
+    return {
+      smarta: contaminated ? sunrises[1] : sunrises[0],
+      vaishnava: sunrises[1],
+      kind,
+      sunrises,
+      viddha: contaminated,
+    }
   }
   if (kind === 'one') {
-    return { smarta: sunrises[0], vaishnava: sunrises[0], kind, sunrises }
+    return { smarta: sunrises[0], vaishnava: sunrises[0], kind, sunrises, viddha: false }
   }
-  return { smarta: runsThrough, vaishnava: runsThrough, kind, sunrises }
+  return { smarta: runsThrough, vaishnava: runsThrough, kind, sunrises, viddha: false }
 }
 
 /**

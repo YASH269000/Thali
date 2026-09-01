@@ -46,23 +46,45 @@ minute of boundary error.
   defining point (23°15′00″ on 21 March 1956) where it reads 23°14′43″ —
   about 17″ low, or 7 minutes in the timing of an ingress.
 
-### Dates at risk in 2026–2027
+### Which dates would actually move
 
-A date is at risk when a small error would move it. The margin is the
-closest approach between any nearby sunrise and either end of the tithi:
-below **15 minutes**, combined ephemeris and refraction error could flip the day.
+A tight margin says a boundary is CLOSE. It does not say the date is in
+doubt, and treating the two as the same thing turned out to be wrong in
+both directions. So every date is now re-resolved with the whole tithi
+shifted by ±15 minutes — far larger than the measured ephemeris error
+and the refraction uncertainty combined. If the answer does not move under
+that, the date is not in question however close the boundary looks.
 
-| date | observance | margin | why |
+**5 of 234 observances across 2026–2027 move under that shift.**
+These are the dates that would carry a confirmation prompt:
+
+| date | observance | margin | why it is delicate |
 | --- | --- | --- | --- |
-| 2026-05-05 | Sankashti Chaturthi | 11 min | spans two sunrises — the split nearly vanishes |
-| 2026-05-26 | Ekadashi Vrat (Padmini) | 13 min | spans two sunrises — the split nearly vanishes |
-| 2026-06-29 | Purnima | 1 min | spans two sunrises — the split nearly vanishes |
-| 2026-07-10 | Ekadashi Vrat (Yogini) | 8 min | kshaya tithi — a sunrise nearly falls inside |
-| 2026-11-27 | Sankashti Chaturthi | 13 min | kshaya tithi — a sunrise nearly falls inside |
-| 2026-12-23 | Purnima | 12 min | kshaya tithi — a sunrise nearly falls inside |
-| 2027-04-24 | Sankashti Chaturthi | 4 min | sunrise nearly outside the tithi |
+| 2026-04-28 | Pradosh Vrat | 589 min | resolved at pradosh, near its window edge |
+| 2026-07-10 | Ekadashi Vrat (Yogini) | 8 min | kshaya tithi — no sunrise falls inside it |
+| 2026-12-23 | Purnima | 12 min | kshaya tithi — no sunrise falls inside it |
+| 2026-12-26 | Sankashti Chaturthi | 602 min | resolved at moonrise, near its window edge |
+| 2027-05-04 | Pradosh Vrat | 574 min | resolved at pradosh, near its window edge |
 
-7 of the 234 computed observances across the two years are inside the risk margin.
+And the tight margins that are nonetheless safe — this is the half a
+margin-only report gets wrong:
+
+| date | observance | margin | verdict |
+| --- | --- | --- | --- |
+| 2026-05-05 | Sankashti Chaturthi | 11 min | **stable** — both sides of the boundary give the same day |
+| 2026-05-27 | Ekadashi Vrat (Padmini) | 13 min | **stable** — both sides of the boundary give the same day |
+| 2026-06-29 | Purnima | 1 min | **stable** — both sides of the boundary give the same day |
+| 2026-07-10 | Ekadashi Vrat (Yogini) | 8 min | moves — listed above |
+| 2026-11-27 | Sankashti Chaturthi | 13 min | **stable** — both sides of the boundary give the same day |
+| 2026-12-23 | Purnima | 12 min | moves — listed above |
+| 2027-04-24 | Sankashti Chaturthi | 4 min | **stable** — both sides of the boundary give the same day |
+
+Note what this corrects. Of the seven observances inside the fifteen-minute
+margin, 5 are stable; and 3 dates that the margin never flagged do move.
+The margin was the wrong signal on its own — for anything resolved at
+sunset or moonrise it measures a distance to sunrise, which is not the
+quantity deciding the outcome. Stability is measured against the rule that
+actually applies.
 
 ## 2. Does an Adhik Maas occur in 2026?
 
@@ -93,6 +115,72 @@ The full month table for 2026:
 
 2027 carries no intercalary month, as expected: they recur about every 2.7 years.
 
+### Diff against the supplied 2026 table
+
+24 rows, Delhi/IST, compiled from Drik Panchang, ISKCON Bangalore and
+Indian panchang media.
+
+| | agreement |
+| --- | --- |
+| dates | **24 of 24** |
+| names | **24 of 24** |
+
+No date disagreements. No name disagreements.
+
+**A prediction of mine was falsified and it is worth recording.** I
+predicted that a 24-row table would show matching dates with names
+shifted a month from late May, on the theory that it had been compiled
+without the leap month. It contains Padmini and Parama and every one of
+the 24 names is right. The table was not compiled leap-month-blind and
+the hypothesis was wrong.
+
+**One observation about the source, which changes no date.** The dark
+fortnight is labelled inconsistently. Purnimanta naming is used from
+April onward — the document's "Krishna, Vaishakha" is the engine's
+Chaitra Krishna, and the two schemes differ by exactly one month for
+krishna paksha only. But January to March and the Adhika month are
+labelled amanta. Both conventions are correct; using both in one table
+is not. The Ekadashi NAMES are right throughout under either reading,
+so nothing downstream is affected.
+
+| | rows |
+| --- | --- |
+| krishna rows labelled purnimanta (Apr–Dec) | Varuthini, Apara, Yogini, Kamika, Aja, Indira, Rama, Utpanna |
+| krishna rows labelled amanta (Jan–Mar, Adhika) | Shattila, Vijaya, Papmochani, Parama |
+| shukla rows | identical in both schemes — all 12 agree |
+
+### Padmini: window versus convention
+
+The one date that needed reconciling, and the answer is unambiguous once
+the two questions are separated.
+
+| | tithi begins | tithi ends |
+| --- | --- | --- |
+| Drik Panchang (New Delhi) | 26 May 05:10 | 27 May 06:21 |
+| this engine | 05-26 05:12 | 05-27 06:22 |
+| difference | 2 min | 1 min |
+
+**The astronomy agrees. The disagreement was entirely convention** — which
+is what the question asked me to determine, and it is the good outcome:
+a two-minute window difference could not have been argued away, whereas a
+convention can be named and implemented.
+
+The convention is this. Ekadashi is present at BOTH sunrises here, so
+"udaya tithi" alone does not decide it — the plain two-sunrise rule gave
+Smarta the 26th. But Dashami ran until 05:12 against a sunrise of 05:25,
+thirteen minutes inside arunodaya kaal (the last four ghatis of night),
+so the 26th is Dashami-viddha and the vrat moves to the 27th. The engine
+now implements that rule, and the agreement above is the result: it was
+23 of 24 before, and 24 of 24 after.
+
+**Would I ship it?** Yes. Its margin is 13 minutes, which looks alarming,
+but the date is stable: shift the whole tithi either way by a quarter of
+an hour and it is still 27 May. Both branches lead there — either the
+tithi touches two sunrises and the first is viddha, or it touches only
+the second. It also now matches the cited authority exactly. It is a
+tight boundary, not an uncertain date, and the engine distinguishes
+those.
+
 ### The 24 vs 26 question
 
 Both numbers are right. They count different years, and the research
@@ -117,7 +205,7 @@ The two Adhik Maas Ekadashis, computed:
 
 | name | Smarta | Vaishnava | margin |
 | --- | --- | --- | --- |
-| Padmini | 2026-05-26 | 2026-05-27 | 13 min |
+| Padmini | 2026-05-27 | 2026-05-27 | 13 min |
 | Parama | 2026-06-11 | 2026-06-11 | 264 min |
 
 The research document is quoted as giving Padmini on 27 May 2026 and Parama
@@ -371,7 +459,7 @@ every later name one month early.
 | 7 | 2026-04-13 | — | Varuthini | Chaitra | 280 min |  |
 | 8 | 2026-04-27 | — | Mohini | Vaishakha | 686 min |  |
 | 9 | 2026-05-13 | — | Apara | Vaishakha | 480 min |  |
-| 10 | 2026-05-26 | 2026-05-27 | Padmini | Adhika Jyeshtha | 13 min | two sunrises, **at risk** |
+| 10 | 2026-05-27 | — | Padmini | Adhika Jyeshtha | 13 min | two sunrises, **at risk** |
 | 11 | 2026-06-11 | — | Parama | Adhika Jyeshtha | 264 min |  |
 | 12 | 2026-06-25 | — | Nirjala | Nija Jyeshtha | 555 min |  |
 | 13 | 2026-07-10 | — | Yogini | Nija Jyeshtha | 8 min | kshaya tithi, **at risk** |

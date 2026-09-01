@@ -80,13 +80,46 @@ test('an Adhik Maas renames Ekadashis rather than adding them to a Gregorian yea
   assert.deepEqual(named, ['Padmini', 'Parama'], 'the leap month carries these two and only these')
 })
 
-test('Padmini spans two sunrises, so Smarta and Vaishnava differ', () => {
+test('Padmini is Dashami-viddha, so both schools keep the second day', () => {
+  // The tithi is current at both sunrises, so the plain rule would give Smarta
+  // the 26th. Dashami ran to 05:12 against a 05:25 sunrise — inside arunodaya —
+  // so the 26th is viddha and the vrat moves. This is what Drik Panchang,
+  // ISKCON and the panchang media publish, and it is the whole reason the
+  // engine needed a viddha rule rather than the two-sunrise rule alone.
   const padmini = resolveTithiRule(rule('ekadashi_vrat'), 2026, place)
     .find((e) => e.ekadashiName === 'Padmini')
   assert.equal(padmini.spansTwoSunrises, true)
-  assert.equal(padmini.smarta, '2026-05-26')
+  assert.equal(padmini.dashamiViddha, true)
+  assert.equal(padmini.smarta, '2026-05-27')
   assert.equal(padmini.vaishnava, '2026-05-27')
-  assert.ok(padmini.vaishnava > padmini.smarta, 'Vaishnava takes the later day, by rule')
+})
+
+test('the whole 2026 comparison table reproduces, dates and names', async () => {
+  const { EKADASHI_2026, normaliseName } = await import('./reference/ekadashi2026.js')
+  const mine = resolveTithiRule(rule('ekadashi_vrat'), 2026, place)
+  assert.equal(mine.length, EKADASHI_2026.length)
+  EKADASHI_2026.forEach((expected, i) => {
+    assert.equal(mine[i].smarta, expected.date, `row ${i + 1} date`)
+    assert.equal(normaliseName(mine[i].ekadashiName), normaliseName(expected.name), `row ${i + 1} name`)
+  })
+})
+
+test('the Padmini tithi window matches the cited authority to a minute', () => {
+  // If the window matches and only the day assignment differs, the question is
+  // convention, not accuracy. It matched, which is why the viddha rule above
+  // was the right fix rather than anything in the ephemeris.
+  const { PADMINI_WINDOW } = { PADMINI_WINDOW: { begins: [2026, 5, 26, 5, 10], ends: [2026, 5, 27, 6, 21] } }
+  const padmini = resolveTithiRule(rule('ekadashi_vrat'), 2026, place)
+    .find((e) => e.ekadashiName === 'Padmini')
+  const asLocal = (jd) => fromJD(jd + place.tz / 24)
+  const s = asLocal(padmini.startsAt)
+  const e = asLocal(padmini.endsAt)
+  const [, , sd, sh, sm] = PADMINI_WINDOW.begins
+  const [, , ed, eh, em] = PADMINI_WINDOW.ends
+  const startDiff = Math.abs((s.day - sd) * 1440 + (s.hour - sh) * 60 + (s.minute - sm))
+  const endDiff = Math.abs((e.day - ed) * 1440 + (e.hour - eh) * 60 + (e.minute - em))
+  assert.ok(startDiff <= 5, `tithi start differs from Drik Panchang by ${startDiff} min`)
+  assert.ok(endDiff <= 5, `tithi end differs from Drik Panchang by ${endDiff} min`)
 })
 
 test('where a tithi claims one sunrise the two schools agree', () => {
@@ -196,4 +229,31 @@ test('the app\'s disputed 2026 dates are the wrong tithi, not a rule difference'
   assert.notEqual(at('2026-08-14').name, 'Ashtami', 'app Janmashtami date')
   assert.notEqual(at('2026-12-22').name, 'Ekadashi', 'app Mokshada date')
   assert.notEqual(at('2026-10-25').number, 4, 'app Karwa Chauth date')
+})
+
+test('a tight margin is not the same as an unstable date', () => {
+  // The distinction the report turns on, and one the margin alone got wrong in
+  // both directions: most tight margins are stable, and some dates the margin
+  // never flagged do move.
+  const rows = []
+  for (const year of [2026, 2027]) {
+    for (const r of TITHI_RULES) rows.push(...resolveTithiRule(r, year, place))
+  }
+  const tight = rows.filter((e) => e.atRisk)
+  const unstable = rows.filter((e) => e.needsConfirmation)
+
+  assert.ok(tight.some((e) => e.stable), 'some tight margins must be stable, or the test proves nothing')
+  assert.ok(unstable.some((e) => !e.atRisk), 'some unstable dates are not flagged by margin')
+  for (const e of rows) {
+    assert.equal(typeof e.stable, 'boolean', `${e.smarta} has no stability verdict`)
+    assert.equal(e.needsConfirmation, !e.stable)
+  }
+})
+
+test('Padmini is tight but stable — a date worth shipping', () => {
+  const padmini = resolveTithiRule(rule('ekadashi_vrat'), 2026, place)
+    .find((e) => e.ekadashiName === 'Padmini')
+  assert.ok(padmini.margin < 15, 'it really is a tight boundary')
+  assert.equal(padmini.stable, true, 'both sides of the boundary give 27 May')
+  assert.equal(padmini.needsConfirmation, false)
 })

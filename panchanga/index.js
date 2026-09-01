@@ -36,6 +36,50 @@ export { sunRiseSet, moonRise, moonSet } from './riseset.js'
 export const RISK_MINUTES = 15
 
 /**
+ * How far the whole tithi is shifted when testing whether a date is stable.
+ *
+ * Comfortably larger than everything that could be wrong at once: the measured
+ * worst-case ephemeris error is about one minute, and refraction moves sunrise
+ * by a minute or two. Fifteen minutes is not a plausible error, which is the
+ * point — a date that survives it is not merely probably right.
+ */
+export const STABILITY_SHIFT_MINUTES = 15
+
+/**
+ * Does this date survive the ephemeris being wrong?
+ *
+ * A small margin says a boundary is CLOSE, which is not the same as saying the
+ * date is in doubt. Padmini 2026 is the case that makes the distinction worth
+ * drawing: its margin is 13 minutes, but both sides of that boundary lead to
+ * 27 May — either the tithi touches two sunrises and the first is viddha, or
+ * it touches only the second — so the date is not actually in question.
+ *
+ * So rather than reporting the margin and letting a reader guess, this shifts
+ * the entire tithi by ±15 minutes and re-resolves. If the answer does not
+ * move, the date is stable however tight the margin looks.
+ */
+function stabilityOf(span, place, rule, resolvedDate) {
+  for (const shift of [-STABILITY_SHIFT_MINUTES, STABILITY_SHIFT_MINUTES]) {
+    const d = shift / 1440
+    const moved = {
+      ...span,
+      startJd: span.startJd + d,
+      endJd: span.endJd + d,
+      startJde: span.startJde + d,
+      endJde: span.endJde + d,
+    }
+    const obs = resolveObservance(moved, place, rule.viddha)
+    let date = obs.smarta
+    if (rule.resolveAt) {
+      const k = resolveByKaal(moved, place, rule.resolveAt)
+      if (k.date) date = k.date
+    }
+    if (date !== resolvedDate) return { stable: false, breaksAt: shift }
+  }
+  return { stable: true, breaksAt: null }
+}
+
+/**
  * Every occurrence of one tithi rule in a Gregorian year.
  *
  * Within a lunation each tithi index occurs exactly once, so the month
@@ -69,7 +113,7 @@ export function resolveTithiRule(rule, year, place = DEFAULT_LOCATION) {
         startJd: jdeToJd(startJde),
         endJd: jdeToJd(endJde),
       }
-      const obs = resolveObservance(span, place)
+      const obs = resolveObservance(span, place, rule.viddha)
       const margin = boundaryMargin(span, place)
 
       // A festival fixed at nishita or madhyahna is resolved by that moment,
@@ -101,6 +145,7 @@ export function resolveTithiRule(rule, year, place = DEFAULT_LOCATION) {
         resolvedBy: rule.resolveAt || 'sunrise',
         kaalNote,
         spansTwoSunrises: obs.kind === 'two',
+        dashamiViddha: Boolean(obs.viddha),
         kshayaTithi: obs.kind === 'none',
         startsAt: span.startJd,
         endsAt: span.endJd,
@@ -108,6 +153,11 @@ export function resolveTithiRule(rule, year, place = DEFAULT_LOCATION) {
         observedAt: rule.observedAt || 'sunrise',
       }
       entry.atRisk = entry.margin < RISK_MINUTES
+      // A tight margin is a reason to check, not a reason to doubt. This is
+      // what decides whether a date needs a confirmation prompt in the app.
+      const stability = stabilityOf(span, place, rule, resolved)
+      entry.stable = stability.stable
+      entry.needsConfirmation = !stability.stable
       if (rule.id === 'ekadashi_vrat') entry.ekadashiName = ekadashiName(month, paksha)
 
       // Fasts that end at sunset or moonrise need that time, not just a date.
