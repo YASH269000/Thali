@@ -887,6 +887,10 @@ export const MEAL_TARGET = {
   // Broken at moonrise or at midday: the one meal of the day, so a full one.
   moonrise_meal: [3, 4],
   midday_meal: [3, 4],
+  // Both small: the Kharna meal precedes thirty-six hours without water, and
+  // the arghya prasad follows them.
+  kharna_meal: [2, 3],
+  parana_arghya: [2, 3],
 }
 
 /**
@@ -911,6 +915,9 @@ export const SLOT_SHAPE = {
   moonrise_meal: 'dinner',
   // Broken at madhyahna, so eaten as the midday one.
   midday_meal: 'lunch',
+  // After sunset, and before sunrise-plus-a-little, respectively.
+  kharna_meal: 'dinner',
+  parana_arghya: 'breakfast',
 }
 
 /** The meal shape to select dishes for: a slot borrows one, a meal is itself. */

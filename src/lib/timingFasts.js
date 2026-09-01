@@ -123,6 +123,45 @@ export const TIMING_FASTS = {
     ],
   },
 
+  // Chhath, day by day. Kharna is the unusual one and Nirjala Ekadashi is its
+  // precedent: a window that OPENS at its meal rather than closing at it. The
+  // kheer is eaten after sunset and the thirty-six hours start there, so the
+  // slot lands inside the window it begins.
+  chhath_kharna: {
+    id: 'chhath_kharna',
+    label: 'Chhath — Kharna',
+    windowFrom: 'sunset',
+    windowTo: 'sunrise',
+    describe: (t) => `Fasted from dawn and broken after sunset, ${t.sunset.text}, `
+      + 'with rasiao-kheer and roti. That meal OPENS the thirty-six hours of '
+      + 'nirjala rather than ending a fast — nothing more passes until the '
+      + 'Usha Arghya the morning after next.',
+    slots: (t) => [
+      slot('kharna_meal', 'Kharna, after sunset', t.sunset, {
+        target: [2, 3],
+        note: 'Rasiao-kheer — rice cooked in jaggery and milk — with roti. The '
+          + 'last food before the nirjala, so it is eaten unhurried.',
+      }),
+    ],
+  },
+
+  chhath_usha_arghya: {
+    id: 'chhath_usha_arghya',
+    label: 'Chhath — Usha Arghya',
+    windowFrom: 'sunrise',
+    windowTo: 'sunrise',
+    describe: (t) => `The arghya to the rising sun at ${t.sunrise.text}, and the `
+      + 'fast is broken after it. Thirty-six hours since the Kharna kheer, '
+      + 'without food or water.',
+    slots: (t) => [
+      slot('parana_arghya', 'After the morning arghya', t.sunrise, {
+        target: [2, 3],
+        note: 'Thekua, seasonal fruit and the prasad offered at the ghat. Light, '
+          + 'because it follows thirty-six hours without water.',
+      }),
+    ],
+  },
+
   // Nirjala Ekadashi is not a tradition of its own — it is ONE OCCURRENCE of
   // ekadashi_vrat, the Jyeshtha shukla one, and the only Ekadashi kept without
   // water. So it is matched on the occurrence rather than on the fast id, and
@@ -167,6 +206,24 @@ export const TIMING_FASTS = {
  * one city and 12:39 in another. So it contributes a window and no slots.
  */
 export const WINDOW_ONLY_FASTS = {
+  // Sandhya Arghya has no slot because it has no meal. It sits inside the
+  // thirty-six hours, and modelling it as absent from everything is more
+  // honest than inventing an occasion to eat at. The evening arghya is still
+  // a time the household needs, so it gets a window.
+  chhath_sandhya_arghya: {
+    id: 'chhath_sandhya_arghya',
+    label: 'Chhath — Sandhya Arghya',
+    describe: (t) => `Nirjala, all day. The arghya is offered to the setting sun `
+      + `at ${t.sunset.text}, standing in water. Nothing is eaten or drunk `
+      + 'today, so Thali plans no meal — the fast breaks tomorrow morning.',
+  },
+  chhath_nahay_khay: {
+    id: 'chhath_nahay_khay',
+    label: 'Chhath — Nahay-Khay',
+    describe: (t) => `A bath, then one satvik meal. Sunrise ${t.sunrise.text}, `
+      + `sunset ${t.sunset.text}. No onion or garlic from today until the fast `
+      + 'is broken.',
+  },
   uposatha_observance: {
     id: 'uposatha_observance',
     label: 'Uposatha',

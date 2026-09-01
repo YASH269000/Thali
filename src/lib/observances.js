@@ -71,7 +71,14 @@ export const OBSERVANCE_FASTS = {
   navratri_chaitra: ['navratri_vrat'],
   navratri_sharad: ['navratri_vrat'],
   ram_navami: ['ram_navami_vrat'],
-  chhath_puja: ['chhath_puja_vrat'],
+  // Four days, four observances, and each reaches TWO traditions: the day
+  // itself, and the whole-festival row that was there before. A household that
+  // keeps all four ticks Chhath Puja Vrat once; one that joins partway — which
+  // happens, and is the reason the days are selectable at all — ticks the day.
+  chhath_nahay_khay: ['chhath_puja_vrat', 'chhath_nahay_khay'],
+  chhath_kharna: ['chhath_puja_vrat', 'chhath_kharna'],
+  chhath_sandhya_arghya: ['chhath_puja_vrat', 'chhath_sandhya_arghya'],
+  chhath_usha_arghya: ['chhath_puja_vrat', 'chhath_usha_arghya'],
   mahavir_jayanti: ['mahavir_jayanti'],
   buddha_purnima: ['vesak_buddha_purnima'],
   sawan_somvar: ['sawan_somvar_vrat'],

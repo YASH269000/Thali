@@ -629,6 +629,62 @@
       "popularity": "M",
       "whoTypicallyObserves": "Practising Jains, both Shvetambar and Digambar",
       "briefDescription": "The fourteenth day of each fortnight, kept as a day of restraint and often of pratikraman. Many observe Upvas or Ayambil on it. Jain dietary rules apply in full: no root vegetables, no onion or garlic, no honey."
+    },
+    {
+      "sNo": 46,
+      "fastingTraditionName": "Chhath — Nahay-Khay",
+      "nameInOriginalScript": "नहाय-खाय",
+      "religion": "Hindu",
+      "deityOrPurpose": "Surya and Chhathi Maiya",
+      "frequency": "Once per year (day 1 of 4)",
+      "durationPerOccurrence": "1 day",
+      "calendarSystem": "Hindu Lunar (Kartika Shukla)",
+      "fastStrictnessLevel": "Light (one satvik meal)",
+      "popularity": "M",
+      "whoTypicallyObserves": "Chhath vratis and their households, Bihar, Jharkhand and eastern UP",
+      "briefDescription": "The first day. A ritual bath, then a single satvik meal — traditionally bottle gourd with rice and chana dal. No onion or garlic, and the kitchen is kept for the vrat from this day."
+    },
+    {
+      "sNo": 47,
+      "fastingTraditionName": "Chhath — Kharna",
+      "nameInOriginalScript": "खरना",
+      "religion": "Hindu",
+      "deityOrPurpose": "Surya and Chhathi Maiya",
+      "frequency": "Once per year (day 2 of 4)",
+      "durationPerOccurrence": "1 day",
+      "calendarSystem": "Hindu Lunar (Kartika Shukla)",
+      "fastStrictnessLevel": "Strict (fast all day, one meal after sunset)",
+      "popularity": "M",
+      "whoTypicallyObserves": "Chhath vratis",
+      "briefDescription": "The second day. Fasted from dawn, broken after sunset with rasiao-kheer and roti. That meal BEGINS the 36-hour nirjala rather than ending a fast."
+    },
+    {
+      "sNo": 48,
+      "fastingTraditionName": "Chhath — Sandhya Arghya",
+      "nameInOriginalScript": "संध्या अर्घ्य",
+      "religion": "Hindu",
+      "deityOrPurpose": "Surya (setting sun)",
+      "frequency": "Once per year (day 3 of 4)",
+      "durationPerOccurrence": "1 day",
+      "calendarSystem": "Hindu Lunar (Kartika Shukla)",
+      "fastStrictnessLevel": "Very Strict (nirjala — no water)",
+      "popularity": "M",
+      "whoTypicallyObserves": "Chhath vratis",
+      "briefDescription": "The third day, inside the nirjala. The evening arghya is offered to the setting sun standing in water. No food and no water at all."
+    },
+    {
+      "sNo": 49,
+      "fastingTraditionName": "Chhath — Usha Arghya",
+      "nameInOriginalScript": "उषा अर्घ्य",
+      "religion": "Hindu",
+      "deityOrPurpose": "Surya (rising sun)",
+      "frequency": "Once per year (day 4 of 4)",
+      "durationPerOccurrence": "1 day",
+      "calendarSystem": "Hindu Lunar (Kartika Shukla)",
+      "fastStrictnessLevel": "Strict until the morning arghya",
+      "popularity": "M",
+      "whoTypicallyObserves": "Chhath vratis",
+      "briefDescription": "The fourth day. The arghya to the rising sun, after which the fast is broken with prasad — thekua, seasonal fruit and the kheer offered the day before."
     }
   ],
   "foodRules": [
@@ -1265,10 +1321,6 @@
       "dietaryImpactSummary": "Feast + sweets — NOT a fasting day",
       "appAction": "Suggest Diwali special menu: sweets, namkeen, festive dinner"
     },
-    "chhath_puja": {
-      "dietaryImpactSummary": "36-hour nirjala fast around the Shashti evening arghya; thekua, kheer and seasonal fruit as prasad",
-      "appAction": "Plan the Kharna meal the evening before and the prasad after the morning arghya"
-    },
     "vinayaka_chaturthi": {
       "dietaryImpactSummary": "Fast broken at madhyahna; sattvic food, no onion or garlic",
       "appAction": "Plan one meal for the midday break, and modak if the family keeps it"
@@ -1276,6 +1328,22 @@
     "jain_chaturdashi": {
       "dietaryImpactSummary": "Jain rules in full — no roots, no onion or garlic, no honey",
       "appAction": "Plan a Jain-safe single meal; offer Ayambil if the member keeps it"
+    },
+    "chhath_nahay_khay": {
+      "dietaryImpactSummary": "One satvik meal; lauki with rice and chana dal, no onion or garlic",
+      "appAction": "Plan a single satvik meal — bottle gourd, plain rice and chana dal if the catalogue has them"
+    },
+    "chhath_kharna": {
+      "dietaryImpactSummary": "Fast all day; rasiao-kheer and roti after sunset, which opens the 36-hour nirjala",
+      "appAction": "Plan one evening meal around kheer, then nothing until the Usha Arghya"
+    },
+    "chhath_sandhya_arghya": {
+      "dietaryImpactSummary": "Nirjala — no food and no water. Nothing is planned.",
+      "appAction": "Plan no meal; show the arghya time and the hours remaining"
+    },
+    "chhath_usha_arghya": {
+      "dietaryImpactSummary": "Fast broken after the morning arghya; thekua, fruit and prasad",
+      "appAction": "Plan the parana after sunrise — light, and no onion or garlic"
     }
   },
   "appLogicRules": [

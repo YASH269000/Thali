@@ -205,16 +205,55 @@ export const TITHI_RULES = [
     paksha: 'shukla',
     masa: 'Bhadrapada',
   },
+  // CHHATH IS FOUR DAYS AND FOUR DIFFERENT RULES, SO IT IS FOUR OBSERVANCES.
+  //
+  // It was one record with a four-day window, and that could not express what
+  // the days actually are: Nahay-Khay is a satvik meal, Kharna is an evening
+  // kheer that STARTS a 36-hour nirjala, Sandhya Arghya sits inside that fast
+  // with no meal at all, and Usha Arghya breaks it the next morning. One
+  // record carrying four sets of rules would have pushed span-awareness into
+  // every consumer — each would have had to work out which day of the window
+  // it was looking at before it could say anything true.
+  //
+  // All four resolve from the same Kartika shukla anchor, so they cannot drift
+  // apart: consecutive tithis of one fortnight of one month.
   {
-    id: 'chhath_puja',
-    name: 'Chhath Puja',
+    id: 'chhath_nahay_khay',
+    name: 'Chhath — Nahay-Khay',
+    religion: 'Hindu',
+    tithi: 4,
+    paksha: 'shukla',
+    masa: 'Kartika',
+    note: 'Day one. A bath, then one satvik meal — traditionally lauki with rice and chana dal.',
+  },
+  {
+    id: 'chhath_kharna',
+    name: 'Chhath — Kharna',
+    religion: 'Hindu',
+    tithi: 5,
+    paksha: 'shukla',
+    masa: 'Kartika',
+    observedAt: 'sunset',
+    note: 'Day two. Fasted through the day, broken after sunset with kheer and roti — and that meal OPENS the 36-hour nirjala rather than ending anything.',
+  },
+  {
+    id: 'chhath_sandhya_arghya',
+    name: 'Chhath — Sandhya Arghya',
     religion: 'Hindu',
     tithi: 6,
     paksha: 'shukla',
     masa: 'Kartika',
     observedAt: 'sunset',
-    window: { fromTithi: 4, toTithi: 7 },
-    note: 'Four days, Chaturthi to Saptami. Shashti carries the sandhya arghya at sunset and is the date given.',
+    note: 'Day three. The evening arghya to the setting sun, inside the nirjala. No food and no water all day.',
+  },
+  {
+    id: 'chhath_usha_arghya',
+    name: 'Chhath — Usha Arghya',
+    religion: 'Hindu',
+    tithi: 7,
+    paksha: 'shukla',
+    masa: 'Kartika',
+    note: 'Day four. The arghya to the rising sun, after which the fast is broken. Thirty-six hours from the Kharna meal.',
   },
   {
     id: 'diwali',

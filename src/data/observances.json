@@ -2029,6 +2029,19 @@
       "endsAt": 2461353.793212
     },
     {
+      "id": "chhath_nahay_khay",
+      "name": "Chhath — Nahay-Khay",
+      "religion": "Hindu",
+      "date": "2026-11-13",
+      "confidence": "computed",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Chaturthi",
+      "masa": "Kartika",
+      "marginMinutes": 600,
+      "startsAt": 2461357.027549,
+      "endsAt": 2461358.133901
+    },
+    {
       "id": "vinayaka_chaturthi",
       "name": "Vinayaka Chaturthi",
       "religion": "Hindu",
@@ -2042,8 +2055,21 @@
       "endsAt": 2461358.133901
     },
     {
-      "id": "chhath_puja",
-      "name": "Chhath Puja",
+      "id": "chhath_kharna",
+      "name": "Chhath — Kharna",
+      "religion": "Hindu",
+      "date": "2026-11-14",
+      "confidence": "computed",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Panchami",
+      "masa": "Kartika",
+      "marginMinutes": 439,
+      "startsAt": 2461358.133901,
+      "endsAt": 2461359.24599
+    },
+    {
+      "id": "chhath_sandhya_arghya",
+      "name": "Chhath — Sandhya Arghya",
       "religion": "Hindu",
       "date": "2026-11-15",
       "confidence": "computed",
@@ -2051,10 +2077,21 @@
       "tithi": "shukla Shashthi",
       "masa": "Kartika",
       "marginMinutes": 283,
-      "from": "2026-11-13",
-      "through": "2026-11-16",
       "startsAt": 2461359.24599,
       "endsAt": 2461360.355135
+    },
+    {
+      "id": "chhath_usha_arghya",
+      "name": "Chhath — Usha Arghya",
+      "religion": "Hindu",
+      "date": "2026-11-16",
+      "confidence": "computed",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Saptami",
+      "masa": "Kartika",
+      "marginMinutes": 145,
+      "startsAt": 2461360.355135,
+      "endsAt": 2461361.451276
     },
     {
       "id": "masik_durgashtami",
@@ -4258,6 +4295,19 @@
       "endsAt": 2461708.06723
     },
     {
+      "id": "chhath_nahay_khay",
+      "name": "Chhath — Nahay-Khay",
+      "religion": "Hindu",
+      "date": "2027-11-02",
+      "confidence": "computed",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Chaturthi",
+      "masa": "Kartika",
+      "marginMinutes": 643,
+      "startsAt": 2461710.990338,
+      "endsAt": 2461712.022703
+    },
+    {
       "id": "vinayaka_chaturthi",
       "name": "Vinayaka Chaturthi",
       "religion": "Hindu",
@@ -4271,8 +4321,21 @@
       "endsAt": 2461712.022703
     },
     {
-      "id": "chhath_puja",
-      "name": "Chhath Puja",
+      "id": "chhath_kharna",
+      "name": "Chhath — Kharna",
+      "religion": "Hindu",
+      "date": "2027-11-03",
+      "confidence": "computed",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Panchami",
+      "masa": "Kartika",
+      "marginMinutes": 663,
+      "startsAt": 2461712.022703,
+      "endsAt": 2461713.084911
+    },
+    {
+      "id": "chhath_sandhya_arghya",
+      "name": "Chhath — Sandhya Arghya",
       "religion": "Hindu",
       "date": "2027-11-04",
       "confidence": "computed",
@@ -4280,10 +4343,21 @@
       "tithi": "shukla Shashthi",
       "masa": "Kartika",
       "marginMinutes": 537,
-      "from": "2027-11-02",
-      "through": "2027-11-05",
       "startsAt": 2461713.084911,
       "endsAt": 2461714.172521
+    },
+    {
+      "id": "chhath_usha_arghya",
+      "name": "Chhath — Usha Arghya",
+      "religion": "Hindu",
+      "date": "2027-11-05",
+      "confidence": "computed",
+      "resolvedBy": "sunrise",
+      "tithi": "shukla Saptami",
+      "masa": "Kartika",
+      "marginMinutes": 387,
+      "startsAt": 2461714.172521,
+      "endsAt": 2461715.277525
     },
     {
       "id": "masik_durgashtami",

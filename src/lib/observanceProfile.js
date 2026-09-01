@@ -155,9 +155,22 @@ export const DEFAULT_BASELINE = {
 export const BASELINE_OVERRIDES = {
   // "Very Strict (nirjala — no water)" in the database, in those words.
   karwa_chauth: { mealCount: 'nirjala' },
-  // A 36-hour nirjala fast around the Shashti arghya; the calendar guidance
-  // for chhath_puja says so too.
-  chhath_puja_vrat: { mealCount: 'nirjala' },
+  // Chhath, day by day. The 36 hours are not one flag on one record — they
+  // are the shape of three consecutive days: Kharna's meal comes after sunset
+  // and opens them, Sandhya Arghya has no meal at all, and Usha Arghya's
+  // parana closes them the next morning. A member keeping all three is absent
+  // from every standard meal across the span, which is what nirjala means and
+  // is why it does not reset at midnight.
+  //
+  // The whole-festival row deliberately carries NO strictness of its own. It
+  // marks all four days, and if it also declared nirjala then strictest-wins
+  // would make Nahay-Khay a fast — which it is not; it is one satvik meal.
+  // The day observances supply the shape, the festival row supplies the
+  // membership, and the two do not fight because only one of them speaks.
+  chhath_nahay_khay: { mealCount: 'one_meal' },
+  chhath_kharna: { mealCount: 'nirjala' },
+  chhath_sandhya_arghya: { mealCount: 'nirjala' },
+  chhath_usha_arghya: { mealCount: 'nirjala' },
   // Dawn to sunset, every day of the month. Suhoor and iftar sit outside the
   // three meal types Thali plans, so the fasting day itself carries no meal.
   ramadan_ramzan: { mealCount: 'nirahar' },
@@ -288,9 +301,36 @@ export function observanceFor(member, fastId) {
   }
 }
 
+/**
+ * Traditions that are a container for several others.
+ *
+ * Chhath is one festival and four days with four different shapes, and a
+ * household that keeps the whole thing ticks it once. But the shape of a given
+ * day comes from that day's tradition — Nahay-Khay is one satvik meal, Kharna
+ * opens the nirjala — so the festival row has to expand to its days or the
+ * member is resolved against a baseline that cannot describe any of them.
+ *
+ * The days stay individually selectable, because families do join partway.
+ * Ticking the festival is exactly ticking all four; ticking one is that one.
+ */
+export const TRADITION_EXPANDS = {
+  chhath_puja_vrat: [
+    'chhath_nahay_khay', 'chhath_kharna', 'chhath_sandhya_arghya', 'chhath_usha_arghya',
+  ],
+}
+
+/** A member's traditions, with any container expanded to what it contains. */
+export function expandFasts(fasts) {
+  const out = []
+  for (const id of fasts || []) {
+    for (const x of TRADITION_EXPANDS[id] || [id]) if (!out.includes(x)) out.push(x)
+  }
+  return out
+}
+
 /** Every fast this member is keeping today, with how they keep it. */
 export function observancesToday(member, activeFastIds) {
-  return (member?.fasts || [])
+  return expandFasts(member?.fasts)
     .filter((id) => activeFastIds.has(id))
     .map((id) => observanceFor(member, id))
 }

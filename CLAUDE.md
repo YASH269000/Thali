@@ -75,6 +75,12 @@ the family's city.
   silently takes dinner's dish count and the whole pool.
 - An unknown mealType is a 400, never a coerced dinner.
 - Print the city beside every time. Never precompute a time for Delhi.
+- A container tradition (Chhath Puja Vrat) expands to its days via
+  `expandFasts`. Anything looking up who keeps a slot must expand first, or the
+  meal comes back with an empty guest list.
+- A window can OPEN at its slot rather than close at it — Kharna and Nirjala
+  Ekadashi both do. A tradition with a real fast and no meal (Sandhya Arghya)
+  belongs in `WINDOW_ONLY_FASTS` rather than being given an invented occasion.
 
 ## Location
 `thali_location` holds one of the eight cities in `panchanga/locations.js`,

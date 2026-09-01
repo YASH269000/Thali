@@ -16,7 +16,7 @@ import {
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { describeSavedAt, recallPlan, rememberPlan } from '../lib/planCache.js'
 import { loadOverrides } from '../lib/observanceOverrides.js'
-import { observancesToday, suggestedAttendance } from '../lib/observanceProfile.js'
+import { expandFasts, observancesToday, suggestedAttendance } from '../lib/observanceProfile.js'
 import { slotsFor, windowsFor } from '../lib/timingFasts.js'
 import { loadLocationKey } from '../lib/location.js'
 import { isoDateOf, observancesOn } from '../lib/observances.js'
@@ -504,7 +504,11 @@ export default function MealPlan() {
     const slots = slotsFor(ids, iso, locationKey, occurrences)
     // Who each slot belongs to: the members keeping that tradition, and only
     // them. A household where one person keeps Karva Chauth still eats dinner.
-    const observers = (fastId) => family.filter((m) => (m.fasts || []).includes(fastId)
+    // Expanded, because a container tradition holds the days a slot belongs
+    // to: Sunita ticks Chhath Puja Vrat and the Kharna slot is filed under
+    // chhath_kharna. Without this the meal came back with an empty guest list
+    // — the same shape as the Nirjala parana, and found the same way.
+    const observers = (fastId) => family.filter((m) => expandFasts(m.fasts).includes(fastId)
       && observancesToday(m, activeFastIds).some((o) => o.fastId === fastId && !o.observesLightly))
     return {
       windows: windowsFor(ids, iso, locationKey, occurrences),

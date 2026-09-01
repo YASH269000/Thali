@@ -148,6 +148,33 @@ const JAIN = {
 }
 
 /**
+ * Chhath, which is satvik throughout and not only a matter of hours.
+ *
+ * Nahay-Khay is the day this bites hardest — one meal, and the tradition names
+ * the dishes: bottle gourd with rice and chana dal. The catalogue has them
+ * (J008 Dudhi Chana Dal Sabzi, ASC113 Boiled rice), so nothing had to be
+ * written; what was missing was any rule keeping onion and garlic out of the
+ * vrat kitchen, which the whole four days require.
+ *
+ * Kept lighter than the vrat rules: Chhath prasad is grain-based — thekua is
+ * wheat, the kheer is rice — so the grain and pulse exclusions that govern
+ * Ekadashi would be wrong here, and chana dal is the point of the first meal
+ * rather than something to exclude.
+ */
+const CHHATH = {
+  id: 'chhath',
+  label: 'Chhath',
+  flags: ['onionGarlicFree', 'alcoholFree'],
+  vegetarianOnly: true,
+  forbidden: [
+    'onion', 'spring onion', 'shallots', 'leek', 'garlic', 'garlic cloves', 'lehsun',
+    'egg', 'eggs', 'chicken', 'mutton', 'fish', 'prawns', 'wine', 'beer',
+  ],
+  swaps: [],
+  permitted: ['lauki', 'bottle gourd', 'rice', 'chana dal', 'jaggery', 'ghee', 'wheat flour'],
+}
+
+/**
  * Sawan, the month, with its stricter Mondays.
  *
  * A month-long tag rather than a day: `sawan_somvar_vrat` is active across the
@@ -192,12 +219,17 @@ export const TRADITION_RULES = {
   jain_chaturdashi: JAIN,
   jain_year_round_dietary_rules: JAIN,
   sawan_somvar_vrat: SAWAN,
+  chhath_puja_vrat: CHHATH,
+  chhath_nahay_khay: CHHATH,
+  chhath_kharna: CHHATH,
+  chhath_sandhya_arghya: CHHATH,
+  chhath_usha_arghya: CHHATH,
 }
 
 /** The Jain diet is an identity, not a fast, and carries the same rules. */
 export const DIET_RULES = { jain: JAIN }
 
-export const ALL_RULES = [VRAT, JAIN, SAWAN]
+export const ALL_RULES = [VRAT, JAIN, SAWAN, CHHATH]
 
 /* ------------------------------------------------------------------ *
  * Matching                                                           *

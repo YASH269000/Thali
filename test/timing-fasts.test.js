@@ -18,9 +18,13 @@ import { dayTimes, formatTime, sargiTime, FAJR_ANGLE } from '../src/lib/times.js
 import {
   TIMING_SLOT_IDS, WINDOW_ONLY_FASTS, slotsFor, timingFastsFor, windowsFor,
 } from '../src/lib/timingFasts.js'
+import { ALL_RULES } from '../src/lib/ingredientRules.js'
 import { MEAL_TARGET, SLOT_SHAPE, filterRecipes, selectCandidatesForMeal, shapeOf } from '../src/lib/mealPlanRules.js'
-import { mealsAttendedBy, strictestMealCount } from '../src/lib/observanceProfile.js'
+import {
+  expandFasts, mealsAttendedBy, observancesToday, strictestMealCount, suggestedAttendance,
+} from '../src/lib/observanceProfile.js'
 import { LOCATIONS } from '../src/lib/location.js'
+import { activeFastIdsOn } from '../src/lib/fastingRules.js'
 import computed from '../src/data/observances.json' with { type: 'json' }
 
 const RECIPES = JSON.parse(fs.readFileSync(new URL('../src/data/recipes.json', import.meta.url), 'utf8'))
@@ -334,4 +338,149 @@ test('the slot list is stable for stable inputs', () => {
     timingFastsFor(['karwa_chauth']).map((t) => t.id),
     timingFastsFor(['karwa_chauth']).map((t) => t.id),
   )
+})
+
+/* ------------------------------------------------------------------ *
+ * Chhath — four days, four shapes, one span of thirty-six hours       *
+ * ------------------------------------------------------------------ */
+
+const CHHATH = ['chhath_nahay_khay', 'chhath_kharna', 'chhath_sandhya_arghya', 'chhath_usha_arghya']
+  .map((id) => computed.observances.find((o) => o.id === id && o.date.startsWith('2026')))
+const dateOf = (iso) => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d) }
+
+/** The binding traditions today, exactly as the meal screen resolves them. */
+const bindingToday = (member, iso) => observancesToday(member, activeFastIdsOn(dateOf(iso)))
+  .filter((o) => !o.observesLightly).map((o) => o.fastId)
+
+const vrati = (fasts) => ({
+  id: 'm1', name: 'Sunita', age: 36, relationship: 'mother', diet: 'vegetarian',
+  health: [], religion: 'Hindu', cuisine: 'north_indian', spiceLevel: 2,
+  dislikes: '', lifeStage: 'adult', fasts,
+})
+
+test('Chhath is four consecutive days, computed from one anchor', () => {
+  assert.equal(CHHATH.filter(Boolean).length, 4, 'a Chhath day is missing from 2026')
+  const dates = CHHATH.map((o) => o.date)
+  assert.deepEqual(dates, ['2026-11-13', '2026-11-14', '2026-11-15', '2026-11-16'])
+  // Consecutive tithis of one fortnight, so they cannot drift apart.
+  assert.deepEqual(CHHATH.map((o) => o.tithi), [
+    'shukla Chaturthi', 'shukla Panchami', 'shukla Shashthi', 'shukla Saptami'])
+})
+
+test('the thirty-six hours span two nights and do not reset at midnight', () => {
+  // The requirement in one assertion: Kharna opens the window on day two's
+  // evening and Usha Arghya closes it on day four's morning, so the vrati is
+  // absent from every standard meal across the intervening day.
+  const whole = vrati(['chhath_puja_vrat'])
+  const meals = (iso) => mealsAttendedBy(whole, activeFastIdsOn(dateOf(iso)))
+
+  assert.deepEqual(meals('2026-11-12'), ['breakfast', 'lunch', 'dinner'], 'the day before')
+  // Nahay-Khay is NOT a fast — one satvik meal.
+  assert.deepEqual(meals('2026-11-13'), ['dinner'], 'Nahay-Khay lost its meal')
+  for (const iso of ['2026-11-14', '2026-11-15', '2026-11-16']) {
+    assert.deepEqual(meals(iso), [], `${iso} planned a standard meal inside the nirjala`)
+  }
+  assert.deepEqual(meals('2026-11-17'), ['breakfast', 'lunch', 'dinner'], 'the day after')
+})
+
+test('each day shows only its own slot, and Sandhya Arghya shows none', () => {
+  const whole = vrati(['chhath_puja_vrat'])
+  const slotIds = (iso) => slotsFor(bindingToday(whole, iso), iso, 'kolkata').map((s) => s.id)
+
+  assert.deepEqual(slotIds('2026-11-13'), [], 'Nahay-Khay eats a standard meal, not a slot')
+  assert.deepEqual(slotIds('2026-11-14'), ['kharna_meal'])
+  assert.deepEqual(slotIds('2026-11-15'), [],
+    'Sandhya Arghya invented a meal; it sits inside the fast and has none')
+  assert.deepEqual(slotIds('2026-11-16'), ['parana_arghya'])
+
+  // And each belongs to a tradition the member can actually be found by. The
+  // Kharna slot is filed under chhath_kharna while Sunita ticked the festival,
+  // so a lookup that did not expand the container returned an empty table.
+  const [kharna] = slotsFor(bindingToday(whole, '2026-11-14'), '2026-11-14', 'kolkata')
+  assert.ok(expandFasts(whole.fasts).includes(kharna.fastId),
+    'the slot belongs to no tradition this member holds, so nobody is at it')
+})
+
+test('Kharna\'s window opens at its meal rather than closing at it', () => {
+  const whole = vrati(['chhath_puja_vrat'])
+  const [w] = windowsFor(bindingToday(whole, '2026-11-14'), '2026-11-14', 'kolkata')
+  assert.match(w.text, /OPENS/)
+  const [slot] = slotsFor(bindingToday(whole, '2026-11-14'), '2026-11-14', 'kolkata')
+  assert.equal(slot.atJd, dayTimes('2026-11-14', 'kolkata').sunset.jd,
+    'the Kharna meal is after sunset')
+
+  // Nirjala Ekadashi is the precedent, and behaves the same way.
+  const [nw] = windowsFor(['ekadashi_vrat'], NIRJALA.date, 'kolkata', [NIRJALA])
+  assert.match(nw.text, /through the whole day and night/)
+})
+
+test('a family can keep one day without the others', () => {
+  // Allowed on purpose: households do join partway. What must not happen is a
+  // banner implying a fast that never started, so only the day they keep is
+  // ever a fasting day for them.
+  const partial = vrati(['chhath_sandhya_arghya'])
+  const meals = (iso) => mealsAttendedBy(partial, activeFastIdsOn(dateOf(iso)))
+  assert.deepEqual(meals('2026-11-14'), ['breakfast', 'lunch', 'dinner'], 'Kharna bound a non-observer')
+  assert.deepEqual(meals('2026-11-15'), [], 'the day they DO keep')
+  assert.deepEqual(meals('2026-11-16'), ['breakfast', 'lunch', 'dinner'], 'Usha Arghya bound a non-observer')
+  assert.deepEqual(windowsFor(bindingToday(partial, '2026-11-14'), '2026-11-14', 'kolkata'), [],
+    'a day they do not keep still described a fast to them')
+})
+
+test('ticking the whole festival is exactly ticking its four days', () => {
+  assert.deepEqual(expandFasts(['chhath_puja_vrat']),
+    ['chhath_nahay_khay', 'chhath_kharna', 'chhath_sandhya_arghya', 'chhath_usha_arghya'])
+  // And an ordinary tradition expands to itself.
+  assert.deepEqual(expandFasts(['ekadashi_vrat']), ['ekadashi_vrat'])
+})
+
+test('Chhath is satvik, and the dishes it names are in the catalogue', () => {
+  const { mains } = filterRecipes(RECIPES, [vrati(['chhath_puja_vrat'])],
+    activeFastIdsOn(dateOf('2026-11-13')))
+  const unfasting = filterRecipes(RECIPES, [vrati([])], new Set()).mains.length
+  assert.ok(mains.length < unfasting, `${mains.length} of ${unfasting} — no rule applied`)
+  assert.ok(!mains.some((r) => r.flags?.onionGarlicFree?.status === 'no'))
+
+  // Traditionally lauki with rice and chana dal. Both exist and survive.
+  assert.ok(mains.some((r) => r.recipeId === 'J008'), 'Dudhi Chana Dal Sabzi is not servable')
+  assert.ok(mains.some((r) => r.recipeId === 'ASC113'), 'Boiled rice is not servable')
+
+  // But the vrat grain rules must NOT apply: Chhath prasad is thekua and
+  // rice kheer, and chana dal is the point of the first meal.
+  const chhathRule = ALL_RULES.find((r) => r.id === 'chhath')
+  for (const term of ['rice', 'wheat flour', 'chana dal', 'jaggery']) {
+    assert.ok(!chhathRule.forbidden.includes(term), `Chhath forbids ${term}`)
+  }
+})
+
+/* ------------------------------------------------------------------ *
+ * Uposatha's corrected baseline                                       *
+ * ------------------------------------------------------------------ */
+
+test('before_noon removes dinner and keeps the two meals before it', () => {
+  // It was `two_meals`, which means breakfast and DINNER — the one meal an
+  // observance forbidding food after midday cannot include.
+  const tenzin = { id: 'm1', name: 'Tenzin', diet: 'vegetarian', health: [],
+    lifeStage: 'adult', fasts: ['uposatha_observance'] }
+  const ids = activeFastIdsOn(dateOf('2026-01-03'))
+  assert.ok(ids.has('uposatha_observance'), '2026-01-03 is not an Uposatha')
+  assert.deepEqual(mealsAttendedBy(tenzin, ids), ['breakfast', 'lunch'])
+
+  assert.deepEqual(suggestedAttendance([tenzin], 'dinner', ids).present, [],
+    'dinner was planned on a day that forbids eating after midday')
+  for (const meal of ['breakfast', 'lunch']) {
+    assert.deepEqual(suggestedAttendance([tenzin], meal, ids).present, ['m1'], meal)
+  }
+  assert.match(suggestedAttendance([tenzin], 'dinner', ids).absent[0].reason, /before midday/i)
+})
+
+test('the madhyahna cutoff is shown, with its city, and moves between them', () => {
+  const delhi = windowsFor(['uposatha_observance'], '2026-01-03', 'delhi')[0]
+  const kolkata = windowsFor(['uposatha_observance'], '2026-01-03', 'kolkata')[0]
+  assert.equal(delhi.city, 'Delhi')
+  assert.equal(kolkata.city, 'Kolkata')
+  assert.match(delhi.text, /12:25 PM/)
+  assert.match(kolkata.text, /11:40 AM/)
+  // Forty-five minutes apart, and a clock noon is wrong in both.
+  assert.notEqual(delhi.text, kolkata.text)
 })
