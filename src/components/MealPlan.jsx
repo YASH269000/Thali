@@ -60,6 +60,17 @@ const RETRY_DELAYS_MS = [1000, 3000, 6000]
 const ATTEMPT_TIMEOUT_MS = 40000
 const TOTAL_BUDGET_MS = 90000
 
+// Why an attempt stopped, told apart by an explicit reason rather than by
+// inspecting the AbortError.
+//
+// `signal.reason` is never empty: aborting with no argument still populates it
+// with a spec-supplied DOMException, so a `!signal.reason` test can never be
+// true. Both kinds of abort therefore looked identical — a timeout put its raw
+// "signal is aborted without reason" text on screen as if it were an answer,
+// and a real cancellation (navigating away, or switching meal mid-flight) fell
+// into the retry loop and kept firing requests at a screen nobody was on.
+const ABORT_TIMEOUT = 'thali:attempt-timeout'
+
 const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner']
 
@@ -516,7 +527,7 @@ export default function MealPlan() {
       for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
         // Its own ceiling per attempt, aborted through the same controller the
         // effect cleanup uses so a navigation still cancels everything.
-        const timeout = setTimeout(() => controller.abort(), Math.min(ATTEMPT_TIMEOUT_MS, Math.max(budgetLeft(), 1)))
+        const timeout = setTimeout(() => controller.abort(ABORT_TIMEOUT), Math.min(ATTEMPT_TIMEOUT_MS, Math.max(budgetLeft(), 1)))
         let res
         let data
         try {
@@ -528,10 +539,17 @@ export default function MealPlan() {
           })
           data = await res.json()
         } catch (err) {
-          if (err.name === 'AbortError' && !controller.signal.reason) throw err
+          // Anything but our own timeout is a cancellation: stop, don't retry.
+          if (err.name === 'AbortError' && controller.signal.reason !== ABORT_TIMEOUT) throw err
           // A timeout or a dropped connection is transient in the same way a
-          // 503 is, so it takes the same path.
-          lastFailure = { error: 'Could not reach the meal planner.', detail: err.message }
+          // 503 is, so it takes the same path. Said in words: the abort's own
+          // message describes an AbortController, not a kitchen.
+          lastFailure = {
+            error: 'Could not reach the meal planner.',
+            detail: err.name === 'AbortError'
+              ? 'The planner took too long to answer.'
+              : err.message,
+          }
           res = null
         } finally {
           clearTimeout(timeout)
