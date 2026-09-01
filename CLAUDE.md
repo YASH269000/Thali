@@ -76,6 +76,11 @@ Sawan. Evaluated with the PANTRY matcher (`splitIngredients` →
   that — it excluded 31 correctly-flagged recipes.
 - A rejection names the tradition the MEMBER keeps (`keptAs`), not the rule
   set's label — one rule set serves Ekadashi and Navratri both.
+- Where a rule and a compliance flag disagree, THE RULE WINS AND THE FLAG GETS
+  CORRECTED, with the evidence in the flag's own `note`. Never leave a standing
+  disagreement: it is how a future reader concludes the flag is authoritative.
+  `test/ingredient-rules.test.js` sweeps both fast flags across pulse, grain,
+  allium and fermented and fails if any recipe disagrees.
 
 ## User-Editable Dates
 `thali_observance_dates` holds a family's own answers, one slot per

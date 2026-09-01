@@ -783,30 +783,67 @@ recipe is the fresh root, not dry sonth. Each correction carries its evidence
 in the flag's own `note`, and `test/ingredient-rules.test.js` asserts the nine
 stay corrected and stay explained.
 
-### Eight more the rules surfaced, not yet approved
+### Eleven more, from the sweep — FIXED
 
-Reported rather than changed, because the nine above were approved
-individually and these were not. The filter already excludes all eight — the
-ingredient rule is stricter than the flag, so nobody is served them — but the
-flag and the rule disagree and one of them should move.
+The nine above were found one ingredient at a time. These came from asking the
+question the other way round: not "what do the rules exclude?" but "what do
+the FLAGS still pass?", swept systematically across four categories — pulse,
+grain, allium, fermented — with a deliberately wider keyword net than the
+rules enforce, against both `ekadashiSafe` and `navratriSafe`.
 
-| recipe | flag | what the rule catches |
+| recipe | flags | evidence |
 | --- | --- | --- |
-| N004 Samo Rice Pulao | `ekadashiSafe`, `navratriSafe` | `green peas` |
-| ASC512 Plum chutney | `ekadashiSafe` | `Vinegar` |
-| ASC513 Raw mango chutney | `ekadashiSafe` | `Vinegar, distilled` |
-| BFP163 Green chilli sauce | `ekadashiSafe` | `Vinegar` |
-| BFP306 Jellied sunshine fruit salad | `ekadashiSafe` | `Vinegar` |
-| BFP310 French dressing | `ekadashiSafe` | `Vinegar` |
-| BFP312 Mayonnaise without eggs | `ekadashiSafe` | `Vinegar` |
-| OSR058 Pickled cabbage | `ekadashiSafe` | `Vinegar` |
+| N004 Samo Rice Pulao | `ekadashiSafe`, `navratriSafe` | `green peas` — a legume |
+| ASC512 Plum chutney | `ekadashiSafe`, `navratriSafe` | `Vinegar` |
+| ASC513 Raw mango chutney | `ekadashiSafe`, `navratriSafe` | `Vinegar, distilled` |
+| BFP163 Green chilli sauce | `ekadashiSafe`, `navratriSafe` | `Vinegar` |
+| BFP306 Jellied sunshine fruit salad | `ekadashiSafe`, `navratriSafe` | `Vinegar` |
+| BFP310 French dressing | `ekadashiSafe`, `navratriSafe` | `Vinegar` |
+| BFP312 Mayonnaise without eggs | `ekadashiSafe`, `navratriSafe` | `Vinegar` |
+| OSR058 Pickled cabbage | `ekadashiSafe`, `navratriSafe` | `Vinegar` |
+| ASC173 Cabbage and peas | `navratriSafe` | `Peas, fresh (Pisum sativum)` |
+| ASC480 Vegetable soup | `navratriSafe` | `Peas, fresh` — its `ekadashiSafe` was corrected first |
+| OSR056 Small onion pickle | `navratriSafe` | `Shallots, raw` — its `ekadashiSafe` and `jainSafe` were corrected first |
 
-**N004 is the one worth an argument.** It is a hand-written Thali Original
-written *for* Navratri, and it is excluded by the same peas rule that
-condemned ASC480. Its author hedged in the ingredient list itself — "carrot
-equivalent — use bottle gourd (lauki) cubed instead if strict" — so they knew
-they were near the line. Either fresh green peas are vrat food and both flags
-stand, or they are a pulse and both recipes are wrong. They cannot differ.
+Nineteen flag corrections across eleven recipes. Vinegar goes for the same
+reason allium does: it is fermented, and fermented foods are set aside on a
+vrat under the sattvic reasoning. Green peas go because a legume is a pulse,
+and N004 is the case that settles it — a hand-written Thali Original that
+hedges on its own carrot ("use bottle gourd (lauki) cubed instead if strict"),
+which is an author who knew the dish sat near the line. Either peas are vrat
+food and ASC480 stands too, or they are not and both go. They cannot differ.
+
+**The last three are the ones worth learning from.** Every earlier sweep
+looked at `ekadashiSafe` alone, so `navratriSafe` was never audited — and an
+onion pickle sat there flagged safe for Navratri, including on two recipes
+whose *other* flags had just been corrected. A half-corrected recipe reads as
+a considered one. The audit now runs over both flags and lives in
+`test/ingredient-rules.test.js` rather than in somebody's terminal, so a
+recipe added next month with a flag derived rather than considered fails the
+build. It comes back clean at 181 `ekadashiSafe` and 204 `navratriSafe`
+recipes, across all four categories.
+
+No grain violation was found at any point, and nothing was found that the
+shipped rules do not already exclude — the flags were the stale half, not the
+rules.
+
+### The standing principle: the rule wins, the flag gets corrected
+
+Where an ingredient rule and a compliance flag disagree, the rule is right and
+the flag is fixed — with the evidence written into the flag's own `note`, in
+the format above.
+
+This is not a preference for one mechanism over the other. A flag is an
+annotation somebody made once, often derived rather than considered: seven of
+the eight vinegar and peas rows are INDB imports whose flags were filled in
+wholesale. A rule reads the ingredient list the recipe itself carries. When
+they disagree, one of them is looking at the food.
+
+The reason to *correct* rather than to leave the rule enforcing over a stale
+flag: a standing disagreement is how a future reader concludes the flag is
+authoritative. Someone will read `ekadashiSafe: yes` on a vinegar chutney,
+find that the app never serves it, and conclude the filter is broken. Both
+halves have to say the same thing.
 
 ## Lent, Easter and a religion the app does not offer
 

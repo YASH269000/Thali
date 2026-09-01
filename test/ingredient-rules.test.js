@@ -220,3 +220,85 @@ test('ingredient names are read the way the shopping list reads them', () => {
   assert.ok(names.includes('sendha namak'), JSON.stringify(names))
   assert.ok(!names.some((n) => /^\d/.test(n)), 'a quantity survived into an ingredient name')
 })
+
+/* ------------------------------------------------------------------ *
+ * The audit sweep                                                     *
+ *                                                                     *
+ * Deliberately a WIDER net than the rules enforce. The rules decide   *
+ * what a family is served; this asks the other question — what do the *
+ * FLAGS still pass? Three recipes were found by it that no amount of  *
+ * checking individual ingredients had turned up, including an onion   *
+ * pickle flagged navratriSafe, because every earlier sweep had looked *
+ * at ekadashiSafe alone.                                              *
+ *                                                                     *
+ * Kept as a test rather than run once, so a recipe added next month   *
+ * with a flag derived rather than considered fails the build instead  *
+ * of reaching a plate.                                                *
+ * ------------------------------------------------------------------ */
+
+const AUDIT = {
+  pulse: ['dal', 'toor dal', 'arhar dal', 'tuvar dal', 'moong dal', 'chana dal',
+    'urad dal', 'masoor dal', 'rajma', 'chickpeas', 'chana', 'kabuli chana', 'besan',
+    'gram flour', 'lentils', 'lentil', 'peas', 'matar', 'green peas', 'dried peas',
+    'soya', 'soybean', 'soy', 'tofu', 'sprouts', 'beans', 'kidney beans',
+    'french beans', 'lima beans', 'lobia', 'cowpea', 'moth beans', 'horse gram',
+    'black gram', 'green gram', 'bengal gram', 'red gram', 'soya chunks', 'edamame'],
+  grain: ['rice', 'basmati rice', 'brown rice', 'parboiled rice', 'rice flour',
+    'puffed rice', 'murmura', 'poha', 'wheat', 'atta', 'whole wheat flour', 'maida',
+    'refined flour', 'suji', 'rava', 'semolina', 'oats', 'barley', 'corn', 'maize',
+    'cornflour', 'corn flour', 'makki', 'millet', 'bajra', 'jowar', 'ragi',
+    'vermicelli', 'sevai', 'bread', 'pasta', 'noodles', 'macaroni', 'daliya',
+    'quinoa', 'couscous', 'sattu', 'bulgur', 'cornmeal', 'breadcrumbs', 'flour'],
+  allium: ['onion', 'spring onion', 'shallots', 'leek', 'garlic', 'garlic cloves',
+    'chives', 'scallion', 'onion powder', 'garlic powder', 'onion paste',
+    'ginger garlic paste'],
+  fermented: ['vinegar', 'apple cider vinegar', 'soy sauce', 'soya sauce', 'tamari',
+    'wine', 'rice wine', 'cooking wine', 'mirin', 'sake', 'beer', 'rum', 'brandy',
+    'vodka', 'whisky', 'alcohol', 'yeast', 'idli batter', 'dosa batter', 'kimchi',
+    'miso', 'tempeh', 'fish sauce', 'worcestershire', 'sourdough', 'kombucha'],
+}
+
+// Curd, paneer and buttermilk are fermented and are vrat food; the vrat flours
+// are grains and are the point. Neither is a finding.
+const PERMITTED_FERMENT = /curd|yoghurt|yogurt|dahi|paneer|buttermilk|chaas|lassi|khoya|cheese/i
+const VRAT_STAPLE = /kuttu|buckwheat|singhara|water chestnut|rajgira|amaranth|\bsama\b|samak|barnyard|sabudana|sago|makhana/i
+
+test('no recipe flagged safe for a vrat contains a pulse, grain, allium or ferment', () => {
+  const findings = []
+  for (const recipe of RECIPES) {
+    const flags = ['ekadashiSafe', 'navratriSafe']
+      .filter((f) => recipe.flags?.[f]?.status === 'yes')
+    if (flags.length === 0) continue
+    const names = ingredientNamesOf(recipe)
+    for (const [category, terms] of Object.entries(AUDIT)) {
+      for (const term of terms) {
+        const found = names.find((n) => ruleViolations(
+          { recipeId: `${recipe.recipeId}#${term}`, ingredients: n },
+          [{ id: 'audit', forbidden: [term], swaps: [] }],
+        ).length > 0)
+        if (!found) continue
+        if (category === 'fermented' && PERMITTED_FERMENT.test(found)) continue
+        if (VRAT_STAPLE.test(found)) continue
+        findings.push(`${recipe.recipeId} ${recipe.name} — ${flags.join('+')} but ${category}: ${term} in "${found}"`)
+        break
+      }
+    }
+  }
+  assert.deepEqual(findings, [],
+    'a flag and an ingredient disagree. The rule wins and the flag gets corrected — '
+    + 'see "Nine compliance flags corrected" in docs/DATA-ISSUES.md for the format, '
+    + 'and record the evidence in the flag\'s own note.')
+})
+
+test('the corrections from the sweep stay corrected', () => {
+  // The three the ekadashiSafe-only sweeps could never have found.
+  assert.equal(byId.ASC173.flags.navratriSafe.status, 'no')
+  assert.equal(byId.ASC480.flags.navratriSafe.status, 'no')
+  assert.equal(byId.OSR056.flags.navratriSafe.status, 'no')
+  // N004 and the seven vinegar rows, both flags each.
+  for (const id of ['N004', 'ASC512', 'ASC513', 'BFP163', 'BFP306', 'BFP310', 'BFP312', 'OSR058']) {
+    assert.equal(byId[id].flags.ekadashiSafe.status, 'no', id)
+    assert.equal(byId[id].flags.navratriSafe.status, 'no', id)
+    assert.ok(byId[id].flags.ekadashiSafe.note.length > 20, `${id} corrected without evidence`)
+  }
+})

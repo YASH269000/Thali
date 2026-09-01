@@ -858,12 +858,12 @@
     "hasFullPreparation": true,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Green peas are a legume, and no pulse is eaten on a vrat — the same reading that corrected ASC480. The recipe hedges on its own carrot (\"use bottle gourd (lauki) cubed instead if strict\"), which is an author who knew the dish was near the line. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Green peas are a legume, and no pulse is eaten on a vrat — the same reading that corrected ASC480. The recipe hedges on its own carrot (\"use bottle gourd (lauki) cubed instead if strict\"), which is an author who knew the dish was near the line. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "no",
@@ -14918,8 +14918,8 @@
         "note": "No — contains ginger"
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Peas are a legume. No pulse is eaten on Ekadashi or during Navratri. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "no",
@@ -31046,8 +31046,8 @@
         "note": "No — lists \"Peas, fresh (Pisum sativum)\". Peas are a pulse, and no pulse is eaten on Ekadashi. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Peas are a legume. No pulse is eaten on Ekadashi or during Navratri. Corrected 2026-09; was \"yes\". Its ekadashiSafe flag was corrected first; this one was missed because that sweep only looked at ekadashiSafe."
       },
       "jainSafe": {
         "status": "no",
@@ -32498,12 +32498,12 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "yes",
@@ -32554,12 +32554,12 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "yes",
@@ -37426,12 +37426,12 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "yes",
@@ -42466,12 +42466,12 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "no",
@@ -42634,12 +42634,12 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "yes",
@@ -42690,12 +42690,12 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "yes",
@@ -56190,8 +56190,8 @@
         "note": "No — lists \"Shallots, raw\". Allium is excluded on Ekadashi. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Shallots are an allium. Corrected 2026-09; was \"yes\". Its ekadashiSafe and jainSafe flags were corrected first; this one was missed because that sweep only looked at ekadashiSafe."
       },
       "jainSafe": {
         "status": "no",
@@ -56298,12 +56298,12 @@
     "hasFullPreparation": false,
     "flags": {
       "ekadashiSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "navratriSafe": {
-        "status": "yes",
-        "note": "Yes"
+        "status": "no",
+        "note": "Vinegar is fermented, and fermented foods are set aside on a vrat under the same sattvic reasoning as onion and garlic. Corrected 2026-09; was \"yes\"."
       },
       "jainSafe": {
         "status": "yes",
