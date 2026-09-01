@@ -200,3 +200,35 @@ and the thin-pool warning are judged against it. `eligible` is still reported
 alongside for transparency. Predicted and actual dish counts now agree: Jain
 guest on Italian predicted 3 and returned 3; Buddhist on East Asian predicted 5
 and returned 5.
+
+
+## A parenthetical is usually a step, sometimes the product
+
+`"Tomatoes (chopped)"` and `"Tomatoes"` are one purchase; `"Coriander (ground)"`
+and `"Coriander leaves"` are two. Both `ingredientIdentity` (which the
+shopping-list dedupe keys on) and `pantryIdentity` used to drop every
+parenthetical before deciding what a thing was, so the second pair looked
+identical to the first.
+
+`stripNonIdentityParens()` now keeps a parenthetical whose every word is a
+product word — ground, powdered, dried, dry, tinned, canned, frozen, smoked,
+desiccated, flaked, with sun-/freeze- style modifiers allowed. Anything else is
+still discarded, so the prep note survives.
+
+The "every word" test matters. Removing the prep words first and judging what
+was left was tried and is wrong: `"(grated and squeezed dry)"` reduces to
+`"dry"`, which reads as a product and would have stopped
+`"Potatoes (grated and squeezed dry)"` matching Potato.
+
+Three names in the catalogue carry a product parenthetical — `Rose petals
+(dried)`, `Sichuan peppercorns (ground)`, `Roasted peanuts (ground) or smooth
+peanut butter`. None currently shares a list with the plain form, so the
+rendered shopping list is unchanged (verified byte-for-byte over 5,932
+generated lists). The dedupe had the identical hole and is fixed by the same
+helper.
+
+One asymmetry worth knowing: `Sichuan peppercorns (ground)` is now a different
+identity from `Sichuan peppercorns (toasted and ground)`, because the second
+mixes an instruction in and so reads as a step. Defensible — "(ground)" alone
+can mean buy it ground — but it is a distinction the source data did not
+intend to draw.

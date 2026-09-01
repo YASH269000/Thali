@@ -170,6 +170,70 @@ export function cleanIngredientName(raw) {
 }
 
 /* ------------------------------------------------------------------ *
+ * Identity-bearing parentheticals                                     *
+ *                                                                     *
+ * A parenthetical is usually an instruction — "(chopped)", "(boiled,  *
+ * cubed)" — and identity ignores it, which is why "cabbage            *
+ * (shredded)" and "cabbage" are one purchase.                         *
+ *                                                                     *
+ * Sometimes it is the product instead. "Coriander (ground)" is not    *
+ * coriander leaves with a note; it is a different jar. Dropping the   *
+ * bracket made the two identical, so the pantry claimed one for the   *
+ * other and the shopping list would have merged them onto one line.   *
+ *                                                                     *
+ * Only a parenthetical that is ENTIRELY a product statement counts.   *
+ * "(grated and squeezed dry)" contains the word "dry" and is still an *
+ * instruction; blocking on any occurrence would have stopped          *
+ * "Potatoes (grated and squeezed dry)" matching Potato.               *
+ * ------------------------------------------------------------------ */
+
+const PRODUCT_TOKENS = new Set([
+  'ground', 'powdered', 'powder', 'dried', 'dry', 'dehydrated', 'desiccated',
+  'tinned', 'canned', 'frozen', 'pickled', 'smoked', 'concentrate',
+  'concentrated', 'flaked', 'flakes',
+])
+
+// Modifiers that only ever qualify a product word: "sun-dried", "freeze-dried".
+const PRODUCT_MODIFIERS = new Set(['sun', 'air', 'freeze', 'oven', 'spray', 'shade'])
+
+const PAREN_STOPWORDS = new Set(['and', 'or', 'the', 'a', 'in', 'to', 'with', 'then'])
+
+/**
+ * Is this parenthetical naming a different product rather than a step?
+ *
+ * Every word has to be a product word. Removing the prep words first and
+ * testing what was left was tried and is wrong: "(grated and squeezed dry)"
+ * reduces to "dry", which reads as a product and would have stopped
+ * "Potatoes (grated and squeezed dry)" matching Potato.
+ */
+function parenIsProduct(inner) {
+  const words = String(inner || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .filter((w) => !PAREN_STOPWORDS.has(w))
+  if (words.length === 0) return false
+  return words.some((w) => PRODUCT_TOKENS.has(w))
+    && words.every((w) => PRODUCT_TOKENS.has(w) || PRODUCT_MODIFIERS.has(w))
+}
+
+/**
+ * Parentheticals removed for identity — except the ones that ARE the identity,
+ * whose words are kept inline so the name stays distinct.
+ *
+ * Used by every place that strips brackets before deciding what a thing is:
+ * ingredientIdentity below, which the shopping-list dedupe keys on, and
+ * pantryIdentity, which decides whether the family already has it.
+ */
+export function stripNonIdentityParens(text) {
+  return String(text || '')
+    .replace(/\s*\(([^)]*)\)/g, (whole, inner) => (parenIsProduct(inner) ? ` ${inner} ` : ' '))
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/* ------------------------------------------------------------------ *
  * Canonical identity                                                  *
  * ------------------------------------------------------------------ */
 
@@ -211,8 +275,7 @@ export function ingredientIdentity(raw) {
   // Parentheticals are kept for display but ignored for identity: "cabbage
   // (shredded)" and "cabbage" are one purchase, and a gloss should not split
   // a line the way a binomial used to.
-  const lower = clean
-    .replace(/\s*\(.*?\)/g, ' ')
+  const lower = stripNonIdentityParens(clean)
     .toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim()
   if (!lower) return { base: '', form: '', clean }
 
@@ -252,7 +315,12 @@ export function ingredientIdentity(raw) {
 // roasted and smoked.
 const PREP_WORDS = [
   'sliced', 'chopped', 'diced', 'minced', 'grated', 'crushed', 'mashed',
-  'julienned', 'cubed', 'shredded', 'boiled', 'blanched', 'soaked', 'toasted',
+  'julienned', 'cubed', 'shredded', 'boiled', 'blanched', 'soaked',
+  // An oven step, not a different jar. The audit split cleanly here: every
+  // roasted/toasted collision in the catalogue is something a cook does to the
+  // raw thing (roasted peanuts, roasted besan), while every ground/powdered
+  // one is another item on the shelf. Those stay out.
+  'roasted', 'toasted',
 ]
 
 const PREP_DEGREE = ['finely', 'roughly', 'thinly', 'coarsely']
@@ -262,6 +330,11 @@ const PREP_DEGREE = ['finely', 'roughly', 'thinly', 'coarsely']
 // purchases, and the same is true of every fresh/dried pair in this data.
 const STATE_WORDS = [
   'thick', 'thin', 'cold', 'warm', 'chilled', 'full-fat', 'low-fat', 'plain',
+  // "Fresh coriander" IS coriander leaves — 96 lines of the catalogue say so,
+  // and it was the single largest pantry miss. The fresh/dried contrast that
+  // kept this word out is carried by `dried`, which is a product word and is
+  // never stripped, so "Dried coriander leaves" still fails to match.
+  'fresh',
 ]
 
 const PREP_RUN = `(?:(?:${PREP_DEGREE.join('|')})\\s+)?(?:${PREP_WORDS.join('|')})`
@@ -302,10 +375,11 @@ export function pantryIdentity(raw) {
     (text.match(ANY_PREP_RE) || []).map((p) => p.toLowerCase().replace(/\s+/g, ' ')),
   )]
 
-  // Parentheticals are prep or gloss, never identity — ingredientIdentity
-  // ignores them for base and form anyway, so dropping them here only lets the
-  // strip above see the head noun.
-  const outside = text.replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim()
+  // Parentheticals are prep or gloss — unless they name the product, in which
+  // case their words stay and the name stays distinct. Same rule as
+  // ingredientIdentity, so the pantry and the dedupe cannot disagree about
+  // what "Coriander (ground)" is.
+  const outside = stripNonIdentityParens(text)
   const settled = stripQualifiers(outside) || outside || text
   const { base, form } = ingredientIdentity(settled)
 
@@ -316,6 +390,51 @@ export function pantryIdentity(raw) {
   // flour, which the guide has always said are the same thing.
   const aliased = Boolean(lookupIngredient(settled.toLowerCase()))
   return { base, form: aliased ? '' : form, prep }
+}
+
+/**
+ * The alternatives an either/or ingredient offers.
+ *
+ * Split on " or " only. Every "/" in this catalogue is a gloss or a note —
+ * "Lauki/bottle gourd" is one vegetable named twice, "(jain — no onion/garlic)"
+ * is a caveat — so treating it as a choice invents ingredients.
+ *
+ * A one-word tail borrows the head, because that is what it means:
+ * "coriander root or stems" offers coriander root and coriander stems, not
+ * "stems". That also keeps it correctly OUT of the Coriander leaves chip.
+ */
+export function alternatives(name) {
+  const text = String(name || '').trim()
+  if (!/\s+or\s+/i.test(text)) return [text]
+  const parts = text.split(/\s+or\s+/i).map((p) => p.trim()).filter(Boolean)
+  if (parts.length < 2) return [text]
+  const headWords = parts[0].split(/\s+/)
+  return parts.map((part, i) => {
+    if (i === 0) return part
+    // "Shallots or 1 small onion (chopped)" — the second alternative carries
+    // its own quantity, which has to come off before it can be recognised.
+    const bare = part
+      .replace(/^[\d\s./\u00bd\u00bc\u00be\u2153\u2154]+/, '')
+      .replace(/^(?:small|medium|large)\s+/i, '')
+      .trim() || part
+    if (bare.split(/\s+/).length === 1 && headWords.length > 1) {
+      return `${headWords.slice(0, -1).join(' ')} ${bare}`
+    }
+    return bare
+  })
+}
+
+/**
+ * Does a pantry entry cover this ingredient, by any of its alternatives?
+ *
+ * @returns {{ via: string } | null} `via` is the alternative that matched, so
+ *   the UI can say which one the family already has.
+ */
+export function matchPantryLine(chipIdentity, lineName) {
+  for (const alt of alternatives(lineName)) {
+    if (pantryMatches(chipIdentity, pantryIdentity(alt))) return { via: alt }
+  }
+  return null
 }
 
 /**
@@ -366,10 +485,14 @@ const PREP_GERUND = {
   grated: 'grating', crushed: 'crushing', mashed: 'mashing',
   julienned: 'julienning', cubed: 'cubing', shredded: 'shredding',
   boiled: 'boiling', blanched: 'blanching', soaked: 'soaking',
-  toasted: 'toasting',
+  toasted: 'toasting', roasted: 'roasting',
 }
 
-/** "needs chopping and slicing" — what is still to do, for the pantry note. */
+// Steps that come first in a kitchen, so the note reads in the order the cook
+// works: "needs roasting and crushing", not "needs crushing and roasting".
+const FIRST_STEPS = ['roasting', 'toasting', 'boiling', 'blanching', 'soaking']
+
+/** "needs roasting and crushing" — what is still to do, for the pantry note. */
 export function prepLabel(prep) {
   const verbs = []
   for (const raw of prep || []) {
@@ -381,6 +504,11 @@ export function prepLabel(prep) {
     const phrase = `${degree}${gerund}`
     if (!verbs.includes(phrase)) verbs.push(phrase)
   }
+  const rank = (v) => {
+    const i = FIRST_STEPS.findIndex((f) => v.endsWith(f))
+    return i === -1 ? FIRST_STEPS.length : i
+  }
+  verbs.sort((a, b) => rank(a) - rank(b))
   if (verbs.length === 0) return ''
   if (verbs.length === 1) return `needs ${verbs[0]}`
   return `needs ${verbs.slice(0, -1).join(', ')} and ${verbs.at(-1)}`

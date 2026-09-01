@@ -4,7 +4,9 @@
 // The model scaled down reliably but not up — rice stayed at 1.5 cups when
 // the table grew from 3 diners to 5. Arithmetic does not have that problem.
 
-import { ingredientIdentity, pantryIdentity, pantryMatches, prepLabel } from './ingredientNames.js'
+import {
+  ingredientIdentity, matchPantryLine, pantryIdentity, prepLabel,
+} from './ingredientNames.js'
 import { namedInModification } from './recipeRefs.js'
 
 const VULGAR = {
@@ -532,17 +534,22 @@ export function applyPantry(entries, pantryItems) {
   const prepared = []
   const matched = new Set()
   for (const entry of all) {
-    const id = pantryIdentity(entry.name)
-    const hits = terms.filter((t) => pantryMatches(t.id, id))
+    // An either/or line is covered if the family has ANY of its alternatives,
+    // and the note reports the one they have rather than the whole string.
+    const hits = terms
+      .map((t) => ({ term: t, hit: matchPantryLine(t.id, entry.name) }))
+      .filter((x) => x.hit)
     if (hits.length === 0) { rows.push(entry); continue }
 
     const line = formatEntry(entry)
     removed.push(line)
-    for (const h of hits) matched.add(h.item)
-    const label = prepLabel(id.prep)
+    for (const h of hits) matched.add(h.term.item)
+    // Prep is read off the alternative that matched: "shallots or 1 small
+    // onion (chopped)" needs chopping, and nothing else on that line matters.
+    const label = prepLabel(pantryIdentity(hits[0].hit.via).prep)
     // Keyed on the name as the list DISPLAYS it, via the shared helper below,
     // because that is what the pantry note is rendered against.
-    if (label) prepared.push({ item: hits[0].item, name: listItemName(line), prep: label })
+    if (label) prepared.push({ item: hits[0].term.item, name: listItemName(line), prep: label })
   }
   return { rows, removed, matched: [...matched], prepared }
 }
