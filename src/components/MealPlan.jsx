@@ -60,15 +60,20 @@ const RETRY_DELAYS_MS = [1000, 3000, 6000]
 const ATTEMPT_TIMEOUT_MS = 40000
 const TOTAL_BUDGET_MS = 90000
 
-// Why an attempt stopped, told apart by an explicit reason rather than by
-// inspecting the AbortError.
+// Why an attempt stopped. A timeout is transient and retried; anything else is
+// a cancellation and stops the sequence.
 //
-// `signal.reason` is never empty: aborting with no argument still populates it
-// with a spec-supplied DOMException, so a `!signal.reason` test can never be
-// true. Both kinds of abort therefore looked identical — a timeout put its raw
-// "signal is aborted without reason" text on screen as if it were an answer,
-// and a real cancellation (navigating away, or switching meal mid-flight) fell
-// into the retry loop and kept firing requests at a screen nobody was on.
+// Told apart by an explicit reason, because `signal.reason` is never empty:
+// aborting with no argument still populates it with a spec-supplied
+// DOMException, so a `!signal.reason` test can never be true. Both kinds of
+// abort therefore looked identical — a timeout put its raw "signal is aborted
+// without reason" text on screen as if it were an answer, and a real
+// cancellation fell into the retry loop and kept firing requests at a screen
+// nobody was on.
+//
+// Note this is a plain string, so a fetch aborted with it rejects with the
+// string itself rather than a DOMException: `err.name` is undefined on that
+// path, and the signal has to be asked instead of the error.
 const ABORT_TIMEOUT = 'thali:attempt-timeout'
 
 const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
@@ -525,9 +530,17 @@ export default function MealPlan() {
 
     try {
       for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
-        // Its own ceiling per attempt, aborted through the same controller the
-        // effect cleanup uses so a navigation still cancels everything.
-        const timeout = setTimeout(() => controller.abort(ABORT_TIMEOUT), Math.min(ATTEMPT_TIMEOUT_MS, Math.max(budgetLeft(), 1)))
+        // Its own ceiling, on its own controller. An aborted controller stays
+        // aborted, so sharing one across attempts would let a single timeout
+        // collapse every retry behind it — each remaining fetch rejecting
+        // instantly on a dead signal, all three burnt in milliseconds. The
+        // request-wide controller is relayed in so the effect cleanup still
+        // cancels whatever is in flight.
+        const attemptCtl = new AbortController()
+        const relay = () => attemptCtl.abort(controller.signal.reason)
+        if (controller.signal.aborted) relay()
+        else controller.signal.addEventListener('abort', relay, { once: true })
+        const timeout = setTimeout(() => attemptCtl.abort(ABORT_TIMEOUT), Math.min(ATTEMPT_TIMEOUT_MS, Math.max(budgetLeft(), 1)))
         let res
         let data
         try {
@@ -535,24 +548,26 @@ export default function MealPlan() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body,
-            signal: controller.signal,
+            signal: attemptCtl.signal,
           })
           data = await res.json()
         } catch (err) {
-          // Anything but our own timeout is a cancellation: stop, don't retry.
-          if (err.name === 'AbortError' && controller.signal.reason !== ABORT_TIMEOUT) throw err
+          // The request-wide controller aborting means nobody is on this
+          // screen any more: stop, don't retry.
+          if (controller.signal.aborted) throw err
           // A timeout or a dropped connection is transient in the same way a
-          // 503 is, so it takes the same path. Said in words: the abort's own
-          // message describes an AbortController, not a kitchen.
+          // 503 is, so it takes the same path. Said in words either way: an
+          // abort's own message describes an AbortController, not a kitchen.
           lastFailure = {
             error: 'Could not reach the meal planner.',
-            detail: err.name === 'AbortError'
+            detail: attemptCtl.signal.reason === ABORT_TIMEOUT
               ? 'The planner took too long to answer.'
-              : err.message,
+              : err?.message || 'The connection dropped.',
           }
           res = null
         } finally {
           clearTimeout(timeout)
+          controller.signal.removeEventListener('abort', relay)
         }
 
         if (res?.ok) {
@@ -1102,7 +1117,7 @@ export default function MealPlan() {
             {/* Beside the header, not inside the cuisine picker: that block is
                 hidden whole on a fast day, and the explanation is most worth
                 reading on exactly the days the constraints bite hardest. */}
-            <WhyThisMeal explanation={plan.explanation} />
+            <WhyThisMeal explanation={plan.explanation} savedAt={cachedFrom} />
 
             {(plan.guestNotes || []).map((n) => (
               <div key={n.kind} className="guest-note">

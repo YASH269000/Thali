@@ -103,6 +103,14 @@
   color: #6b6b66;
 }
 
+/* The dishes that need a change hang off the row they were counted out of,
+   rather than becoming a step of their own that reads as an increase. */
+.why-funnel-sub {
+  display: block;
+  font-size: 13px;
+  color: #9a9a94;
+}
+
 .why-reasons {
   list-style: none;
   margin: 0;

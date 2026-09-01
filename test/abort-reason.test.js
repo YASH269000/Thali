@@ -50,10 +50,40 @@ test('the guard the code actually ships is written the way these tests assume', 
   const { readFile } = await import('node:fs/promises')
   const src = await readFile(new URL('../src/components/MealPlan.jsx', import.meta.url), 'utf8')
 
-  assert.match(src, /controller\.abort\(ABORT_TIMEOUT\)/,
+  // assert.ok, not assert.match: matching against a 50 KB source file prints
+  // the whole file on failure, which buries the one line that matters.
+  const has = (re, why) => assert.ok(re.test(src), why)
+  const lacks = (re, why) => assert.ok(!re.test(src), why)
+
+  has(/const attemptCtl = new AbortController\(\)/,
+    'each attempt needs its own controller: an aborted one stays aborted')
+  has(/attemptCtl\.abort\(ABORT_TIMEOUT\)/,
     'the attempt timeout must abort with its own reason')
-  assert.match(src, /controller\.signal\.reason !== ABORT_TIMEOUT\) throw err/,
-    'anything that is not our timeout must be rethrown as a cancellation')
-  assert.doesNotMatch(src, /!controller\.signal\.reason/,
+  has(/signal: attemptCtl\.signal/,
+    'the fetch must be tied to the per-attempt controller, not the outer one')
+  has(/if \(controller\.signal\.aborted\) throw err/,
+    'a cancellation must stop the sequence rather than be retried')
+  has(/attemptCtl\.signal\.reason === ABORT_TIMEOUT/,
+    'the timeout is recognised from the signal, since a string reason leaves err.name undefined')
+  has(/removeEventListener\('abort', relay\)/,
+    'the relay must be detached, or every attempt leaves a listener behind')
+
+  lacks(/!controller\.signal\.reason/,
     'the guard that could never be true must not come back')
+  lacks(/signal: controller\.signal/,
+    'sharing the outer signal is what let one timeout collapse every retry')
+})
+
+test('a string reason leaves err.name undefined, so the error cannot be asked', async () => {
+  // Why the check moved from the error to the signal. Aborting with a string
+  // makes fetch reject with that string, which has no `.name` and no
+  // `.message` — the first version of this fix read both and got undefined.
+  const c = new AbortController()
+  c.abort(ABORT_TIMEOUT)
+
+  const err = await fetch('https://example.invalid', { signal: c.signal }).catch((e) => e)
+  assert.equal(err, ABORT_TIMEOUT)
+  assert.equal(err.name, undefined)
+  assert.equal(err.message, undefined)
+  assert.equal(c.signal.reason, ABORT_TIMEOUT, 'the signal still knows')
 })
