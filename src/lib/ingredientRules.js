@@ -189,6 +189,7 @@ export const TRADITION_RULES = {
   paryushana_parva: JAIN,
   das_lakshana_parva: JAIN,
   atthai_8_day_continuous_fast: JAIN,
+  jain_chaturdashi: JAIN,
   jain_year_round_dietary_rules: JAIN,
   sawan_somvar_vrat: SAWAN,
 }

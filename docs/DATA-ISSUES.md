@@ -899,6 +899,51 @@ is no second mechanism and no second source of dates.
 `test/location.test.js` asserts the invariant directly: `observancesOn` takes
 no location and must never learn to.
 
+## Uposatha had a tradition row and no dates — the inverse of the others
+
+`jain_chaturdashi`, `kalashtami` and `vinayaka_chaturthi` computed 100
+occurrences between them across 2026-27 and could be selected by nobody.
+Uposatha was the opposite: a selectable Buddhist tradition with **no engine
+rule at all**, so it produced zero dates.
+
+It needed no new astronomy. Uposatha is kept on the ashtami, purnima and
+amavasya of each lunar month — four days — and the engine already computes all
+four under other names. So the fix was a mapping, not a rule:
+
+| engine observance | now also reaches |
+| --- | --- |
+| `masik_durgashtami` (24) | `uposatha_observance` |
+| `kalashtami` (25) | `uposatha_observance` |
+| `purnima` (25) | `uposatha_observance` |
+| `amavasya` (25) | `uposatha_observance` |
+
+That gives Uposatha 50 days in 2026, at the quarter-lunar-month rhythm the
+tradition keeps, and it gives Durgashtami and Kalashtami somebody who can
+select them.
+
+**Uposatha is a mealCount, not a timing slot.** It was handed to the timing
+work as one — "nothing after noon" — but that rule maps exactly onto WHICH of
+the standard three meals are eaten, which `mealCount` already answers. Its
+baseline is `before_noon`: breakfast and lunch stand, dinner is the meal that
+goes. `two_meals` was the previous baseline and was wrong for exactly that
+reason — it means breakfast and *dinner*.
+
+What it does need is the cutoff computed. "Noon" here is madhyahna, the
+midpoint between sunrise and sunset, which is 11:36 AM in Kolkata and 12:38 PM
+in Mumbai on the same day. An hour apart, and a clock noon is wrong in both.
+
+### Vinayaka Chaturthi and Jain Chaturdashi now have rows
+
+The cost was one `masterIndex` row each plus one `OBSERVANCE_FASTS` entry —
+small enough that leaving them unreachable was the stranger choice. Both also
+took a baseline and a guidance entry; Jain Chaturdashi took the Jain ingredient
+rules, which narrow it from 1,132 to 460 for a vegetarian.
+
+`test/location.test.js` used to assert their unreachability with a note that
+making one reachable should make it fail. It did. The assertion is now the
+other way round: every observance that varies by city must be reachable by
+somebody, or nobody is ever asked about it.
+
 ## Fajr at 18 degrees, and the two other conventions
 
 Maghrib is sunset and needs no convention. Fajr does: it is the moment the sun

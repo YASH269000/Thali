@@ -884,6 +884,9 @@ export const MEAL_TARGET = {
   suhoor: [2, 3],
   parana: [3, 4],
   iftar: [3, 4],
+  // Broken at moonrise or at midday: the one meal of the day, so a full one.
+  moonrise_meal: [3, 4],
+  midday_meal: [3, 4],
 }
 
 /**
@@ -904,6 +907,10 @@ export const SLOT_SHAPE = {
   suhoor: 'breakfast',
   parana: 'dinner',
   iftar: 'dinner',
+  // Broken after moonrise, so eaten as the evening meal.
+  moonrise_meal: 'dinner',
+  // Broken at madhyahna, so eaten as the midday one.
+  midday_meal: 'lunch',
 }
 
 /** The meal shape to select dishes for: a slot borrows one, a meal is itself. */

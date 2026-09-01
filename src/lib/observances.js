@@ -59,8 +59,8 @@ export const OBSERVANCE_FASTS = {
   ekadashi_vrat: ['ekadashi_vrat'],
   pradosh_vrat: ['pradosh_vrat'],
   sankashti_chaturthi: ['sankashti_chaturthi'],
-  purnima: ['purnima_vrat', 'satyanarayan_vrat'],
-  amavasya: ['amavasya_vrat'],
+  purnima: ['purnima_vrat', 'satyanarayan_vrat', 'uposatha_observance'],
+  amavasya: ['amavasya_vrat', 'uposatha_observance'],
   janmashtami: ['janmashtami_vrat'],
   maha_shivaratri: ['maha_shivaratri_vrat'],
   karwa_chauth: ['karwa_chauth'],
@@ -77,16 +77,21 @@ export const OBSERVANCE_FASTS = {
   sawan_somvar: ['sawan_somvar_vrat'],
   makar_sankranti: ['makar_sankranti_pongal'],
 
-  // Real observances with no corresponding tradition in the database.
-  // Vinayaka Chaturthi, Durgashtami and Kalashtami are kept monthly by many
-  // families but the database offers no row to select; Jain Chaturdashi has
-  // no row either (Upvas is a personal choice, not a fixed day, so mapping it
-  // here would mark 25 days a year on someone who chose one); and Dussehra
-  // and Diwali are feasts, not fasts.
-  vinayaka_chaturthi: [],
-  masik_durgashtami: [],
-  kalashtami: [],
-  jain_chaturdashi: [],
+  // Vinayaka Chaturthi and Jain Chaturdashi now have rows of their own. They
+  // computed correctly and could be observed by nobody, which is a strange
+  // thing to leave standing when the fix is one row each.
+  vinayaka_chaturthi: ['vinayaka_chaturthi_vrat'],
+  jain_chaturdashi: ['jain_chaturdashi'],
+
+  // Uposatha is kept on the ashtami, purnima and amavasya of each lunar
+  // month — four days, and the engine already computes all four under other
+  // names. So the Buddhist observance needs no rule of its own; it needs to
+  // be told which existing ones are its days. That also gives Durgashtami and
+  // Kalashtami somebody who can select them, which they did not have.
+  masik_durgashtami: ['uposatha_observance'],
+  kalashtami: ['uposatha_observance'],
+
+  // Feasts, not fasts. Nobody's plate changes.
   dussehra: [],
   diwali: [],
 

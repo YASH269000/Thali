@@ -173,6 +173,12 @@ test('the same narrowing happens on a date the curated calendar never knew', () 
   assert.ok(activeFastIdsOn(new Date(2026, 0, 14)).has('ekadashi_vrat'))
 })
 
+// Days in 2026 carrying an observance the guidance table says nothing about.
+const GUIDANCE_FREE_DAYS = [
+  new Date(2026, 0, 3), new Date(2026, 0, 6), new Date(2026, 0, 18),
+  new Date(2026, 1, 1), new Date(2026, 2, 3),
+].filter((d) => calendarNotesOn(d).some((n) => !('impact' in n)))
+
 test('the prompt is told what day it is, with no empty fields', () => {
   const notes = calendarNotesOn(new Date(2026, 8, 7))
   assert.equal(notes.length, 1)
@@ -188,7 +194,17 @@ test('the prompt is told what day it is, with no empty fields', () => {
 
   // A day whose observance carries no curated guidance still names the day,
   // and carries no blank impact or action fields for the model to read.
-  const quiet = calendarNotesOn(new Date(2026, 0, 22))
-  assert.equal(quiet[0].observance, 'Vinayaka Chaturthi')
-  assert.ok(!('impact' in quiet[0]))
+  //
+  // The observance is found rather than named: this used to pin Vinayaka
+  // Chaturthi, which then acquired guidance when it got a tradition row of
+  // its own, and the test failed for a change that was entirely correct. What
+  // it means to assert is that SOME observance has no guidance and still
+  // names its day — not that any particular one is guidance-less forever.
+  const guidanceless = GUIDANCE_FREE_DAYS.find((d) => calendarNotesOn(d).length > 0)
+  assert.ok(guidanceless, 'every observance now carries guidance — good, but retire this test')
+  for (const note of calendarNotesOn(guidanceless)) {
+    assert.ok(note.observance, 'a note that names no day')
+    if ('impact' in note) continue
+    assert.ok(!('appAction' in note), 'a note with an action but no impact')
+  }
 })

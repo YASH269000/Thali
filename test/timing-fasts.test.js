@@ -15,7 +15,9 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 
 import { dayTimes, formatTime, sargiTime, FAJR_ANGLE } from '../src/lib/times.js'
-import { TIMING_SLOT_IDS, slotsFor, timingFastsFor, windowsFor } from '../src/lib/timingFasts.js'
+import {
+  TIMING_SLOT_IDS, WINDOW_ONLY_FASTS, slotsFor, timingFastsFor, windowsFor,
+} from '../src/lib/timingFasts.js'
 import { MEAL_TARGET, SLOT_SHAPE, filterRecipes, selectCandidatesForMeal, shapeOf } from '../src/lib/mealPlanRules.js'
 import { mealsAttendedBy, strictestMealCount } from '../src/lib/observanceProfile.js'
 import { LOCATIONS } from '../src/lib/location.js'
@@ -176,4 +178,160 @@ test('a slot selects the dishes of the meal it sits at, not the whole pool', () 
   assert.equal(sargi.eligible, breakfast.eligible, 'sargi did not take breakfast\'s shape')
   assert.ok(sargi.eligible < mains.length, 'sargi fell through to the whole pool')
   assert.equal(selectCandidatesForMeal(mains, 'parana', opts).eligible, dinner.eligible)
+})
+
+/* ------------------------------------------------------------------ *
+ * Nirjala Ekadashi — the composition test                             *
+ *                                                                     *
+ * The only one of the six that is both an ingredient fast and a       *
+ * timing fast. The day is waterless AND the vrat food rules still     *
+ * govern the parana, and the two halves are enforced in different     *
+ * places that know nothing about each other.                          *
+ * ------------------------------------------------------------------ */
+
+const NIRJALA = computed.observances.find(
+  (o) => o.ekadashiName === 'Nirjala' && o.date.startsWith('2026'))
+
+const member = (o) => ({
+  id: 'm1', name: 'Vrinda', age: 40, relationship: 'self', diet: 'vegetarian',
+  health: [], religion: 'Hindu', cuisine: 'north_indian', spiceLevel: 2,
+  dislikes: '', lifeStage: 'adult', fasts: ['ekadashi_vrat'], ...o,
+})
+const OPTS = { limit: 40, excludeIds: [], anyFasting: true, forceCuisine: 'indian' }
+
+test('Nirjala is one occurrence, not a tradition, and is matched as one', () => {
+  assert.ok(NIRJALA, 'no Nirjala Ekadashi shipped for 2026')
+  assert.equal(NIRJALA.id, 'ekadashi_vrat')
+
+  // The ordinary Ekadashis get no slots; only this one does.
+  const aja = computed.observances.find((o) => o.ekadashiName === 'Aja' && o.date.startsWith('2026'))
+  assert.deepEqual(slotsFor(['ekadashi_vrat'], aja.date, 'delhi', [aja]), [],
+    'an ordinary Ekadashi grew a nirjala slot')
+  const [parana] = slotsFor(['ekadashi_vrat'], NIRJALA.date, 'delhi', [NIRJALA])
+  assert.equal(parana.id, 'parana')
+  // And it belongs to the tradition a member can actually select. Filing it
+  // under `nirjala_ekadashi` — the timing tradition's own id — gave the parana
+  // an empty guest list, because nobody selects a fast by that name.
+  assert.equal(parana.fastId, 'ekadashi_vrat')
+})
+
+test('the parana draws from the Ekadashi pool, not the catalogue', () => {
+  const { mains } = filterRecipes(RECIPES, [member({
+    observances: { ekadashi_vrat: { mealCount: 'nirjala' } },
+  })], new Set(['ekadashi_vrat']))
+
+  // The ingredient half is untouched by the timing half: 177, the same pool
+  // any other Ekadashi gives, not the 1,132 a vegetarian sees unfasting.
+  const unfasting = filterRecipes(RECIPES, [member({ fasts: [] })], new Set()).mains.length
+  assert.ok(mains.length < unfasting / 3,
+    `parana pool is ${mains.length} of ${unfasting} — the vrat rules did not apply`)
+
+  const parana = selectCandidatesForMeal(mains, 'parana', OPTS)
+  assert.ok(parana.candidates.length > 0, 'nothing to break the fast with')
+  assert.ok(parana.eligible < mains.length, 'the parana took the whole pool')
+})
+
+test('and the day itself is waterless', () => {
+  const strict = member({ observances: { ekadashi_vrat: { mealCount: 'nirjala' } } })
+  assert.deepEqual(mealsAttendedBy(strict, new Set(['ekadashi_vrat'])), [],
+    'a nirjala day planned a standard meal')
+  const [w] = windowsFor(['ekadashi_vrat'], NIRJALA.date, 'delhi', [NIRJALA])
+  assert.match(w.text, /without water/i)
+})
+
+test('but the exemption still returns a plan, not an empty screen', () => {
+  // The requirement that matters most here: a diabetic member with the
+  // exemption set gets a nourishing day, and the fast's food rules stop
+  // applying to her along with its hours.
+  const exempt = member({
+    id: 'm2', name: 'Sumitra', age: 62, lifeStage: 'elderly', health: ['diabetes_t2'],
+    observances: { ekadashi_vrat: { mealCount: 'nirjala', observesLightly: true } },
+  })
+  assert.deepEqual(mealsAttendedBy(exempt, new Set(['ekadashi_vrat'])),
+    ['breakfast', 'lunch', 'dinner'])
+
+  const { mains } = filterRecipes(RECIPES, [exempt], new Set(['ekadashi_vrat']))
+  assert.ok(mains.length > 500, `${mains.length} dishes is not a nourishing day`)
+  for (const meal of ['breakfast', 'lunch', 'dinner']) {
+    assert.ok(selectCandidatesForMeal(mains, meal, OPTS).candidates.length > 0, meal)
+  }
+  // And she is offered no slots, because the fast does not bind her.
+  assert.deepEqual(slotsFor([], NIRJALA.date, 'delhi', [NIRJALA]), [])
+})
+
+/* ------------------------------------------------------------------ *
+ * Uposatha: a mealCount, not a slot                                   *
+ * ------------------------------------------------------------------ */
+
+test('Uposatha needs no slots, because its rule is which meals not when', () => {
+  // "No solid food after noon" maps exactly onto WHICH of the standard three
+  // are eaten, which mealCount already answers. What it needs is the cutoff
+  // computed — madhyahna is the midpoint of the day, not twelve on a clock.
+  assert.ok(WINDOW_ONLY_FASTS.uposatha_observance)
+  assert.deepEqual(slotsFor(['uposatha_observance'], '2026-01-03', 'delhi'), [])
+
+  const [w] = windowsFor(['uposatha_observance'], '2026-01-03', 'kolkata')
+  assert.equal(w.city, 'Kolkata')
+  assert.match(w.text, /madhyahna/i)
+  assert.match(w.text, /\d{1,2}:\d{2} [AP]M/)
+
+  const observer = { id: 'm1', name: 'Tenzin', diet: 'vegetarian', health: [],
+    lifeStage: 'adult', fasts: ['uposatha_observance'] }
+  assert.deepEqual(mealsAttendedBy(observer, new Set(['uposatha_observance'])),
+    ['breakfast', 'lunch'], 'dinner is the meal Uposatha excludes')
+})
+
+test('madhyahna is the midpoint of the day and moves with the city', () => {
+  const delhi = dayTimes('2026-01-03', 'delhi')
+  const kolkata = dayTimes('2026-01-03', 'kolkata')
+  assert.equal(delhi.madhyahna.jd, (delhi.sunrise.jd + delhi.sunset.jd) / 2)
+  assert.notEqual(delhi.madhyahna.text, kolkata.madhyahna.text)
+})
+
+/* ------------------------------------------------------------------ *
+ * Sankashti and Vinayaka                                              *
+ * ------------------------------------------------------------------ */
+
+test('Sankashti breaks at moonrise and Vinayaka at midday', () => {
+  const sankashti = computed.observances.find(
+    (o) => o.id === 'sankashti_chaturthi' && o.date.startsWith('2026'))
+  const [s] = slotsFor(['sankashti_chaturthi'], sankashti.date, 'delhi')
+  assert.equal(s.id, 'moonrise_meal')
+  assert.equal(s.at, dayTimes(sankashti.date, 'delhi').moonrise.text)
+
+  const vinayaka = computed.observances.find(
+    (o) => o.id === 'vinayaka_chaturthi' && o.date.startsWith('2026'))
+  const [v] = slotsFor(['vinayaka_chaturthi_vrat'], vinayaka.date, 'chennai')
+  assert.equal(v.id, 'midday_meal')
+  assert.equal(v.at, dayTimes(vinayaka.date, 'chennai').madhyahna.text)
+})
+
+/* ------------------------------------------------------------------ *
+ * The permanent-spinner class cannot come back through a slot         *
+ * ------------------------------------------------------------------ */
+
+test('slot ids and meal names never collide, so two requests cannot be confused', () => {
+  // The generation guard keys on the meal type first. A sargi and a lunch
+  // therefore produce different keys and can never abort each other without
+  // restarting — the failure that produced a permanent spinner needed the key
+  // to be UNCHANGED while a dependency identity churned.
+  const standard = ['breakfast', 'lunch', 'dinner']
+  for (const id of TIMING_SLOT_IDS) {
+    assert.ok(!standard.includes(id), `${id} collides with a standard meal name`)
+  }
+  assert.equal(new Set(TIMING_SLOT_IDS).size, TIMING_SLOT_IDS.length, 'two slots share an id')
+})
+
+test('the slot list is stable for stable inputs', () => {
+  // The other half of that failure: the derived attendance list is memoised on
+  // these, so they have to be equal by value across renders or the memo never
+  // holds and the abort-without-restart returns.
+  const a = slotsFor(['karwa_chauth'], KARVA, 'delhi')
+  const b = slotsFor(['karwa_chauth'], KARVA, 'delhi')
+  assert.deepEqual(a, b)
+  assert.deepEqual(a.map((s) => s.id), b.map((s) => s.id))
+  assert.deepEqual(
+    timingFastsFor(['karwa_chauth']).map((t) => t.id),
+    timingFastsFor(['karwa_chauth']).map((t) => t.id),
+  )
 })

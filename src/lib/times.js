@@ -71,6 +71,10 @@ export function dayTimes(isoDate, locationKey, { fajrAngle = FAJR_ANGLE } = {}) 
     sunset: at(sunset),
     moonrise: at(moonRise(jd0, place)),
     moonset: at(moonSet(jd0, place)),
+    // Madhyahna: the midpoint of the day, which is what a fast broken "at
+    // midday" means — not 12:00 on a clock. The engine resolves Ganesh and
+    // Vinayaka Chaturthi by it, and this is the same quantity.
+    madhyahna: at(sunrise != null && sunset != null ? (sunrise + sunset) / 2 : null),
     // Named apart from sunset because they answer a different question with
     // the same instant, and a reader looking for iftar should find it.
     fajr: at(fajr),

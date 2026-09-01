@@ -209,16 +209,16 @@ test('answering a city-variance date settles it, and it does not come back', () 
   }
 })
 
-test('three of the fourteen can never reach anybody, and that is known', () => {
-  // jain_chaturdashi, kalashtami and vinayaka_chaturthi map to no fasting
-  // tradition — deliberately, because the database has no row a member could
-  // select. So their city variance is real and unreachable. Recorded here so
-  // it is a known consequence rather than a silent one; adding a tradition row
-  // for any of them would make this test fail and that would be the signal.
-  const unreachable = ['jain_chaturdashi', 'kalashtami', 'vinayaka_chaturthi']
-  for (const id of unreachable) {
-    assert.deepEqual(OBSERVANCE_FASTS[id], [], `${id} is now reachable — good, drop it from this list`)
-    assert.ok(computed.observances.some((o) => o.id === id && o.variesByCity),
-      `${id} no longer varies by city`)
+test('every observance that varies by city can now reach somebody', () => {
+  // This test used to assert the opposite. jain_chaturdashi, kalashtami and
+  // vinayaka_chaturthi computed correctly and could be observed by nobody,
+  // and it recorded that as a known consequence — with a note that making one
+  // reachable should make it fail. It did, and this is the other side of it:
+  // two got tradition rows of their own, and Kalashtami and Durgashtami
+  // became the days Uposatha is kept on, which they already were.
+  for (const o of computed.observances) {
+    if (!o.variesByCity) continue
+    assert.ok((OBSERVANCE_FASTS[o.id] || []).length > 0,
+      `${o.id} varies by city and no member can select it, so nobody is asked`)
   }
 })

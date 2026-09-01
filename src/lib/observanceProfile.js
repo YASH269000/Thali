@@ -69,6 +69,20 @@ export const MEAL_COUNTS = [
     note: 'Two meals. Thali assumes breakfast and dinner — change it below if yours differ.',
   },
   {
+    id: 'before_noon',
+    label: 'Nothing after midday',
+    short: 'nothing after midday',
+    // Breakfast and lunch, both finished before madhyahna. This is a mealCount
+    // and not a timing slot, which is worth saying because Uposatha was
+    // handed to this work as a timing fast: "no solid food after noon" maps
+    // exactly onto WHICH of the standard three are eaten, so it needs no slots
+    // of its own. What it does need is the midday itself, computed — madhyahna
+    // is the midpoint between sunrise and sunset, not 12:00 on a clock — and
+    // that is shown as a window beside the meals.
+    meals: ['breakfast', 'lunch'],
+    note: 'Eats before midday only. Thali plans breakfast and lunch, both to be finished before the cutoff shown.',
+  },
+  {
     id: 'phalahar',
     label: 'Phalahar — fruit and vrat food through the day',
     short: 'phalahar',
@@ -153,6 +167,11 @@ export const BASELINE_OVERRIDES = {
   shawwal_fasts_6_days: { mealCount: 'nirahar' },
   sha_ban_fasts: { mealCount: 'nirahar' },
   ayyam_al_bid_white_days: { mealCount: 'nirahar' },
+  // Broken at midday, not kept all day: the one meal is the one after it.
+  vinayaka_chaturthi_vrat: { mealCount: 'one_meal' },
+  // Twice a month, and the Jain dietary rules apply in full whatever the
+  // household's own level of fasting on the day.
+  jain_chaturdashi: { mealCount: 'one_meal' },
   // Named for what they are.
   ekasana_one_meal_fast: { mealCount: 'one_meal' },
   upvas_complete_day_fast: { mealCount: 'nirahar' },
@@ -167,10 +186,11 @@ export const BASELINE_OVERRIDES = {
   // Always active and never a fasting day of its own; the Jain diet's own
   // rules already reach the filter through `diet: 'jain'`.
   jain_year_round_dietary_rules: { mealCount: 'unrestricted' },
-  // Buddhist Uposatha: no solid food after noon, so the evening meal is the
-  // one that goes rather than the morning.
-  uposatha_observance: { mealCount: 'two_meals' },
-  vesak_buddha_purnima: { mealCount: 'two_meals' },
+  // Buddhist Uposatha and Vesak: no solid food after midday, so the evening
+  // meal is the one that goes. `two_meals` was wrong for them — it means
+  // breakfast and dinner, and dinner is the meal these traditions exclude.
+  uposatha_observance: { mealCount: 'before_noon' },
+  vesak_buddha_purnima: { mealCount: 'before_noon' },
   // A year-long practice with alternate-day fasting; the day itself is not
   // predictable from a calendar, so it changes nothing on its own.
   varsitap: { mealCount: 'unrestricted' },

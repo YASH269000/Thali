@@ -601,6 +601,34 @@
       "popularity": "H",
       "whoTypicallyObserves": "All Keralites (cross-religion)",
       "briefDescription": "NOT a fasting tradition — included because the elaborate vegetarian feast (Onam Sadhya with 26+ dishes on banana leaf) is an important dietary planning event for Thali app."
+    },
+    {
+      "sNo": 44,
+      "fastingTraditionName": "Vinayaka Chaturthi Vrat",
+      "nameInOriginalScript": "विनायक चतुर्थी व्रत",
+      "religion": "Hindu",
+      "deityOrPurpose": "Lord Ganesha",
+      "frequency": "Once per month (12/year)",
+      "durationPerOccurrence": "1 day",
+      "calendarSystem": "Hindu Lunar (Shukla Chaturthi)",
+      "fastStrictnessLevel": "Moderate (fast broken at midday)",
+      "popularity": "M",
+      "whoTypicallyObserves": "Ganesha devotees; observed monthly alongside Sankashti",
+      "briefDescription": "The bright-fortnight Chaturthi, kept monthly for Ganesha. The fast is broken at madhyahna — the midpoint between sunrise and sunset — rather than at a clock noon. Bhadrapada’s Vinayaka Chaturthi is Ganesh Chaturthi."
+    },
+    {
+      "sNo": 45,
+      "fastingTraditionName": "Jain Chaturdashi",
+      "nameInOriginalScript": "जैन चतुर्दशी",
+      "religion": "Jain",
+      "deityOrPurpose": "Spiritual observance",
+      "frequency": "Twice per month (24/year)",
+      "durationPerOccurrence": "1 day each",
+      "calendarSystem": "Jain Lunar (Chaturdashi)",
+      "fastStrictnessLevel": "Moderate to Strict",
+      "popularity": "M",
+      "whoTypicallyObserves": "Practising Jains, both Shvetambar and Digambar",
+      "briefDescription": "The fourteenth day of each fortnight, kept as a day of restraint and often of pratikraman. Many observe Upvas or Ayambil on it. Jain dietary rules apply in full: no root vegetables, no onion or garlic, no honey."
     }
   ],
   "foodRules": [
@@ -1240,6 +1268,14 @@
     "chhath_puja": {
       "dietaryImpactSummary": "36-hour nirjala fast around the Shashti evening arghya; thekua, kheer and seasonal fruit as prasad",
       "appAction": "Plan the Kharna meal the evening before and the prasad after the morning arghya"
+    },
+    "vinayaka_chaturthi": {
+      "dietaryImpactSummary": "Fast broken at madhyahna; sattvic food, no onion or garlic",
+      "appAction": "Plan one meal for the midday break, and modak if the family keeps it"
+    },
+    "jain_chaturdashi": {
+      "dietaryImpactSummary": "Jain rules in full — no roots, no onion or garlic, no honey",
+      "appAction": "Plan a Jain-safe single meal; offer Ayambil if the member keeps it"
     }
   },
   "appLogicRules": [

@@ -19,7 +19,7 @@ import { loadOverrides } from '../lib/observanceOverrides.js'
 import { observancesToday, suggestedAttendance } from '../lib/observanceProfile.js'
 import { slotsFor, windowsFor } from '../lib/timingFasts.js'
 import { loadLocationKey } from '../lib/location.js'
-import { isoDateOf } from '../lib/observances.js'
+import { isoDateOf, observancesOn } from '../lib/observances.js'
 import { activeFastIdsOn } from '../lib/fastingRules.js'
 import { loadFamily } from '../lib/family.js'
 import { FAST_LABEL } from '../data/memberOptions.js'
@@ -497,16 +497,20 @@ export default function MealPlan() {
       }
     }
     const ids = [...binding]
-    const slots = slotsFor(ids, iso, locationKey)
+    // The day's occurrences, so a tradition can match one rather than an id.
+    // Nirjala Ekadashi is one of the twenty-four and cannot be told from the
+    // others by fast id alone.
+    const occurrences = observancesOn(today, overrides)
+    const slots = slotsFor(ids, iso, locationKey, occurrences)
     // Who each slot belongs to: the members keeping that tradition, and only
     // them. A household where one person keeps Karva Chauth still eats dinner.
     const observers = (fastId) => family.filter((m) => (m.fasts || []).includes(fastId)
       && observancesToday(m, activeFastIds).some((o) => o.fastId === fastId && !o.observesLightly))
     return {
-      windows: windowsFor(ids, iso, locationKey),
+      windows: windowsFor(ids, iso, locationKey, occurrences),
       slots: slots.map((s) => ({ ...s, members: observers(s.fastId) })),
     }
-  }, [family, activeFastIds, today, locationKey])
+  }, [family, activeFastIds, today, locationKey, overrides])
 
   // The slot being planned, when one is. Its members are the ones at it: a
   // sargi is eaten by whoever is keeping the fast, not by the whole family.
