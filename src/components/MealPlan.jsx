@@ -733,6 +733,17 @@ export default function MealPlan() {
       </header>
 
       <main className="content">
+        {/* First thing in the page, at every stage. Rendered lower down it sat
+            below the meal chooser and off the fold, so the one screen where a
+            family would act on it never showed it. */}
+        {idWarnings.length > 0 && (
+          <div className="id-warning" role="alert">
+            {idWarnings.map((w) => (
+              <p key={w.memberId}>{w.message}</p>
+            ))}
+          </div>
+        )}
+
         {stage === 'plan' && (
           <div className="plan-controls">
             <div className="meal-toggle" role="group" aria-label="Meal type">
@@ -873,14 +884,6 @@ export default function MealPlan() {
             <button type="button" className="btn btn-solid" onClick={regenerate}>
               Try again
             </button>
-          </div>
-        )}
-
-        {stage !== 'meal' && idWarnings.length > 0 && (
-          <div className="id-warning" role="alert">
-            {idWarnings.map((w) => (
-              <p key={w.memberId}>{w.message}</p>
-            ))}
           </div>
         )}
 

@@ -456,8 +456,9 @@ function CookModeView({ dish, onClose, onOpenComponent, backTo = null }) {
                   Make {components.length === 1 ? 'this' : 'these'} first
                 </p>
                 <p className="ck-ref-body">
-                  {dish.name} is built on {components.length === 1 ? 'another recipe' : 'other recipes'}.
-                  {' '}Their ingredients are already on the shopping list.
+                  {components.length === 1
+                    ? `${dish.name} is built on another recipe. Its ingredients are already on the shopping list.`
+                    : `${dish.name} is built on other recipes. Their ingredients are already on the shopping list.`}
                 </p>
                 <ul className="ck-component-list">
                   {components.map((c) => (
