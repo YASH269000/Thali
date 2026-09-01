@@ -272,3 +272,36 @@ readable shape first.
 caution because the data carries no GI or carbohydrate figure to say anything
 sharper, and inventing specificity would be worse than repeating a true
 sentence. It belongs to the health-conditions data regeneration.
+
+
+## INDB sampling words on the shopping list
+
+`cleanIngredientName` already dropped the lab qualifiers it knew about, but not
+all of them, so a shopping list said "Orange carrot", "Bulbs and tops spring
+onions" and "Breast skinless chicken". 16 ingredient names now read as food:
+1,192 lines across 936 of the 5,932 generated lists in the regression set.
+
+Colour is kept wherever it is load-bearing. It is dropped only through
+`NOISE_FOR_HEAD`, on the four heads where INDB records the one colour the
+vegetable comes in — carrot, pumpkin, cucumber, gourd. "Green chillies" and
+"Red chillies" are untouched, because there the colour is the whole
+difference.
+
+This merges seven identity keys that were separate only because of the
+qualifier: INDB's carrot with the International v2 carrot, its cucumber with
+theirs, and so on. All seven are the same vegetable and should always have been
+one line. Nothing splits, and the pantry matcher is unchanged — 51 cases pass
+and the full sweep is identical at 207 pairs / 3,674 lines.
+
+One word was tried and backed out. Adding `white` to `SUFFIX_QUALIFIERS` tidies
+"White egg" into "Egg white", but it also turns "Pepper, white" into "Pepper
+white", which splits it from the "white pepper" the International v2 records
+write and breaks the pantry chip that matches them. A tidier egg is not worth a
+spice that stops matching itself, so "White egg" stays.
+
+Still ugly, and left alone: "Breakfast cereal, crunchy clusters type, without
+nuts, unfortified" reads as "Crunchy clusters type without nuts breakfast
+cereal". Dropping `unfortified` moved it from three trailing qualifiers to two,
+which is the threshold at which qualifiers move in front of the head instead of
+staying in source order. It affects 20 lines and the fix is a change to that
+threshold, which would churn names this cleanup has no other reason to touch.

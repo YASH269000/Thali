@@ -33,6 +33,12 @@ const NOISE_QUALIFIERS = new Set([
   'big', 'small', 'medium', 'large', 'whole', 'poultry', 'cow', 'buffalo',
   'all varieties', 'milled', 'brown skin', 'small clove', 'big clove',
   'flesh only', 'kernel', 'edible portion', 'without salt',
+  // How the sample was taken or shaped, which is a fact about the laboratory
+  // rather than about the shop: "Spring onions, bulbs and tops, raw",
+  // "Chicken, whole, corn-fed, raw, meat and skin", "MUTTON, muscle".
+  'elongate', 'skinless', 'muscle', 'bulbs and tops', 'mature seeds',
+  'boiled in unsalted water', 'unfortified', 'corn-fed', 'corn fed',
+  'meat and skin', 'jagged', 'smooth ridges',
 ])
 
 // "white" is noise on sugar and bread, where it is the default form, and
@@ -43,6 +49,13 @@ const NOISE_FOR_HEAD = {
   bread: new Set(['white']),
   rice: new Set(['white']),
   flour: new Set(['white']),
+  // A colour is the whole difference between two chillies and no difference at
+  // all between two carrots. These are the heads where INDB records the only
+  // colour the vegetable comes in, so it says nothing a shopper needs.
+  carrot: new Set(['orange']),
+  pumpkin: new Set(['orange', 'round']),
+  cucumber: new Set(['green']),
+  gourd: new Set(['pale green']),
 }
 
 // Trailing instructions are not part of the name. Stripping them is what lets
@@ -92,8 +105,17 @@ const sentenceCase = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerC
 const isBrandHead = (head) => head === head.toUpperCase() && head.includes("'")
 
 // Qualifiers that name the form and so read correctly after the head noun.
+// Qualifiers that name the part or cut, and so read correctly after the head:
+// "Egg, poultry, yolk" is an egg yolk, not a yolk egg.
+//
+// `white` is deliberately NOT here, though it would tidy "White egg" into "Egg
+// white". "Pepper, white" would become "Pepper white", splitting it from the
+// "white pepper" the International v2 records write and breaking the pantry
+// chip that matches them. A tidier egg is not worth a spice that stops
+// matching itself.
 const SUFFIX_QUALIFIERS = new Set([
   'dal', 'powder', 'seeds', 'seed', 'leaves', 'leaf', 'flour', 'paste', 'juice', 'oil',
+  'breast', 'yolk',
 ])
 
 /**
