@@ -679,6 +679,79 @@ export function dishesNeededFor(mealType) {
   return MEAL_TARGET[mealType] || MEAL_TARGET.dinner
 }
 
+/* ------------------------------------------------------------------ *
+ * Dessert                                                             *
+ *                                                                     *
+ * 153 dessert-role recipes are reachable from no meal at all: lunch    *
+ * and dinner do not admit the role, and no dessert name reads as       *
+ * breakfast. Rather than widen those pools — a thali is not improved   *
+ * by a gulab jamun competing with the dal for a slot — a dessert is    *
+ * added alongside the meal, on request, exactly one.                   *
+ *                                                                     *
+ * It is chosen here rather than by the model, which guarantees three   *
+ * things the prompt could only ask for: exactly one, actually of the   *
+ * dessert role, and drawn from the same filtered pool as everything    *
+ * else — so it has already passed every diet, allergen, religion and   *
+ * fasting check the savoury dishes passed.                             *
+ * ------------------------------------------------------------------ */
+
+/** Desserts of one cuisine within a pool. 'indian' means everything else. */
+export function dessertsFor(pool, cuisine) {
+  return pool.filter((r) => roleOf(r) === 'dessert'
+    && (cuisine && cuisine !== 'indian' && cuisine !== 'surprise'
+      ? r.region === cuisine
+      : !isInternational(r)))
+}
+
+/**
+ * Whether a dessert can be offered for this cuisine today, and if not, why.
+ *
+ * The reason matters as much as the answer. A toggle that is simply greyed out
+ * teaches nobody anything, and both common causes are worth stating: every one
+ * of the 26 International v2 desserts is `diabeticFriendly: no`, so one
+ * diabetic member removes dessert from all seven non-Indian cuisines; and none
+ * is ekadashiSafe, so a fast day does the same.
+ *
+ * @param {Array} mains       recipes that passed every member's constraints
+ * @param {Array} catalogue   every recipe, to tell "none exist" from "none fit"
+ * @param {string} cuisine
+ * @param {Array} constraints from filterRecipes
+ */
+export function dessertAvailability(mains, catalogue, cuisine, constraints = []) {
+  const eligible = dessertsFor(mains, cuisine)
+  const label = !cuisine || cuisine === 'indian' || cuisine === 'surprise' ? 'Indian' : cuisine
+  if (eligible.length > 0) return { available: true, count: eligible.length, reason: null }
+
+  const exists = dessertsFor(catalogue, cuisine).length
+  if (exists === 0) {
+    return { available: false, count: 0, reason: `Thali has no ${label} dessert yet.` }
+  }
+
+  const fasting = [...new Set(constraints.flatMap((c) => c.activeFasts))]
+  if (fasting.length > 0) {
+    return {
+      available: false,
+      count: 0,
+      reason: `Sweets are set aside today — no ${label} dessert is safe for the fast being kept.`,
+    }
+  }
+
+  const strict = constraints.some((c) => c.strictFlags.includes('diabeticFriendly'))
+  if (strict) {
+    return {
+      available: false,
+      count: 0,
+      reason: `Every ${label} dessert Thali knows is high-GI, so none suits a member who needs low-GI food.`,
+    }
+  }
+
+  return {
+    available: false,
+    count: 0,
+    reason: `No ${label} dessert fits everyone\u2019s constraints today.`,
+  }
+}
+
 /**
  * Weighted pick of one international cuisine that can actually supply a meal
  * from this pool. Returns null when none can.

@@ -6,7 +6,9 @@
 // have gutted is never offered.
 
 import { activeFastIdsOn } from '../src/lib/fastingRules.js'
-import { filterRecipes, internationalCuisineOptions } from '../src/lib/mealPlanRules.js'
+import {
+  dessertAvailability, filterRecipes, internationalCuisineOptions,
+} from '../src/lib/mealPlanRules.js'
 import { guestsAsMembers, normaliseGuests } from '../src/lib/guests.js'
 import RECIPES from '../src/data/recipes.json' with { type: 'json' }
 
@@ -122,8 +124,17 @@ export default async function handler(req, res) {
       }))
   }
 
+  // Whether "Include a dessert" can be offered, per cuisine, and why not when
+  // it cannot. Indian is in here too — it is a cuisine for this purpose even
+  // though it is not one for the reservation logic above.
+  const desserts = {}
+  for (const cuisine of ['indian', ...(byMeal.lunch || []).map((o) => o.cuisine)]) {
+    desserts[cuisine] = dessertAvailability(mains, RECIPES, cuisine, constraints)
+  }
+
   return res.status(200).json({
     unreadableSettings,
+    desserts,
     anyFasting,
     activeFasts: [...new Set(constraints.flatMap((c) => c.activeFasts))],
     byMeal,

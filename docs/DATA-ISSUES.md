@@ -583,3 +583,40 @@ so it lands at 13 KB.
 
 A 4xx never reaches the cache. Someone whose fast id cannot be read must see
 that, not a stale plan standing in for it.
+
+
+## Dessert: an optional course, not a widened pool
+
+153 dessert-role recipes were reachable from no meal at all — lunch and dinner
+do not admit the role, and no dessert name reads as breakfast. Adding `dessert`
+to the lunch/dinner role list would have fixed the reachability and broken the
+meal: a gulab jamun would compete with the dal for a savoury slot.
+
+"Include a dessert" is off by default and adds exactly one dessert-role dish
+alongside the meal. It is chosen in `api/generate-plan.js` rather than by the
+model, which guarantees three things a prompt could only request: exactly one,
+actually of the dessert role, and drawn from `mains` — the pool that has
+already passed every diet, allergen, religion and fasting check the savoury
+dishes passed. "The dessert passes every constraint the meal passes" is
+therefore structural, not a second rule that could drift.
+
+Its ingredients reach the shopping list and Buy-for by the same route as any
+other dish, because it is simply another entry in `plan.dishes`.
+
+### Two reasons it is withheld, and both are common
+
+**Every one of the 26 International v2 desserts is `diabeticFriendly: no`.** One
+diabetic member therefore removes dessert from all seven non-Indian cuisines,
+and the toggle says so rather than greying out: "Every Italian dessert Thali
+knows is high-GI, so none suits a member who needs low-GI food." The Indian
+catalogue keeps 24.
+
+**A fast day removes every non-Indian dessert**, because none is ekadashiSafe.
+But it does NOT remove dessert altogether: 17 Indian sweets survive an Ekadashi
+fast, and they are the ones made for it — Makhana Kheer, Sabudana Kheer,
+Singhare Ka Halwa, Rajgira Ladoo. Offering one of those on a vrat is correct,
+not a leak; the fast forbids certain ingredients, not sweetness.
+
+`dessertAvailability()` never returns a bare no. It distinguishes "no such
+dessert exists", "the fast rules them out", "they are all high-GI" and "none
+fits today", because a greyed-out toggle teaches nobody anything.

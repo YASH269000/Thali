@@ -34,6 +34,7 @@ const MEAL_TYPE_KEY = 'thali_meal_type'
 const PRESENT_KEY = 'thali_present_members'
 const CUISINE_KEY = 'thali_cuisine'
 const EXTRA_GUESTS_KEY = 'thali_extra_guests'
+const DESSERT_KEY = 'thali_include_dessert'
 const RECENT_LIMIT = 5
 
 /* ---- transient-failure retry -------------------------------------- *
@@ -133,8 +134,8 @@ function guestSignature(list) {
   return normaliseGuests(list).map((g) => `${g.restriction}:${g.count}`).sort().join(',')
 }
 
-function planKey(type, ids, list, pick) {
-  return `${type}|${[...ids].sort().join(',')}|${guestSignature(list)}|${pick}`
+function planKey(type, ids, list, pick, dessert = false) {
+  return `${type}|${[...ids].sort().join(',')}|${guestSignature(list)}|${pick}${dessert ? '|+dessert' : ''}`
 }
 
 function loadCuisine() {
@@ -144,6 +145,18 @@ function loadCuisine() {
   } catch {
     return 'indian'
   }
+}
+
+function loadIncludeDessert() {
+  try {
+    return window.sessionStorage.getItem(DESSERT_KEY) === 'yes'
+  } catch {
+    return false
+  }
+}
+
+function saveIncludeDessert(on) {
+  try { window.sessionStorage.setItem(DESSERT_KEY, on ? 'yes' : 'no') } catch { /* not fatal */ }
 }
 
 function saveCuisine(v) {
@@ -443,6 +456,9 @@ export default function MealPlan() {
   // any hand-edited quantities outlive a regeneration.
   const [buyWindow, setBuyWindow] = useState(loadBuyWindow)
   const [buyEdits, setBuyEdits] = useState(loadBuyEdits)
+  // Off by default: a dessert is an addition to the meal, never an assumption
+  // about it.
+  const [includeDessert, setIncludeDessert] = useState(loadIncludeDessert)
   // Set once a retry is under way, so the waiting screen can say why it is
   // still waiting rather than looking stuck.
   const [retrying, setRetrying] = useState(null)
@@ -466,14 +482,14 @@ export default function MealPlan() {
   // chooser with the same choice costs nothing.
   const generatedFor = useRef(null)
 
-  const generate = useCallback(async (type, ids, guestList, pick) => {
+  const generate = useCallback(async (type, ids, guestList, pick, dessert) => {
     // StrictMode double-invokes effects in dev; without this the screen would
     // fire two requests per view and burn the 10 RPM free-tier budget.
     if (inFlight.current) inFlight.current.abort()
     const controller = new AbortController()
     inFlight.current = controller
 
-    const key = planKey(type, ids, guestList || [], pick)
+    const key = planKey(type, ids, guestList || [], pick, dessert)
     const body = JSON.stringify({
       family,
       presentMembers: ids,
@@ -481,6 +497,7 @@ export default function MealPlan() {
       date: new Date().toISOString(),
       mealType: type,
       cuisine: pick,
+      includeDessert: Boolean(dessert),
       recentRecipeIds: recentRecipeIds(),
     })
 
@@ -591,14 +608,14 @@ export default function MealPlan() {
     }
     // Reopening a chooser and confirming the same meal and the same people
     // must not spend another Gemini call.
-    if (generatedFor.current === planKey(mealType, present, guests, cuisine)) return undefined
-    generatedFor.current = planKey(mealType, present, guests, cuisine)
+    if (generatedFor.current === planKey(mealType, present, guests, cuisine, includeDessert)) return undefined
+    generatedFor.current = planKey(mealType, present, guests, cuisine, includeDessert)
     // Fetching is exactly the "synchronise with an external system" case
     // effects exist for; the setState inside is the request's loading flag.
     // oxlint-disable-next-line react/set-state-in-effect
-    generate(mealType, present, guests, cuisine)
+    generate(mealType, present, guests, cuisine, includeDessert)
     return () => { if (inFlight.current) inFlight.current.abort() }
-  }, [family.length, mealType, present, stage, guests, cuisine, generate, navigate])
+  }, [family.length, mealType, present, stage, guests, cuisine, includeDessert, generate, navigate])
 
   useEffect(() => {
     if (stage !== 'meal' || family.length === 0) return undefined
@@ -654,8 +671,8 @@ export default function MealPlan() {
   }
 
   const regenerate = () => {
-    generatedFor.current = planKey(mealType, present, guests, cuisine)
-    generate(mealType, present, guests, cuisine)
+    generatedFor.current = planKey(mealType, present, guests, cuisine, includeDessert)
+    generate(mealType, present, guests, cuisine, includeDessert)
   }
 
   const changeWho = () => setStage('who')
@@ -700,11 +717,26 @@ export default function MealPlan() {
     ? 'indian' : cuisine
   const selectedThinNote = thinCuisines.get(selectedCuisine)?.note || null
 
+  // Whether a dessert can be offered for the cuisine actually selected. The
+  // API answers per cuisine, because "every Italian dessert is high-GI" is a
+  // different sentence from "no dessert is safe on a fast day".
+  const dessertInfo = cuisineInfo?.desserts?.[selectedCuisine]
+    || cuisineInfo?.desserts?.indian
+    || null
+  const dessertAvailable = Boolean(dessertInfo?.available)
+
+  const toggleDessert = () => {
+    const next = !includeDessert
+    setIncludeDessert(next)
+    saveIncludeDessert(next)
+    if (plan) setStage('plan')
+  }
+
   // Cuisines that can be cooked from but cannot furnish a full meal of the
   // type being planned — a Buddhist member takes Indo-Chinese lunch from 47
   // dishes to 4. The plan would be honest and short; this warns first, so a
   // three-dish lunch is a choice rather than a surprise.
-  const planCurrent = Boolean(plan) && planKeyOf === planKey(mealType, present, guests, cuisine)
+  const planCurrent = Boolean(plan) && planKeyOf === planKey(mealType, present, guests, cuisine, includeDessert)
   // A change is selected but its plan has not arrived yet.
   const awaitingPlan = stage === 'plan' && !error && (loading || !planCurrent)
 
@@ -898,6 +930,25 @@ export default function MealPlan() {
                   <p className="cuisine-thin-note" role="status">{selectedThinNote}</p>
                 )}
 
+                {/* An addition to the meal, not a replacement for part of it.
+                    Disabled with the reason rather than hidden: "no dessert
+                    today" is worth knowing, and silently missing a course is
+                    the thing this is meant to stop. */}
+                {dessertInfo && (
+                  <div className="dessert-toggle">
+                    <label className={`dessert-check${dessertAvailable ? '' : ' is-off'}`}>
+                      <input type="checkbox"
+                        checked={includeDessert && dessertAvailable}
+                        disabled={!dessertAvailable}
+                        onChange={toggleDessert} />
+                      <span>Include a dessert</span>
+                    </label>
+                    {dessertAvailable
+                      ? <span className="dessert-hint">One sweet dish alongside the meal, not instead of one.</span>
+                      : <span className="dessert-hint">{dessertInfo.reason}</span>}
+                  </div>
+                )}
+
                 {unavailableNow.length > 0 && (
                   <div className="cuisine-unavailable">
                     <p className="cuisine-unavailable-title">
@@ -993,6 +1044,12 @@ export default function MealPlan() {
               Try again
             </button>
           </div>
+        )}
+
+        {stage === 'plan' && plan?.dessertNote && planCurrent && !loading && (
+          <p className="role-note" role="note">
+            No dessert this time &mdash; {plan.dessertNote}
+          </p>
         )}
 
         {stage === 'plan' && plan?.roleNote && planCurrent && !loading && (

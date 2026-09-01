@@ -9,8 +9,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { activeFastIdsOn, calendarNotesOn, foodRulesFor } from '../src/lib/fastingRules.js'
 import {
-  compactForPrompt, filterRecipes, isInternational, MEAL_TARGET, roleOf,
-  selectCandidatesForMeal, SINGLETON_ROLES,
+  compactForPrompt, dessertAvailability, dessertsFor, filterRecipes,
+  isInternational, MEAL_TARGET, roleOf, selectCandidatesForMeal, SINGLETON_ROLES,
 } from '../src/lib/mealPlanRules.js'
 import { buildShoppingList } from '../src/lib/shoppingList.js'
 import { findRefContradictions, resolveComponents, resolveRecipeRef } from '../src/lib/recipeRefs.js'
@@ -351,6 +351,7 @@ export default async function handler(req, res) {
   const mealType = MEAL_TYPES.includes(body.mealType) ? body.mealType : 'dinner'
   // 'indian' (default) | a cuisine name | 'surprise'
   const requestedCuisine = typeof body.cuisine === 'string' ? body.cuisine : 'indian'
+  const includeDessert = body.includeDessert === true
 
   const recentRecipeIds = Array.isArray(body.recentRecipeIds)
     ? body.recentRecipeIds.filter((x) => typeof x === 'string').slice(0, 60)
@@ -651,6 +652,66 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
     }
   })
 
+  // ---- dessert ----
+  //
+  // Added alongside the meal, never in place of a savoury dish, and chosen
+  // here rather than by the model: that guarantees exactly one, actually of
+  // the dessert role, and drawn from `mains` — so it has already passed every
+  // diet, allergen, religion and fasting check the rest of the plate passed.
+  //
+  // A `partial` diabeticFriendly dessert keeps its caveat, exactly as a
+  // partial savoury dish does; a `no` one was excluded upstream for a member
+  // who needs low-GI food and can never reach here.
+  let dessertNote = null
+  if (includeDessert) {
+    // Whatever cuisine the meal actually ended up being, so the dessert
+    // belongs to the same table.
+    const dessertCuisine = selection.internationalCuisine || requestedCuisine
+    const availability = dessertAvailability(mains, RECIPES, dessertCuisine, constraints)
+    if (!availability.available) {
+      dessertNote = availability.reason
+    } else {
+      const eligible = dessertsFor(mains, dessertCuisine)
+      const onPlate = new Set(dishes.map((d) => d.recipeId))
+      // Prefer one not already on the plate and not served recently; fall back
+      // to the whole set rather than skipping the course over a repeat.
+      const fresh = eligible.filter((r) => !onPlate.has(r.recipeId) && !recentRecipeIds.includes(r.recipeId))
+      const pool = fresh.length > 0 ? fresh : eligible
+      const choice = pool[Math.floor(Math.random() * pool.length)]
+      if (choice) {
+        const full = resolveRecipeRef(choice, byId)
+        dishes.push({
+          recipeId: full.recipeId,
+          name: full.name,
+          role: 'dessert',
+          why: 'Added as the dessert for this meal.',
+          servesMembers: diners.map((m) => ({ memberId: m.id, name: m.name })),
+          excludedMembers: [],
+          substitutes: [],
+          known: true,
+          hindiName: full.hindiName || '',
+          category: full.category || '',
+          region: full.region || '',
+          serves: full.serves ?? null,
+          prepTimeMin: full.prepTimeMin ?? null,
+          cookTimeMin: full.cookTimeMin ?? null,
+          difficulty: full.difficulty || null,
+          caloriesPerServing: full.caloriesPerServing ?? null,
+          ingredients: full.ingredients || '',
+          preparation: full.preparation || null,
+          tips: full.tips || null,
+          hasFullPreparation: Boolean(full.hasFullPreparation),
+          source: full.source || null,
+          flags: full.flags || null,
+          caveats: caveats.get(full.recipeId) || [],
+          ref: full.ref || null,
+          components: resolveComponents(full, RECIPES, { skipIds: [...onPlate, full.recipeId] }),
+          isDessert: true,
+        })
+      }
+    }
+  }
+
   // Alternates for in-place dish swapping. Only the roles actually on the
   // plate, 12 each, so the payload stays around 70 KB instead of shipping the
   // whole 1.8 MB database to the browser.
@@ -709,6 +770,10 @@ shorter meal — fewer dishes is correct, a repeated role is not.`)
 
   return res.status(200).json({
     unreadableSettings,
+    // Set only when a dessert was asked for and could not be given, with the
+    // reason. The UI shows it rather than quietly omitting the course.
+    dessertNote,
+    includeDessert,
     // Set only when a duplicate role survived the retry and a dish was
     // dropped. The UI shows it rather than presenting the short plan as if
     // nothing had happened.
