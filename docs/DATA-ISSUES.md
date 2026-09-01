@@ -411,3 +411,67 @@ to go that a reader would encounter it. It belongs in the "why this meal"
 panel, where the exclusion reason for this row would otherwise read
 "non_veg dish, Asha is vegetarian" against a barbecue sauce, which is
 baffling without the explanation.
+
+
+## Allergies: soy, dairy and sesame join nuts
+
+The `allergens` column records soy, gluten, dairy, sesame, peanuts and tree
+nuts, and until now nothing read it but the nut check. Soy, dairy and sesame
+are now health options and guest restrictions, and `evaluateRecipe` runs one
+allergen loop rather than a branch per allergen.
+
+**The column alone is not enough, and this is the part worth remembering.** It
+exists on 370 of 1,464 recipes — the International v2 import carries it, the
+988 INDB rows and 106 Thali Originals do not. A check reading only that column
+would clear every Indian dish for a soy-allergic member. So each allergen is
+also matched by keyword, exactly as the nut check always was, and where a
+compliance flag covers the whole catalogue it answers instead because it is
+better than either: `lactoseFree` for dairy, on all 1,464 rows.
+
+Keyword and column agree exactly where both exist — 129 soy rows and 53 sesame
+rows either way — and the keywords add 28 INDB soy rows and 17 non-v2 sesame
+rows the column cannot see.
+
+Nut behaviour is unchanged: 0 of 1,464 recipes classify differently before and
+after, and the negation scrub still clears "crunchy clusters type, without
+nuts".
+
+### Dairy allergy is not lactose intolerance
+
+`lactoseFree: conditional` means the only dairy is butter or ghee. That is a
+lactose-tolerance distinction — many lactose-intolerant people manage ghee —
+and not an allergy one. A dairy-allergic member treats `conditional` as
+containing dairy and the dish is excluded outright, not offered as a swap.
+This falls out of the design rather than being special-cased: the flag answers
+"does this contain dairy", and `conditional` means yes.
+
+### Gluten allergy behaves exactly like gluten sensitivity, on purpose
+
+`glutenFree: conditional` in this data means one swappable product — soy sauce
+for tamari — which is a real path to a safe dish rather than a hopeful one, so
+it stays a swap suggestion with the note visible. That makes `gluten_allergy`
+and the existing `gluten_sensitive` identical in behaviour: same flag, same
+`requiredFlags` entry, same conditional handling. Both are offered because
+people describe themselves either way, not because they filter differently. If
+that reads as clutter, delete one — nothing else depends on there being two.
+
+### Pool sizes
+
+Vegetarian member, no fasts, out of 1,132 servable recipes:
+
+| allergy | recipes containing it | servable left | of which v2 | swaps offered |
+|---|---|---|---|---|
+| nuts | 191 | 973 | 331 | 0 |
+| soy | 157 | 987 | 241 | 0 |
+| sesame | 70 | 1,062 | 317 | 0 |
+| dairy | 840 | 542 | 210 | 0 |
+| gluten | 658 | 657 | 135 | 93 |
+
+Only gluten produces swaps, which is the conditional handling above working.
+
+The picker's pool warning fires where it should. East Asian falls to 1 usable
+lunch dish under a soy allergy and 0 under a gluten allergy — not offerable
+either way — while Indo-Chinese at 4 and Continental at 4 (dairy) get the thin
+warning. The warning also names the allergy now: an allergy carries no
+compliance flag, so without that it said a cuisine could not fill a lunch and
+gave no hint why, which is the one thing it exists to do.

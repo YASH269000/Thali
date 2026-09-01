@@ -26,9 +26,17 @@ const FLAG_PHRASE = [
 ]
 
 /** "a Jain, gluten-free meal" — or plain "meal" when nothing binds. */
-function mealDescription(requiredFlags) {
+function mealDescription(requiredFlags, allergens = []) {
   const held = new Set(requiredFlags)
   const words = FLAG_PHRASE.filter(([flag]) => held.has(flag)).map(([, word]) => word)
+  // An allergy carries no compliance flag — it excludes outright — so without
+  // this the warning said a cuisine could not fill a lunch and gave no hint
+  // why, which is the one thing it exists to do.
+  //
+  // "nuts" is the allergen's name and "nut-free" is the adjective; the others
+  // are the same word in both places.
+  const ADJECTIVE = { nuts: 'nut' }
+  for (const allergen of allergens) words.push(`${ADJECTIVE[allergen] || allergen}-free`)
   // jainSafe already implies onionGarlicFree; saying both is noise.
   const trimmed = words.includes('Jain')
     ? words.filter((w) => w !== 'no-onion-garlic')
@@ -68,7 +76,8 @@ export default async function handler(req, res) {
   // Every flag anyone at the table requires today, so a warning can name the
   // reason rather than saying "constraints".
   const requiredFlags = [...new Set(constraints.flatMap((c) => c.requiredFlags))]
-  const description = mealDescription(requiredFlags)
+  const allergens = [...new Set(constraints.flatMap((c) => c.allergens || []))]
+  const description = mealDescription(requiredFlags, allergens)
 
   // Someone fasting means no international option at all — a pizza is never
   // ekadashiSafe, and the picker is hidden rather than shown all-disabled.
@@ -127,6 +136,7 @@ export default async function handler(req, res) {
     )],
     // What the family's constraints add up to today, for the warning text.
     requiredFlags,
+    allergens,
     mealDescription: description,
   })
 }

@@ -77,6 +77,15 @@ export const HEALTH_OPTIONS = [
   { id: 'gluten_sensitive', label: 'Gluten sensitive' },
   { id: 'kidney_issues', label: 'Kidney issues', advisory: true },
   { id: 'nut_allergy', label: 'Nut allergy' },
+  // The `allergens` column records soy, gluten, dairy and sesame across the
+  // catalogue and, until now, nothing read any of them but the nut check.
+  { id: 'soy_allergy', label: 'Soy allergy' },
+  { id: 'dairy_allergy', label: 'Dairy allergy' },
+  { id: 'sesame_allergy', label: 'Sesame allergy' },
+  // Filters exactly as "Gluten sensitive" does — same flag, same swap
+  // suggestion where a dish is gluten-free with tamari. Both are offered
+  // because people describe themselves either way.
+  { id: 'gluten_allergy', label: 'Gluten allergy' },
 ]
 
 /** Conditions recorded but never used to include or exclude a dish. */

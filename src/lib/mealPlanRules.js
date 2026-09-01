@@ -113,11 +113,22 @@ export function dietKind(recipe) {
   return KIND_RANK[declared] >= KIND_RANK[inferred] ? declared : inferred
 }
 
-// Allergy safety net. `nut_allergy` is in the health list but there is no
-// nut-free column among the 8 compliance flags, so nothing would otherwise
-// stop a peanut dish reaching someone allergic to it. Keyword matching over
-// name + ingredients is a heuristic, not authoritative data — a real
-// allergen column in the source workbook should replace it.
+/* ------------------------------------------------------------------ *
+ * Allergens                                                           *
+ *                                                                     *
+ * The `allergens` column is the best data here, and it exists on 370  *
+ * of 1,464 recipes — the International v2 import carries it, the 988  *
+ * INDB rows and 106 Thali Originals do not. An allergen check reading  *
+ * only that column would clear every Indian dish for a soy-allergic    *
+ * member, so each allergen is ALSO matched by keyword, exactly as the  *
+ * nut check has always worked. Where a compliance flag covers the      *
+ * whole catalogue it is used instead, because it is better than both.  *
+ *                                                                     *
+ * An allergy is never "conditional". A dish that can be made safe by   *
+ * swapping an ingredient is still a dish containing the allergen, and  *
+ * the swap list is not the place to learn that.                        *
+ * ------------------------------------------------------------------ */
+
 const NUT_RE = /\b(peanut|peanuts|groundnut|groundnuts|moongphali|cashew|cashews|kaju|almond|almonds|badam|pistachio|pista|walnut|akhrot|hazelnut|pecan|macadamia|nut butter|peanut butter|mixed nuts|dry fruits?|nuts)\b/i
 
 // INDB ingredient strings describe absence as well as presence — "Breakfast
@@ -132,16 +143,69 @@ const NUT_RE = /\b(peanut|peanuts|groundnut|groundnuts|moongphali|cashew|cashews
 const NUT_NEGATION_RE =
   /\b(?:without|no|non|free\s+of|excluding|minus)\s+(?:added\s+)?(?:nut|nuts|dry\s+fruits?)\b|\bnuts?\s*[-\u2010\u2011\u2013]?\s*free\b/gi
 
-export function containsNuts(recipe) {
-  // The International v2 set carries a real allergen column. It is read as an
-  // ADDITION to the keyword test, never a replacement: it catches what
-  // keywords cannot (pine nuts in pesto), and a record that omits it is no
-  // less protected than before.
-  if (/\b(peanuts?|tree nuts?)\b/i.test(String(recipe.allergens || ''))) return true
+const SOY_RE = /\b(soy\s?sauce|soya?|soybeans?|soya?\s+beans?|tofu|edamame|tempeh|miso|gochujang|hoisin|doubanjiang|tamari|ponzu|teriyaki|bean\s+curd|textured\s+vegetable\s+protein)\b/i
+const SOY_NEGATION_RE = /\bsoy\s*[-\u2010\u2011\u2013]?\s*free\b|\b(?:without|no)\s+soy\b/gi
 
-  const haystack = `${recipe.name || ''} ${recipe.ingredients || ''}`
-    .replace(NUT_NEGATION_RE, ' ')
-  return NUT_RE.test(haystack)
+const SESAME_RE = /\b(sesame|tahini|gingelly|za\u2019?atar|zaatar|benne|til\s+seeds?)\b/i
+const SESAME_NEGATION_RE = /\bsesame\s*[-\u2010\u2011\u2013]?\s*free\b|\b(?:without|no)\s+sesame\b/gi
+
+/**
+ * How each allergen is detected.
+ *
+ *   field    — what the `allergens` column calls it, where there is one
+ *   keywords — for the 1,094 records with no allergens column
+ *   flag     — a compliance flag covering the WHOLE catalogue, which beats
+ *              both. `lactoseFree: no` and `conditional` alike mean the dish
+ *              contains dairy; conditional only means the dairy is butter or
+ *              ghee, which is a lactose-tolerance distinction and not an
+ *              allergy one.
+ */
+const ALLERGENS = {
+  nuts: { field: /\b(peanuts?|tree\s+nuts?)\b/i, keywords: NUT_RE, negation: NUT_NEGATION_RE },
+  soy: { field: /\bsoy\b/i, keywords: SOY_RE, negation: SOY_NEGATION_RE },
+  sesame: { field: /\bsesame\b/i, keywords: SESAME_RE, negation: SESAME_NEGATION_RE },
+  dairy: { field: /\bdairy\b/i, flag: 'lactoseFree' },
+}
+
+/** health id -> the allergen it excludes. */
+const HEALTH_ALLERGENS = {
+  nut_allergy: 'nuts',
+  soy_allergy: 'soy',
+  sesame_allergy: 'sesame',
+  dairy_allergy: 'dairy',
+}
+
+export const ALLERGEN_LABEL = {
+  nuts: 'nuts', soy: 'soy', sesame: 'sesame', dairy: 'dairy',
+}
+
+/** Does this recipe contain the named allergen? */
+export function containsAllergen(recipe, allergen) {
+  const rule = ALLERGENS[allergen]
+  if (!rule) return false
+
+  // A flag that exists on every record is better evidence than either the
+  // column or a keyword, so it answers alone.
+  if (rule.flag) {
+    const status = recipe.flags?.[rule.flag]?.status
+    if (status) return status !== 'yes'
+  }
+
+  if (rule.field.test(String(recipe.allergens || ''))) return true
+
+  if (!rule.keywords) return false
+  let haystack = `${recipe.name || ''} ${recipe.ingredients || ''}`
+  if (rule.negation) haystack = haystack.replace(rule.negation, ' ')
+  return rule.keywords.test(haystack)
+}
+
+/**
+ * Kept as its own export because it is the one allergen with a long history
+ * here, and because reading `containsNuts(r)` at a call site says more than
+ * `containsAllergen(r, 'nuts')`. Behaviour is unchanged.
+ */
+export function containsNuts(recipe) {
+  return containsAllergen(recipe, 'nuts')
 }
 
 const DIET_ALLOWS = {
@@ -186,6 +250,13 @@ const RELIGION_FLAGS = {
 const HEALTH_FLAGS = {
   lactose_intolerant: 'lactoseFree',
   gluten_sensitive: 'glutenFree',
+  // Deliberately the same handling as gluten sensitivity, and NOT the
+  // hard-exclude the other allergies get. `glutenFree: conditional` in this
+  // data means one swappable product — soy sauce for tamari — which is a real
+  // path to a safe dish rather than a hopeful one. See DATA-ISSUES.md: this
+  // makes the two options behave identically, which is a product decision
+  // about what people call themselves, not an oversight.
+  gluten_allergy: 'glutenFree',
   diabetes_t1: 'diabeticFriendly',
   diabetes_t2: 'diabeticFriendly',
   // PCOD/PCOS is insulin-resistance driven, so the dietary advice is the same
@@ -230,11 +301,16 @@ export function memberConstraints(member, activeFastIds) {
     strict.add('diabeticFriendly')
   }
 
+  const allergens = (member.health || [])
+    .map((h) => HEALTH_ALLERGENS[h])
+    .filter(Boolean)
+
   return {
     id: member.id,
     name: member.name,
     diet: member.diet,
     religion: member.religion || 'none',
+    allergens: [...new Set(allergens)],
     allowedKinds: DIET_ALLOWS[member.diet] || ['veg'],
     requiredFlags: [...required],
     strictFlags: [...strict],
@@ -268,9 +344,15 @@ export function evaluateRecipe(recipe, constraints) {
     }
   }
 
-  // An allergy is never "conditional" — exclude outright.
-  if (constraints.health.includes('nut_allergy') && containsNuts(recipe)) {
-    return { verdict: 'excluded', reasons: [`contains nuts, ${constraints.name} has a nut allergy`] }
+  // An allergy is never "conditional" — exclude outright. One loop rather
+  // than a branch per allergen: they differ in how they are detected, which
+  // ALLERGENS above owns, and not in what happens once they are.
+  for (const allergen of constraints.allergens) {
+    if (!containsAllergen(recipe, allergen)) continue
+    return {
+      verdict: 'excluded',
+      reasons: [`contains ${ALLERGEN_LABEL[allergen]}, ${constraints.name} has a ${ALLERGEN_LABEL[allergen]} allergy`],
+    }
   }
 
   for (const flag of constraints.requiredFlags) {
