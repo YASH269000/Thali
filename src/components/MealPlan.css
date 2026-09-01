@@ -965,3 +965,46 @@
 .id-warning p + p {
   margin-top: 6px;
 }
+
+/* Still waiting, and saying why. Quiet on purpose — the wait has not changed,
+   only the reason it is taking longer. */
+.loading-retry {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #6b6b66;
+}
+
+/* A plan recalled from the last successful generation. Amber, and it stays on
+   screen for as long as the plan does: it must never read as a fresh answer. */
+.cached-note {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 0.5px solid #e5e0cd;
+  border-radius: 12px;
+  background: #fdfaf0;
+}
+
+.cached-note-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #1a1a1a;
+}
+
+.cached-note p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b6b66;
+}
+
+.cached-chip {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: #f0e6c8;
+  color: #6b5a1f;
+  font-size: 12px;
+  font-weight: 600;
+}

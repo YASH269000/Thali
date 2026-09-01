@@ -546,3 +546,40 @@ Ids reach these functions from localStorage, so they outlive any deploy that
 renames one. `src/lib/family.js` migrates renamed health ids on load and writes
 the repaired roster back, which is why `gluten_allergy` could be deleted
 outright rather than left mapped as an orphan.
+
+
+## Gemini answers 503 under load
+
+"This model is currently experiencing high demand" is a transient failure and
+was surfaced as a dead end. Two mitigations, both client-side.
+
+`MealPlan.jsx` retries a 502 or 503 three times, waiting 1s, 3s and 6s. A 4xx
+is never retried — a 422 for an unreadable fast id says the same thing however
+long you wait, and the retry would only delay the answer. The waiting screen
+stays as it is and gains one quiet line after the first failure: "Model is busy
+— retrying (2 of 3)".
+
+The retry is here and not in `api/generate-plan.js` because the point is
+telling the user what is happening between attempts, which only the client can
+do. Keeping it on one side also means a bad minute costs 4 calls against the
+free tier's 10 RPM rather than 16.
+
+Each attempt has its own 40s ceiling and the sequence has a 90s budget, both
+enforced through the same AbortController the effect cleanup uses. A request
+that never answers was what turned a slow model into a frozen screen.
+
+When every retry fails, `src/lib/planCache.js` offers the last plan that
+worked for this exact combination — keyed by the same `planKey` the generation
+effect uses, so it can only be offered for the meal type, cuisine and set of
+diners it was made for. It is never handed over quietly: a banner says
+"Couldn't reach the model. Here's the last plan we generated for this
+combination (earlier today, 3:45 pm)" with a Try again button, and a "Saved
+plan" chip sits beside the meal header for as long as it is on screen.
+
+The cache stores at most six combinations and drops `alternates` first: a full
+plan is 119 KB and 107 KB of that is twelve swap candidates per role, each
+carrying its whole recipe. A cached plan is a fallback, not a working surface,
+so it lands at 13 KB.
+
+A 4xx never reaches the cache. Someone whose fast id cannot be read must see
+that, not a stale plan standing in for it.

@@ -14,6 +14,7 @@ import {
   saveBuyEdits, saveBuyWindow, windowById,
 } from '../lib/buyQuantities.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
+import { describeSavedAt, recallPlan, rememberPlan } from '../lib/planCache.js'
 import { loadFamily } from '../lib/family.js'
 import { familyIdWarnings } from '../lib/memberValidation.js'
 import { buildShareMessage, whatsappUrl } from '../lib/shareList.js'
@@ -34,6 +35,29 @@ const PRESENT_KEY = 'thali_present_members'
 const CUISINE_KEY = 'thali_cuisine'
 const EXTRA_GUESTS_KEY = 'thali_extra_guests'
 const RECENT_LIMIT = 5
+
+/* ---- transient-failure retry -------------------------------------- *
+ *
+ * Gemini answers 503 "currently experiencing high demand" under load, which
+ * our route surfaces as 502 or 503. Both are worth waiting out; a 4xx is not —
+ * a 422 for an unreadable fast id or a 400 for a bad body will say the same
+ * thing however long you wait, and retrying only delays the answer.
+ *
+ * The retry lives here rather than in api/generate-plan.js because the point
+ * is telling the user what is happening between attempts, which only the
+ * client can do. Keeping it on one side also means a bad minute costs 4 calls
+ * against the free tier's 10 RPM, not 16.
+ */
+const RETRY_STATUSES = new Set([502, 503])
+const RETRY_DELAYS_MS = [1000, 3000, 6000]
+
+// A request that never answers is what turned a slow model into a frozen
+// screen. Each attempt gets its own ceiling, and the whole sequence gets one,
+// so the wait is bounded whatever the network does.
+const ATTEMPT_TIMEOUT_MS = 40000
+const TOTAL_BUDGET_MS = 90000
+
+const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner']
 
 // Labels and hints for the cuisines the database can produce. Which of them
@@ -419,6 +443,11 @@ export default function MealPlan() {
   // any hand-edited quantities outlive a regeneration.
   const [buyWindow, setBuyWindow] = useState(loadBuyWindow)
   const [buyEdits, setBuyEdits] = useState(loadBuyEdits)
+  // Set once a retry is under way, so the waiting screen can say why it is
+  // still waiting rather than looking stuck.
+  const [retrying, setRetrying] = useState(null)
+  // Set when the plan on screen came from the cache, never from the model.
+  const [cachedFrom, setCachedFrom] = useState(null)
   // Which cuisines today's constraints can actually furnish a meal from.
   const [cuisineInfo, setCuisineInfo] = useState(null)
   const [pantry, setPantry] = useState(loadPantry)
@@ -444,31 +473,85 @@ export default function MealPlan() {
     const controller = new AbortController()
     inFlight.current = controller
 
+    const key = planKey(type, ids, guestList || [], pick)
+    const body = JSON.stringify({
+      family,
+      presentMembers: ids,
+      guests: normaliseGuests(guestList || []),
+      date: new Date().toISOString(),
+      mealType: type,
+      cuisine: pick,
+      recentRecipeIds: recentRecipeIds(),
+    })
+
     setLoading(true)
     setError(null)
+    setRetrying(null)
+    setCachedFrom(null)
+
+    const startedAt = Date.now()
+    const budgetLeft = () => TOTAL_BUDGET_MS - (Date.now() - startedAt)
+    let lastFailure = null
+
     try {
-      const res = await fetch('/api/generate-plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          family,
-          presentMembers: ids,
-          guests: normaliseGuests(guestList || []),
-          date: new Date().toISOString(),
-          mealType: type,
-          cuisine: pick,
-          recentRecipeIds: recentRecipeIds(),
-        }),
-        signal: controller.signal,
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        setError(data)
-        setPlan(null)
+      for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
+        // Its own ceiling per attempt, aborted through the same controller the
+        // effect cleanup uses so a navigation still cancels everything.
+        const timeout = setTimeout(() => controller.abort(), Math.min(ATTEMPT_TIMEOUT_MS, Math.max(budgetLeft(), 1)))
+        let res
+        let data
+        try {
+          res = await fetch('/api/generate-plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+            signal: controller.signal,
+          })
+          data = await res.json()
+        } catch (err) {
+          if (err.name === 'AbortError' && !controller.signal.reason) throw err
+          // A timeout or a dropped connection is transient in the same way a
+          // 503 is, so it takes the same path.
+          lastFailure = { error: 'Could not reach the meal planner.', detail: err.message }
+          res = null
+        } finally {
+          clearTimeout(timeout)
+        }
+
+        if (res?.ok) {
+          setPlan(data)
+          setPlanKeyOf(key)
+          setRetrying(null)
+          rememberMeal(type, data.dishes.map((d) => d.recipeId))
+          rememberPlan(key, data)
+          return
+        }
+
+        if (res && !RETRY_STATUSES.has(res.status)) {
+          // A 4xx says the same thing however long you wait.
+          setError(data)
+          setPlan(null)
+          return
+        }
+        if (res) lastFailure = data
+
+        const delay = RETRY_DELAYS_MS[attempt]
+        if (delay === undefined || budgetLeft() <= delay) break
+        setRetrying({ attempt: attempt + 1, of: RETRY_DELAYS_MS.length })
+        await sleep(delay)
+      }
+
+      // Everything failed. A plan this family already had for this exact
+      // combination is worth offering — labelled, never as a fresh answer.
+      const cached = recallPlan(key)
+      if (cached) {
+        setPlan(cached.plan)
+        setPlanKeyOf(key)
+        setCachedFrom(cached.savedAt)
+        setError(null)
       } else {
-        setPlan(data)
-        setPlanKeyOf(planKey(type, ids, guestList || [], pick))
-        rememberMeal(type, data.dishes.map((d) => d.recipeId))
+        setError(lastFailure || { error: 'Could not reach the meal planner.' })
+        setPlan(null)
       }
     } catch (err) {
       if (err.name !== 'AbortError') {
@@ -478,6 +561,7 @@ export default function MealPlan() {
       if (inFlight.current === controller) {
         inFlight.current = null
         setLoading(false)
+        setRetrying(null)
       }
     }
   }, [family])
@@ -873,6 +957,14 @@ export default function MealPlan() {
               Checking today&rsquo;s fasts, every diet and every health condition
               against {dinersLabel(presentMembers.length, liveGuestCount)}.
             </p>
+            {/* Only after the first failure, and quietly: the wait is the same
+                wait, and the screen should say why it is still going rather
+                than change into something else. */}
+            {retrying && (
+              <p className="loading-retry">
+                Model is busy &mdash; retrying ({retrying.attempt} of {retrying.of})
+              </p>
+            )}
           </div>
         )}
 
@@ -881,6 +973,22 @@ export default function MealPlan() {
             <p className="error-title">{error.error || 'Something went wrong.'}</p>
             {error.hint && <p className="error-body">{error.hint}</p>}
             {error.detail && <p className="error-detail">{error.detail}</p>}
+            <button type="button" className="btn btn-solid" onClick={regenerate}>
+              Try again
+            </button>
+          </div>
+        )}
+
+        {/* A cached plan is never handed over quietly. The banner names the
+            day it was made and offers a fresh attempt, and the plan header
+            below carries a "Cached" chip for as long as it is on screen. */}
+        {stage === 'plan' && cachedFrom && plan && !loading && (
+          <div className="cached-note" role="status">
+            <p className="cached-note-title">Showing a saved plan</p>
+            <p>
+              Couldn&rsquo;t reach the model. Here&rsquo;s the last plan we generated for
+              this combination ({describeSavedAt(cachedFrom)}).
+            </p>
             <button type="button" className="btn btn-solid" onClick={regenerate}>
               Try again
             </button>
@@ -906,6 +1014,7 @@ export default function MealPlan() {
               {plan.meta?.internationalCuisine && (
                 <span className="attendance-cuisine"> &middot; {plan.meta.internationalCuisine}</span>
               )}
+              {cachedFrom && <span className="cached-chip">Saved plan</span>}
             </p>
 
             {(plan.guestNotes || []).map((n) => (
