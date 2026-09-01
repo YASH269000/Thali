@@ -364,3 +364,29 @@ Pinned by `test/unknown-recipe.test.js`, which stubs the model at the fetch
 boundary so the retry is observed as a second real request: a good retry is
 accepted with no note, a repeat offence is dropped with a visible one, an
 all-invented plan is a 502, and a clean answer is never retried.
+
+
+## Role gaps in the International v2 set - CLOSED
+
+Four cuisines could not furnish a full meal shape: Indo-Chinese had no sabzi
+and no bread at all, Italian no sabzi, and East Asian and Thai were thin at
+two of one and none or two of the other. A cuisine with no bread cannot answer
+a lunch brief that asks for one, and the model padded with whatever else was
+in the pool.
+
+20 records were appended - Indo-Chinese 8, Thai 5, Italian 4, East Asian 3 -
+taking the catalogue from 1,444 to 1,464 and the v2 set from 350 to 370. Every
+cuisine now has at least 3 bread and 4 sabzi.
+
+Appended, never re-imported. `scripts/import-international-v2.mjs --additions`
+reads only the `*_ADDITIONS.json` files and refuses on any id already present.
+The default mode still drops and rebuilds every v2 row, which would regenerate
+every note from `noteFor()` and silently undo `scripts/clean-flag-notes.mjs` -
+so a full re-import must be followed by that script. Both scripts say so.
+
+The Jain pools widened but the picker did not change, and the reason is worth
+recording: `bread` is a singleton role, so Thai's two new Jain-safe breads
+contribute one usable slot between them, not two. Indo-Chinese went from 0
+usable Jain lunch dishes to 1 and Thai from 1 to 2, both still under the
+3-dish floor at which a cuisine becomes offerable. A Jain guest is still told
+those two cuisines cannot fill a lunch, which remains true.

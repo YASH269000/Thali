@@ -83312,5 +83312,1265 @@
     "dietKind": "veg",
     "containsEgg": "no",
     "allergens": "dairy"
+  },
+  {
+    "recipeId": "EA051",
+    "name": "Korean Vegetable Pajeon (eggless)",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "East Asian",
+    "serves": 4,
+    "prepTimeMin": 15,
+    "cookTimeMin": 20,
+    "difficulty": "Easy",
+    "ingredients": "1½ cups maida (all-purpose flour); ½ cup rice flour; 1½ cups ice-cold water; 1 tsp salt; 2 cups spring onion (cut into 5 cm lengths); 1 carrot (julienned); 1 capsicum (julienned); 4 tbsp oil; 2 tbsp soy sauce (for dipping); 1 tbsp rice vinegar (for dipping); 1 tsp sesame seeds (for dipping)",
+    "preparation": "STEP 1: Whisk maida, rice flour, salt and ice-cold water into a thin batter — cold batter makes it crisp. STEP 2: Heat 2 tbsp oil in a wide pan; lay the spring onion, carrot and capsicum flat. STEP 3: Pour batter over to just cover; cook 4–5 minutes until the base is golden and lacy. STEP 4: Flip, add the remaining oil around the edge, cook 3 minutes more. STEP 5: Cut into squares; serve with soy sauce, vinegar and sesame.",
+    "tips": null,
+    "caloriesPerServing": 290,
+    "source": "International v2",
+    "source_sheet": "East Asian",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains spring onion and carrot"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains spring onion)"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No (contains gluten — wheat flour, pasta, bread or noodles)"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "bread",
+    "cuisine": "East Asian",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten, sesame"
+  },
+  {
+    "recipeId": "EA052",
+    "name": "Miso-glazed Green Beans",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "East Asian",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 10,
+    "difficulty": "Easy",
+    "ingredients": "500 g green beans (trimmed); 2 tbsp white miso paste; 1 tbsp rice vinegar; 1 tbsp sugar; 1 tbsp sesame oil; 1 tbsp oil; 2 cloves garlic (minced); 1 tbsp toasted sesame seeds; 2 tbsp water",
+    "preparation": "STEP 1: Blanch beans 3 minutes; drain. STEP 2: Whisk miso, vinegar, sugar and water into a glaze. STEP 3: Heat both oils, fry garlic 30 seconds, add beans and toss 2 minutes. STEP 4: Add the glaze and toss until it clings; finish with sesame seeds.",
+    "tips": null,
+    "caloriesPerServing": 110,
+    "source": "International v2",
+    "source_sheet": "East Asian",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — gluten-free with a certified gluten-free paste"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "East Asian",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten, sesame"
+  },
+  {
+    "recipeId": "EA053",
+    "name": "Stir-fried Napa Cabbage with Ginger",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "East Asian",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 8,
+    "difficulty": "Easy",
+    "ingredients": "1 large napa cabbage (cut into 3 cm pieces); 2 tbsp oil; 1 tbsp julienned ginger; 3 cloves garlic (sliced); 1 tbsp soy sauce; 1 tsp sugar; 1 tsp rice vinegar; 1 tsp sesame oil; ½ tsp white pepper; salt to taste",
+    "preparation": "STEP 1: Heat oil until shimmering; fry ginger and garlic 30 seconds. STEP 2: Add cabbage stems first, then leaves; stir-fry on high 3 minutes. STEP 3: Season with soy sauce, sugar, salt and pepper. STEP 4: Finish with vinegar and sesame oil — the leaves should still have bite.",
+    "tips": null,
+    "caloriesPerServing": 80,
+    "source": "International v2",
+    "source_sheet": "East Asian",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains ginger and garlic"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — gluten-free with tamari in place of soy sauce"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "East Asian",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten, sesame"
+  },
+  {
+    "recipeId": "IC051",
+    "name": "Steamed Bao Buns (plain)",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": 90,
+    "cookTimeMin": 15,
+    "difficulty": "Medium",
+    "ingredients": "2½ cups maida (all-purpose flour); 1 tsp instant yeast; 2 tbsp sugar; 1 tsp baking powder; ¾ cup warm milk; 2 tbsp oil; ¼ tsp salt",
+    "preparation": "STEP 1: Mix maida, yeast, sugar, baking powder, salt, milk and oil; knead 8 minutes until smooth; rest 1 hour until doubled. STEP 2: Divide into 10, roll into ovals, brush with oil and fold over a chopstick; rest 20 minutes on paper squares. STEP 3: Steam 10–12 minutes until puffed and glossy. Serve alongside gravies to mop up sauce.",
+    "tips": null,
+    "caloriesPerServing": 180,
+    "source": "International v2",
+    "source_sheet": "Indo-Chinese",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No (added sugar)"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No (contains milk)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No (contains milk)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No (contains gluten — wheat flour, pasta, bread or noodles)"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "bread",
+    "cuisine": "Indo-Chinese",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "gluten, dairy"
+  },
+  {
+    "recipeId": "IC052",
+    "name": "Chinese Scallion Pancakes",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": 40,
+    "cookTimeMin": 20,
+    "difficulty": "Medium",
+    "ingredients": "2½ cups maida (all-purpose flour); 1 cup hot water; 1 cup chopped spring onion; 3 tbsp sesame oil; 1 tsp salt; 4 tbsp oil for frying",
+    "preparation": "STEP 1: Mix maida, salt and hot water into a dough; knead smooth and rest 30 minutes. STEP 2: Roll thin, brush with sesame oil, scatter spring onion, roll into a log, coil it, then roll flat again. STEP 3: Pan-fry in oil 3 minutes each side until golden and flaky; cut into wedges.",
+    "tips": null,
+    "caloriesPerServing": 260,
+    "source": "International v2",
+    "source_sheet": "Indo-Chinese",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains spring onion"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains spring onion)"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No (contains gluten — wheat flour, pasta, bread or noodles)"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "bread",
+    "cuisine": "Indo-Chinese",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "gluten, sesame"
+  },
+  {
+    "recipeId": "IC053",
+    "name": "Garlic Sesame Flatbread",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": 45,
+    "cookTimeMin": 15,
+    "difficulty": "Easy",
+    "ingredients": "3 cups maida (all-purpose flour); 1 tsp instant yeast; 1 tsp sugar; 1 cup warm water; 3 tbsp oil; 4 cloves garlic (minced); 2 tbsp white sesame seeds; 2 tbsp chopped spring onion; 1 tsp salt",
+    "preparation": "STEP 1: Knead maida, yeast, sugar, salt, water and 2 tbsp oil into a soft dough; rest 40 minutes. STEP 2: Roll into rounds, brush with the remaining oil mixed with garlic. STEP 3: Scatter sesame and spring onion, press in lightly. STEP 4: Cook on a hot pan 2–3 minutes each side until blistered.",
+    "tips": null,
+    "caloriesPerServing": 240,
+    "source": "International v2",
+    "source_sheet": "Indo-Chinese",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic and spring onion"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic and spring onion)"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No (contains gluten — wheat flour, pasta, bread or noodles)"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "bread",
+    "cuisine": "Indo-Chinese",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "gluten, sesame"
+  },
+  {
+    "recipeId": "IC054",
+    "name": "Chilli Garlic Naan (Indo-Chinese style)",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": 60,
+    "cookTimeMin": 15,
+    "difficulty": "Medium",
+    "ingredients": "3 cups maida (all-purpose flour); 1 tsp instant yeast; 1 tsp sugar; ½ cup thick curd; ¾ cup warm water; 3 tbsp oil; 1 tbsp red chilli flakes; 4 cloves garlic (minced); 2 tbsp chopped coriander; 1 tsp salt",
+    "preparation": "STEP 1: Mix maida, yeast, sugar, salt, curd, water and 2 tbsp oil into a soft dough; rest 1 hour. STEP 2: Roll into teardrops; press chilli flakes, garlic and coriander into the surface. STEP 3: Cook on a very hot tawa, covered, until it puffs; flip and blister the other side. STEP 4: Brush with the remaining oil.",
+    "tips": null,
+    "caloriesPerServing": 280,
+    "source": "International v2",
+    "source_sheet": "Indo-Chinese",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No (contains curd)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No (contains curd)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No (contains gluten — wheat flour, pasta, bread or noodles)"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "bread",
+    "cuisine": "Indo-Chinese",
+    "mealTypes": "lunch, dinner",
+    "spice": "medium",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "gluten, dairy"
+  },
+  {
+    "recipeId": "IC055",
+    "name": "Stir-fried Garlic Bok Choy",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 8,
+    "difficulty": "Easy",
+    "ingredients": "500 g bok choy (halved lengthwise); 4 cloves garlic (sliced); 2 tbsp oil; 1 tbsp soy sauce; 1 tsp sugar; 1 tsp sesame oil; ¼ cup vegetable stock; 1 tsp cornflour mixed in 1 tbsp water; ½ tsp white pepper",
+    "preparation": "STEP 1: Blanch bok choy 1 minute in salted water; drain well. STEP 2: Heat oil, fry garlic until pale gold. STEP 3: Add bok choy, soy sauce, sugar, pepper and stock; toss 2 minutes. STEP 4: Thicken with the slurry and finish with sesame oil.",
+    "tips": null,
+    "caloriesPerServing": 80,
+    "source": "International v2",
+    "source_sheet": "Indo-Chinese",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — gluten-free with tamari in place of soy sauce"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Indo-Chinese",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten, sesame"
+  },
+  {
+    "recipeId": "IC056",
+    "name": "Dry Chilli Beans",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 12,
+    "difficulty": "Easy",
+    "ingredients": "500 g green beans (cut into 5 cm lengths); 3 tbsp oil; 1 tbsp finely chopped garlic; 1 tsp finely chopped ginger; 2 dry red chillies (broken); 1 tbsp soy sauce; 1 tsp red chilli sauce; 1 tsp sugar; 1 tsp vinegar; 1 tsp sesame seeds; salt to taste",
+    "preparation": "STEP 1: Blanch beans 3 minutes; drain and pat dry. STEP 2: Heat oil until smoking; fry the dry chillies 20 seconds, then garlic and ginger. STEP 3: Add beans and stir-fry on high 3 minutes until blistered in spots. STEP 4: Add soy sauce, chilli sauce, sugar, vinegar and salt; toss. STEP 5: Finish with sesame seeds.",
+    "tips": null,
+    "caloriesPerServing": 110,
+    "source": "International v2",
+    "source_sheet": "Indo-Chinese",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic and ginger"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — gluten-free with tamari in place of soy sauce"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Indo-Chinese",
+    "mealTypes": "lunch, dinner",
+    "spice": "hot",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten, sesame"
+  },
+  {
+    "recipeId": "IC057",
+    "name": "Cabbage and Carrot Stir-fry",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 8,
+    "difficulty": "Easy",
+    "ingredients": "4 cups shredded cabbage; 1 cup julienned carrot; 2 tbsp oil; 1 tbsp finely chopped garlic; 1 tsp cumin seeds; 1 tbsp soy sauce; ½ tsp white pepper; 2 tbsp chopped spring onion; 1 tsp vinegar; salt to taste",
+    "preparation": "STEP 1: Heat oil, crackle the cumin, add garlic. STEP 2: Add cabbage and carrot; stir-fry on high 4 minutes so they stay crisp. STEP 3: Season with soy sauce, pepper, salt and vinegar. STEP 4: Finish with spring onion.",
+    "tips": null,
+    "caloriesPerServing": 90,
+    "source": "International v2",
+    "source_sheet": "Indo-Chinese",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains carrot, garlic and spring onion"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic and spring onion)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — gluten-free with tamari in place of soy sauce"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Indo-Chinese",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten"
+  },
+  {
+    "recipeId": "IC058",
+    "name": "Sichuan Aubergine",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Indo-Chinese",
+    "serves": 4,
+    "prepTimeMin": 15,
+    "cookTimeMin": 15,
+    "difficulty": "Medium",
+    "ingredients": "3 medium eggplants (cut into batons); 4 tbsp oil; 1 tbsp finely chopped garlic; 1 tbsp finely chopped ginger; 1 tbsp doubanjiang (chilli bean paste); 1 tbsp soy sauce; 1 tsp sugar; 1 tsp vinegar; ½ cup vegetable stock; 1 tsp cornflour mixed in 1 tbsp water; ¼ cup chopped spring onion; salt to taste",
+    "preparation": "STEP 1: Salt the eggplant batons 10 minutes; pat dry. STEP 2: Sear in 3 tbsp oil until browned and collapsing; set aside. STEP 3: In the remaining oil fry garlic, ginger and doubanjiang 1 minute until fragrant and red. STEP 4: Return eggplant with soy sauce, sugar, vinegar and stock; simmer 4 minutes. STEP 5: Thicken with slurry, finish with spring onion.",
+    "tips": null,
+    "caloriesPerServing": 170,
+    "source": "International v2",
+    "source_sheet": "Indo-Chinese",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic, ginger and spring onion"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic and spring onion)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — gluten-free with tamari in place of soy sauce and a certified gluten-free paste"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Indo-Chinese",
+    "mealTypes": "lunch, dinner",
+    "spice": "hot",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten"
+  },
+  {
+    "recipeId": "IT051",
+    "name": "Broccoli Aglio e Olio",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 12,
+    "difficulty": "Easy",
+    "ingredients": "600 g broccoli (florets); 5 tbsp extra-virgin olive oil; 6 cloves garlic (thinly sliced); 1 tsp red chilli flakes; 2 tbsp lemon juice; ¼ cup grated parmesan (vegetarian rennet); salt to taste",
+    "preparation": "STEP 1: Blanch broccoli 3 minutes in well-salted water; drain. STEP 2: Warm the oil on low and cook garlic slowly until pale gold; add chilli flakes. STEP 3: Toss the broccoli through, pressing some against the pan so it catches colour. STEP 4: Finish with lemon juice, salt and parmesan.",
+    "tips": null,
+    "caloriesPerServing": 130,
+    "source": "International v2",
+    "source_sheet": "Italian",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No (contains parmesan)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No (contains parmesan)"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Italian",
+    "mealTypes": "lunch, dinner",
+    "spice": "medium",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "dairy"
+  },
+  {
+    "recipeId": "IT052",
+    "name": "Balsamic Roasted Vegetables",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": 15,
+    "cookTimeMin": 35,
+    "difficulty": "Easy",
+    "ingredients": "2 zucchini (chunks); 2 capsicums (chunks); 1 red onion (wedges); 1 eggplant (chunks); 1 cup cherry tomatoes; 4 tbsp olive oil; 2 tbsp balsamic vinegar; 1 tsp dried oregano; 1 tsp dried thyme; 3 cloves garlic (smashed); ¼ cup fresh basil (torn); ½ tsp black pepper; salt to taste",
+    "preparation": "STEP 1: Toss all vegetables with oil, garlic, herbs, salt and pepper. STEP 2: Spread in a single layer and roast at 210°C for 30–35 minutes, turning once. STEP 3: Drizzle balsamic while hot and scatter basil.",
+    "tips": null,
+    "caloriesPerServing": 150,
+    "source": "International v2",
+    "source_sheet": "Italian",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains onion and garlic"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains onion and garlic)"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Italian",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "none"
+  },
+  {
+    "recipeId": "IT053",
+    "name": "Peperonata",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": 15,
+    "cookTimeMin": 30,
+    "difficulty": "Easy",
+    "ingredients": "4 capsicums (mixed colours, sliced); 2 onions (sliced); 4 tbsp olive oil; 3 cloves garlic (sliced); 3 tomatoes (chopped); 1 tbsp red vinegar; 1 tsp sugar; 1 tsp dried oregano; ¼ cup fresh basil; ½ tsp black pepper; salt to taste",
+    "preparation": "STEP 1: Soften the onions in oil over low heat, 10 minutes. STEP 2: Add garlic and capsicum; cook 10 minutes until slumping. STEP 3: Add tomatoes, vinegar, sugar, oregano and salt; simmer 10 minutes until jammy. STEP 4: Finish with basil and pepper. Good warm or at room temperature.",
+    "tips": null,
+    "caloriesPerServing": 140,
+    "source": "International v2",
+    "source_sheet": "Italian",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains onions and garlic"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains onions and garlic)"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Italian",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "none"
+  },
+  {
+    "recipeId": "IT054",
+    "name": "Spinach Sautéed with Garlic and Pine Nuts",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Italian",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 10,
+    "difficulty": "Easy",
+    "ingredients": "700 g spinach (washed, roughly chopped); 4 tbsp olive oil; 5 cloves garlic (sliced); 3 tbsp pine nuts (toasted); 2 tbsp raisins (soaked); 2 tbsp lemon juice; ¼ tsp nutmeg; ½ tsp black pepper; salt to taste",
+    "preparation": "STEP 1: Warm the oil and cook garlic gently until fragrant, not brown. STEP 2: Add spinach in batches, letting each wilt before adding more. STEP 3: Cook off the excess liquid; season with salt, pepper and nutmeg. STEP 4: Fold in pine nuts and raisins, finish with lemon juice.",
+    "tips": null,
+    "caloriesPerServing": 160,
+    "source": "International v2",
+    "source_sheet": "Italian",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic"
+      },
+      "diabeticFriendly": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Italian",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "tree nuts"
+  },
+  {
+    "recipeId": "TH051",
+    "name": "Roti Canai (Thai street roti)",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": 60,
+    "cookTimeMin": 20,
+    "difficulty": "Medium",
+    "ingredients": "3 cups maida (all-purpose flour); 1 cup warm water; 3 tbsp sugar; 1 tsp salt; 4 tbsp oil (for dough); 3 tbsp butter (for frying); 2 tbsp condensed milk (optional, to serve)",
+    "preparation": "STEP 1: Knead maida, water, sugar, salt and 2 tbsp oil into a very soft dough; divide into balls and rest submerged in the remaining oil 45 minutes. STEP 2: Stretch each ball paper-thin on an oiled surface, then fold into a square parcel. STEP 3: Fry in butter 2–3 minutes each side until crisp and layered. STEP 4: Serve with curry, or with condensed milk as a sweet version.",
+    "tips": null,
+    "caloriesPerServing": 300,
+    "source": "International v2",
+    "source_sheet": "Thai",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "diabeticFriendly": {
+        "status": "no",
+        "note": "No (added sugar)"
+      },
+      "lactoseFree": {
+        "status": "no",
+        "note": "No (contains butter and condensed milk)"
+      },
+      "vegan": {
+        "status": "no",
+        "note": "No (contains butter and condensed milk)"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No (contains gluten — wheat flour, pasta, bread or noodles)"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "bread",
+    "cuisine": "Thai",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "gluten, dairy"
+  },
+  {
+    "recipeId": "TH052",
+    "name": "Coconut Roti",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": 40,
+    "cookTimeMin": 20,
+    "difficulty": "Easy",
+    "ingredients": "3 cups maida (all-purpose flour); 1 cup coconut milk; ¼ cup desiccated coconut; 1 tbsp sugar; 1 tsp salt; 3 tbsp oil",
+    "preparation": "STEP 1: Mix maida, desiccated coconut, sugar and salt; bind with coconut milk into a soft dough; rest 30 minutes. STEP 2: Divide and roll into thin rounds. STEP 3: Cook on a hot pan with a little oil, 2 minutes each side, until golden-spotted. STEP 4: Serve with green or massaman curry.",
+    "tips": null,
+    "caloriesPerServing": 280,
+    "source": "International v2",
+    "source_sheet": "Thai",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No (contains gluten — wheat flour, pasta, bread or noodles)"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "bread",
+    "cuisine": "Thai",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "gluten"
+  },
+  {
+    "recipeId": "TH053",
+    "name": "Crispy Garlic Flatbread (Thai style)",
+    "hindiName": "",
+    "category": "Bread",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": 45,
+    "cookTimeMin": 15,
+    "difficulty": "Easy",
+    "ingredients": "3 cups maida (all-purpose flour); 1 cup warm water; 1 tsp salt; 1 tsp sugar; 4 tbsp oil; 6 cloves garlic (minced); 2 tbsp chopped coriander; 1 tsp white peppercorns (crushed); 2 red chillies (finely chopped)",
+    "preparation": "STEP 1: Knead maida, water, salt, sugar and 2 tbsp oil into a soft dough; rest 30 minutes. STEP 2: Pound garlic, coriander root or stems, white pepper and chilli into a rough paste. STEP 3: Roll rounds, spread the paste, fold and roll flat again to layer it. STEP 4: Pan-fry in the remaining oil until crisp and golden.",
+    "tips": null,
+    "caloriesPerServing": 260,
+    "source": "International v2",
+    "source_sheet": "Thai",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains garlic"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "no",
+        "note": "No (contains gluten — wheat flour, pasta, bread or noodles)"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "bread",
+    "cuisine": "Thai",
+    "mealTypes": "lunch, dinner",
+    "spice": "medium",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "gluten"
+  },
+  {
+    "recipeId": "TH054",
+    "name": "Stir-fried Thai Basil Vegetables",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 8,
+    "difficulty": "Easy",
+    "ingredients": "4 cups mixed vegetables (long beans, capsicum, baby corn, carrot); 4 cloves garlic (minced); 3 red bird's eye chillies (minced); 2 tbsp oil; 1 tbsp soy sauce; 1 tbsp vegetarian mushroom stir-fry sauce; 1 tsp palm sugar or sugar; 1 cup Thai basil leaves; 2 tbsp water",
+    "preparation": "STEP 1: Pound garlic and chillies together. STEP 2: Fry them in very hot oil 30 seconds. STEP 3: Add the vegetables and stir-fry 3 minutes on the highest flame. STEP 4: Add soy sauce, mushroom sauce, palm sugar and water; toss. STEP 5: Fold in Thai basil off the heat.",
+    "tips": null,
+    "caloriesPerServing": 110,
+    "source": "International v2",
+    "source_sheet": "Thai",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains carrot and garlic"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains garlic)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — gluten-free with tamari in place of soy sauce"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Thai",
+    "mealTypes": "lunch, dinner",
+    "spice": "hot",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten"
+  },
+  {
+    "recipeId": "TH055",
+    "name": "Coconut Braised Pumpkin",
+    "hindiName": "",
+    "category": "Sabzi",
+    "region": "Thai",
+    "serves": 4,
+    "prepTimeMin": 10,
+    "cookTimeMin": 20,
+    "difficulty": "Easy",
+    "ingredients": "600 g pumpkin (cubed); 1 cup coconut milk; 2 tbsp oil; 1 onion (sliced); 3 cloves garlic (minced); 1 tbsp soy sauce; 1 tbsp palm sugar or sugar; 4 kaffir lime leaves (torn); 1 red chilli (sliced); ¼ cup Thai basil leaves; salt to taste",
+    "preparation": "STEP 1: Soften onion and garlic in oil. STEP 2: Add pumpkin and toss 2 minutes. STEP 3: Add coconut milk, soy sauce, palm sugar, lime leaves and salt; simmer covered 12 minutes until tender but holding shape. STEP 4: Finish with chilli and Thai basil.",
+    "tips": null,
+    "caloriesPerServing": 170,
+    "source": "International v2",
+    "source_sheet": "Thai",
+    "hasFullPreparation": true,
+    "flags": {
+      "ekadashiSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "navratriSafe": {
+        "status": "no",
+        "note": ""
+      },
+      "jainSafe": {
+        "status": "no",
+        "note": "No — contains onion and garlic"
+      },
+      "diabeticFriendly": {
+        "status": "partial",
+        "note": "Moderate GI — fine in a smaller portion, alongside vegetables and protein"
+      },
+      "lactoseFree": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "vegan": {
+        "status": "yes",
+        "note": "Yes"
+      },
+      "onionGarlicFree": {
+        "status": "no",
+        "note": "No (contains onion and garlic)"
+      },
+      "glutenFree": {
+        "status": "conditional",
+        "note": "Conditional — gluten-free with tamari in place of soy sauce"
+      },
+      "alcoholFree": {
+        "status": "yes",
+        "note": "Yes"
+      }
+    },
+    "role": "sabzi",
+    "cuisine": "Thai",
+    "mealTypes": "lunch, dinner",
+    "spice": "mild",
+    "dietKind": "veg",
+    "containsEgg": "no",
+    "allergens": "soy, gluten"
   }
 ]

@@ -184,39 +184,81 @@ function convert(rec) {
   }
 }
 
-const files = fs.readdirSync(SRC_DIR).filter((f) => f.endsWith('.json')).sort()
+/* ------------------------------------------------------------------ *
+ * Two modes                                                           *
+ *                                                                     *
+ *   (default)     the original full import: drop every `International`
+ *                 row, convert every v2 file, replace.
+ *   --additions   append the *_ADDITIONS.json files and touch nothing
+ *                 that is already in recipes.json.
+ *                                                                     *
+ * The append mode exists because the full import REBUILDS every note   *
+ * from noteFor(), which would silently undo scripts/clean-flag-notes.  *
+ * If you ever do re-run the full import, run clean-flag-notes.mjs      *
+ * straight afterwards or the catalogue goes back to saying             *
+ * "No (root vegetables: onion and garlic)".                            *
+ * ------------------------------------------------------------------ */
+
+const APPEND_ONLY = process.argv.includes('--additions')
+const isAdditions = (f) => f.endsWith('_ADDITIONS.json')
+
+const files = fs.readdirSync(SRC_DIR)
+  .filter((f) => f.endsWith('.json'))
+  .filter((f) => (APPEND_ONLY ? isAdditions(f) : true))
+  .sort()
 const incoming = files.flatMap((f) =>
   JSON.parse(fs.readFileSync(path.join(SRC_DIR, f), 'utf8')))
 
 const existing = JSON.parse(fs.readFileSync(OUT, 'utf8'))
 const before = existing.length
-const dropped = existing.filter((r) => r.source === 'International').length
-const kept = existing.filter((r) => r.source !== 'International' && r.source !== SOURCE)
 
-// Every Indian record keeps the same 8 flags it had and gains alcoholFree.
-// Verified by grep before this ran: the only alcohol anywhere in the old
-// catalogue was INT029 Mushroom Risotto (white wine), one of the 95 being
-// removed.
-let backfilled = 0
-for (const r of kept) {
-  if (r.flags && !r.flags.alcoholFree) {
-    r.flags.alcoholFree = { status: 'yes', note: 'Yes' }
-    backfilled += 1
+if (APPEND_ONLY) {
+  const ids = new Set(existing.map((r) => r.recipeId))
+  const converted = []
+  for (const rec of incoming) {
+    // An id already present means this ran before, or the additions overlap
+    // the set they extend. Either way, stop rather than duplicate a recipe.
+    if (ids.has(rec.id)) throw new Error(`${rec.id} is already in ${OUT} — refusing to append`)
+    ids.add(rec.id)
+    converted.push(convert(rec))
   }
+  const out = [...existing, ...converted]
+  fs.writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`)
+  console.log(`mode              append-only (${files.length} files)`)
+  console.log(`before            ${before}`)
+  console.log(`appended          ${converted.length}`)
+  console.log(`after             ${out.length}`)
+  console.log('\nnow run: node scripts/clean-flag-notes.mjs --write')
+  console.log('(the notes above are freshly generated and need the same pass the 350 had)')
+} else {
+  const dropped = existing.filter((r) => r.source === 'International').length
+  const kept = existing.filter((r) => r.source !== 'International' && r.source !== SOURCE)
+
+  // Every Indian record keeps the same 8 flags it had and gains alcoholFree.
+  // Verified by grep before this ran: the only alcohol anywhere in the old
+  // catalogue was INT029 Mushroom Risotto (white wine), one of the 95 being
+  // removed.
+  let backfilled = 0
+  for (const r of kept) {
+    if (r.flags && !r.flags.alcoholFree) {
+      r.flags.alcoholFree = { status: 'yes', note: 'Yes' }
+      backfilled += 1
+    }
+  }
+
+  const converted = incoming.map(convert)
+  const ids = new Set(kept.map((r) => r.recipeId))
+  for (const r of converted) {
+    if (ids.has(r.recipeId)) throw new Error(`duplicate recipeId ${r.recipeId}`)
+    ids.add(r.recipeId)
+  }
+
+  const out = [...kept, ...converted]
+  fs.writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`)
+
+  console.log(`before            ${before}`)
+  console.log(`removed (Intl)    ${dropped}`)
+  console.log(`alcoholFree added ${backfilled}`)
+  console.log(`imported (v2)     ${converted.length}`)
+  console.log(`after             ${out.length}`)
 }
-
-const converted = incoming.map(convert)
-const ids = new Set(kept.map((r) => r.recipeId))
-for (const r of converted) {
-  if (ids.has(r.recipeId)) throw new Error(`duplicate recipeId ${r.recipeId}`)
-  ids.add(r.recipeId)
-}
-
-const out = [...kept, ...converted]
-fs.writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`)
-
-console.log(`before            ${before}`)
-console.log(`removed (Intl)    ${dropped}`)
-console.log(`alcoholFree added ${backfilled}`)
-console.log(`imported (v2)     ${converted.length}`)
-console.log(`after             ${out.length}`)
