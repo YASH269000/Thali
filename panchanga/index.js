@@ -1,8 +1,11 @@
 // The calendar engine's public surface.
 //
-// STATUS: standalone and wired to nothing. No file under src/ imports this,
-// by design — it exists to be checked against independent sources before the
-// planner is allowed to depend on it. See docs/CALENDAR-VERIFICATION.md.
+// STATUS: wired in. It was standalone until it had been checked against
+// independent sources; that check is docs/CALENDAR-VERIFICATION.md and it
+// passed, so src/lib/observances.js now depends on this and is the app's only
+// source of tithi-derived dates. The dates themselves are precomputed into
+// src/data/observances.json by scripts/generate-observances.mjs, because a
+// year costs over a second here and no calendar render can wait for that.
 //
 // Three independent calculations live behind this one entry point, and they
 // have genuinely different characters. It is worth keeping them straight:
@@ -77,6 +80,32 @@ function stabilityOf(span, place, rule, resolvedDate) {
     if (date !== resolvedDate) return { stable: false, breaksAt: shift }
   }
   return { stable: true, breaksAt: null }
+}
+
+/**
+ * The first and last civil day of a multi-day observance.
+ *
+ * Navratri is nine TITHIS, not nine days, and a kshaya tithi genuinely
+ * compresses it into eight — so the last day is resolved as Navami by the
+ * same sunrise rule that resolved the first, rather than being assumed to be
+ * the start plus eight. Chhath uses the same mechanism for Chaturthi to
+ * Saptami around its Shashti anchor.
+ */
+function resolveWindow(window, month, paksha, place) {
+  const out = {}
+  for (const [key, number] of [['from', window.fromTithi], ['to', window.toTithi]]) {
+    const index = tithiIndexOf(number, paksha)
+    const startJde = solveElongation(index * 12, month.start + index * 0.98)
+    const endJde = solveElongation(((index + 1) % 30) * 12, startJde + 1)
+    out[key] = resolveObservance({
+      index,
+      startJde,
+      endJde,
+      startJd: jdeToJd(startJde),
+      endJd: jdeToJd(endJde),
+    }, place, null).smarta
+  }
+  return out
 }
 
 /**
@@ -159,6 +188,14 @@ export function resolveTithiRule(rule, year, place = DEFAULT_LOCATION) {
       entry.stable = stability.stable
       entry.needsConfirmation = !stability.stable
       if (rule.id === 'ekadashi_vrat') entry.ekadashiName = ekadashiName(month, paksha)
+
+      // A multi-day observance is still known by one date — the anchor tithi
+      // above — but the app needs the whole span to mark a calendar.
+      if (rule.window) {
+        const span2 = resolveWindow(rule.window, month, paksha, place)
+        entry.from = span2.from
+        entry.through = span2.to
+      }
 
       // Fasts that end at sunset or moonrise need that time, not just a date.
       if (rule.observedAt === 'sunset' || rule.observedAt === 'moonrise') {

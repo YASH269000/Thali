@@ -7,7 +7,7 @@
 // the document, so re-running it after a change to the engine reprints the
 // truth rather than the last thing anyone believed.
 
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import {
   DEFAULT_LOCATION, TITHI_RULES,
   adhikaMaasFor, christianDates, islamicObservances,
@@ -237,7 +237,11 @@ say(`Location: **${place.name}** (${place.lat}°N, ${place.lon}°E, UTC+${place.
   + 'Every Hindu date in this report is local to that place and would legitimately')
 say('differ elsewhere in India.')
 say()
-say('**The engine is wired to nothing.** No file under `src/` imports `panchanga/`.')
+say('**The engine is wired in.** `src/lib/observances.js` imports it, and it is')
+say('now the only source of every tithi-derived date the app shows. What it')
+say('cannot compute — the Jain sect calendars and the Sikh Gurpurabs — stays in')
+say('a short curated table, and the Islamic dates are arithmetic but marked')
+say('provisional. `test/panchanga-source-of-truth.test.js` holds that shape.')
 say()
 
 say('## 1. Measured accuracy')
@@ -602,17 +606,20 @@ say('| 47.a Moon latitude | −3.229126° | −3.229126° |')
 say('| 25.a Sun true longitude, 1992-10-13 0h TD | 199.90987° | 199.90987° |')
 say()
 
-say('## 5. Disagreements with the app\'s own 2026 calendar')
+say('## 5. The app\'s 2026 calendar, before and after')
 say()
-say('`src/data/fastingTraditions.json` carries 25 hand-entered 2026 rows. The')
-say('engine is wired to none of it and this changes nothing there.')
+say('`src/data/fastingTraditions.json` used to carry 25 hand-entered rows for')
+say('2026 and they were the app\'s only lunar dates. Ekadashi appeared twice in')
+say('a year that has twenty-four of it, and the rows below were on the wrong')
+say('day. Both halves are now computed: the "app now" column is read from')
+say('`src/data/observances.json`, which this engine generates.')
 say()
 say('Each disagreement is settled by computation rather than assertion: the')
-say('last column says what tithi actually runs at the deciding moment on the')
-say('date the app gives. Where that is not the tithi the observance requires,')
-say('the app row is refuted by calculation, not by opinion.')
+say('last column says what tithi actually ran at the deciding moment on the')
+say('date the app used to give. Where that is not the tithi the observance')
+say('requires, the old row is refuted by calculation, not by opinion.')
 say()
-say('| observance | app data | engine | what the app\'s date actually is |')
+say('| observance | app before | app now | what the old date actually was |')
 say('| --- | --- | --- | --- |')
 
 /** The tithi running at a given moment on a given local date. */
@@ -630,33 +637,49 @@ function tithiOn(iso, when = 'sunrise') {
   return `${t.paksha} ${t.name}`
 }
 
+/** What the app serves today, read from the generated table rather than assumed. */
+const shipped = JSON.parse(
+  readFileSync(new URL('../src/data/observances.json', import.meta.url), 'utf8'))
+const shippedDate = (id, year = 2026, name = null) => shipped.observances
+  .find((o) => o.id === id && o.date.startsWith(String(year))
+    && (!name || o.ekadashiName === name))?.date
+
 const appChecks = [
-  ['Makar Sankranti', '2026-01-14', mk26.date, 'sunrise', null],
-  ['Maha Shivaratri', '2026-02-17', resolveTithiRule(ruleById('maha_shivaratri'), 2026, place)[0]?.smarta, 'nishita', 'krishna Chaturdashi'],
-  ['Janmashtami', '2026-08-14', resolveTithiRule(ruleById('janmashtami'), 2026, place)[0]?.smarta, 'nishita', 'krishna Ashtami'],
-  ['Ganesh Chaturthi', '2026-08-27', resolveTithiRule(ruleById('ganesh_chaturthi'), 2026, place)[0]?.smarta, 'madhyahna', 'shukla Chaturthi'],
-  ['Karwa Chauth', '2026-10-25', resolveTithiRule(ruleById('karwa_chauth'), 2026, place)[0]?.smarta, 'sunrise', 'krishna Chaturthi'],
-  ['Aja Ekadashi', '2026-09-07', ek26.find((e) => e.ekadashiName === 'Aja')?.smarta, 'sunrise', 'krishna Ekadashi'],
-  ['Mokshada Ekadashi', '2026-12-22', ek26.find((e) => e.ekadashiName === 'Mokshada')?.smarta, 'sunrise', 'shukla Ekadashi'],
+  ['Makar Sankranti', '2026-01-14', shippedDate('makar_sankranti'), 'sunrise', null],
+  ['Maha Shivaratri', '2026-02-17', shippedDate('maha_shivaratri'), 'nishita', 'krishna Chaturdashi'],
+  ['Janmashtami', '2026-08-14', shippedDate('janmashtami'), 'nishita', 'krishna Ashtami'],
+  ['Ganesh Chaturthi', '2026-08-27', shippedDate('ganesh_chaturthi'), 'madhyahna', 'shukla Chaturthi'],
+  ['Karwa Chauth', '2026-10-25', shippedDate('karwa_chauth'), 'moonrise', 'krishna Chaturthi'],
+  ['Aja Ekadashi', '2026-09-07', shippedDate('ekadashi_vrat', 2026, 'Aja'), 'sunrise', 'krishna Ekadashi'],
+  ['Mokshada Ekadashi', '2026-12-22', shippedDate('ekadashi_vrat', 2026, 'Mokshada'), 'sunrise', 'shukla Ekadashi'],
 ]
 for (const [what, app, engine, when, required] of appChecks) {
   if (app === engine) {
-    say(`| ${what} | ${app} | ${engine} | agrees |`)
+    say(`| ${what} | ${app} | ${engine} | unchanged — it was already right |`)
     continue
   }
-  const actual = required ? tithiOn(app, when) : '(solar, not a tithi)'
+  const actual = required ? tithiOn(app, when === 'moonrise' ? 'sunrise' : when) : '(solar, not a tithi)'
   const verdict = required
-    ? (actual === required ? `${actual} — the tithi is right; the difference is the resolution rule` : `**${actual}**, not ${required}`)
+    ? (actual === required
+      ? `${actual} — the tithi was right; the difference is the resolution rule`
+      : `**${actual}**, not ${required}`)
     : actual
   say(`| ${what} | ${app} | ${engine || '—'} | ${verdict} |`)
 }
 say()
 say('Read the last column carefully. Where it names a different tithi entirely,')
-say('the app date cannot be that observance under any school or any location in')
-say('India — a tithi is the same everywhere at a given instant, and only the')
-say('sunrise it is measured against is local. Where it names the RIGHT tithi,')
-say('the disagreement is about which day the tithi is assigned to, which is a')
-say('legitimate difference of rule and not an error.')
+say('the old date could not have been that observance under any school or any')
+say('location in India — a tithi is the same everywhere at a given instant, and')
+say('only the sunrise it is measured against is local. Where it names the RIGHT')
+say('tithi, the disagreement was about which day the tithi is assigned to, which')
+say('is a legitimate difference of rule and not an error.')
+say()
+say('These five were the ones the report had already checked. Replacing the')
+say('table wholesale moved more than five: the Adhik Maas of 2026 shifted every')
+say('lunar date from late May onward, and the hand-entered rows had been')
+say('compiled without it. Diwali moved from 29 October to 8 November, Sharad')
+say('Navratri from 2 October to 11–20 October, Buddha Purnima from 12 May to')
+say('1 May. The full list is in the commit that applied it.')
 say()
 
 say('## 6. Islamic dates — provisional by nature')

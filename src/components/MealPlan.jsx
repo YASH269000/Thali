@@ -15,6 +15,7 @@ import {
 } from '../lib/buyQuantities.js'
 import { loadPantry, savePantry } from '../lib/pantry.js'
 import { describeSavedAt, recallPlan, rememberPlan } from '../lib/planCache.js'
+import { loadOverrides } from '../lib/observanceOverrides.js'
 import { loadFamily } from '../lib/family.js'
 import { FAST_LABEL } from '../data/memberOptions.js'
 import { familyIdWarnings } from '../lib/memberValidation.js'
@@ -517,6 +518,10 @@ export default function MealPlan() {
       cuisine: pick,
       includeDessert: Boolean(dessert),
       recentRecipeIds: recentRecipeIds(),
+      // A family that has corrected a calendar date has corrected it for the
+      // planner too. The server holds no storage of its own, so the answers
+      // travel with the request or the two disagree about what today is.
+      observanceOverrides: loadOverrides(),
     })
 
     setLoading(true)
@@ -661,6 +666,7 @@ export default function MealPlan() {
       body: JSON.stringify({
         family, presentMembers: present, guests: normaliseGuests(guests),
         date: new Date().toISOString(),
+        observanceOverrides: loadOverrides(),
       }),
     })
       .then((r) => r.json())

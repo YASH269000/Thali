@@ -77,6 +77,12 @@ Voice-guided cooking that turns Thali into a teacher for people who cannot cook.
 - Every screen must be reachable from a main navigation
 - All Gemini work goes through api/generate-plan.js (planning) or
   api/cook-assist.js (translate / generate-steps / sequence). Never from the client.
+- Every tithi-derived date comes from the panchanga/ engine, via the generated
+  src/data/observances.json (regenerate with `npm run calendar`). Never hand-type
+  a lunar date into src/data/fastingTraditions.json — the curated table there is
+  only for what no rule decides: Jain sect calendars and Sikh Gurpurabs. Islamic
+  dates are arithmetic and marked provisional. Precedence is user override >
+  curated > computed, and test/panchanga-source-of-truth.test.js enforces the shape.
 
 ## Deployment Target
 Vercel free tier. Push to GitHub, connect to Vercel, auto-deploys.

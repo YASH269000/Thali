@@ -1,10 +1,28 @@
 # panchanga — a calendar engine
 
-Standalone. **Nothing in the app imports this**, and `test/panchanga-isolation.test.js`
-fails if anything starts to. It exists to be checked before it is trusted.
+**The app depends on this.** It was standalone until it had been checked, which
+is what `docs/CALENDAR-VERIFICATION.md` is; read that first. The isolation test
+that used to fail if anything imported this has been replaced by
+`test/panchanga-source-of-truth.test.js`, which asserts the opposite invariant:
+that this is the ONLY source of tithi-derived dates in the app, so a hand-typed
+table cannot drift back in beside it.
 
-Read `docs/CALENDAR-VERIFICATION.md` first — the report is the deliverable; this
-is the thing the report is about.
+## How the app consumes it
+
+Not by calling it. A year of observances costs a little over a second — Newton
+iteration on the moon per tithi, three times over for the stability check —
+which is too slow to block a calendar render on a phone and too slow to add to
+every plan request. So `scripts/generate-observances.mjs` runs the engine and
+writes `src/data/observances.json`, and the app reads that.
+
+That would be a hand-typed table again if nothing enforced the link, so the
+test regenerates the file and fails on any difference. `src/lib/observances.js`
+also imports `TITHI_RULES` from here directly, for the ids and names, which
+keeps the vocabulary as well as the dates in one place.
+
+```
+node scripts/generate-observances.mjs --write   # after any change to a rule
+```
 
 ## What it computes
 

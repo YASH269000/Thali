@@ -3,37 +3,28 @@
 // Shared by the Family Profile screen and the meal-plan API so the two can
 // never disagree about what today means.
 //
-// The database carries dates two different ways and both matter:
-//   1. calendar2026 rows pinned to a date ("Sep 7", or a range like "Aug 3-24")
+// Dates arrive two ways and both matter:
+//   1. observances — from src/lib/observances.js, which is the calendar engine
+//      for anything tithi-derived and a short curated table for the rest.
 //   2. masterIndex traditions defined by frequency alone ("Weekly (every
-//      Saturday)") — these never appear in the calendar, so a date-only check
-//      would miss every weekly fast.
+//      Saturday)") — these appear in no calendar, so a date-only check would
+//      miss every weekly fast.
+//
+// This file used to hold the first half itself, as 25 hand-typed rows matched
+// by substring against their free text. That is why Ekadashi showed twice in a
+// year that has twenty-four of it, and why five of the rows were on the wrong
+// day. Dates now come from one place and this file only joins them to members.
 
-import fastingData from '../data/fastingTraditions.json' with { type: 'json' }
 import { FAST_LABEL, slugify } from '../data/memberOptions.js'
+import fastingData from '../data/fastingTraditions.json' with { type: 'json' }
+import {
+  CONFIDENCE, datesNeedingConfirmation, isoDateOf, observancesOn,
+} from './observances.js'
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+export { CONFIDENCE, datesNeedingConfirmation, isoDateOf }
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
   'Thursday', 'Friday', 'Saturday']
-
-// "Sep 7" matches Sep 7. "Aug 3-24" matches any day from 3 to 24.
-export function calendarRowMatches(dateText, today) {
-  const m = /^([A-Za-z]{3})\s+(\d+)(?:\s*-\s*(\d+))?$/.exec(String(dateText).trim())
-  if (!m) return false
-  if (MONTHS.indexOf(m[1]) !== today.getMonth()) return false
-  const day = today.getDate()
-  const from = Number(m[2])
-  const to = m[3] ? Number(m[3]) : from
-  return day >= from && day <= to
-}
-
-// Tradition name without its parenthetical and trailing "Vrat", for matching
-// against free-text calendar entries ("Aja Ekadashi" -> "Ekadashi Vrat").
-function matchKey(name) {
-  return name.replace(/\s*\(.*?\)/g, '').replace(/\s+vrat$/i, '').trim().toLowerCase()
-}
 
 // A tradition tied to a weekday names it in its frequency: "Weekly (every
 // Monday)", "4 Mondays during Shravan month". That weekday is authoritative.
@@ -45,49 +36,78 @@ function weekdayOf(frequency) {
   return null
 }
 
-/** Set of tradition slugs active on `date`. */
-export function activeFastIdsOn(date) {
+// Traditions whose frequency alone fixes their days: every Monday, every
+// Thursday. Computed once — masterIndex does not change at run time.
+const WEEKLY = fastingData.masterIndex
+  .map((row) => ({
+    id: slugify(row.fastingTraditionName),
+    weekday: weekdayOf(row.frequency),
+    everyWeek: /every\s+(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i
+      .test(row.frequency || ''),
+  }))
+  .filter((r) => r.weekday !== null && r.everyWeek)
+
+/**
+ * Set of tradition slugs active on `date`.
+ *
+ * `overrides` is the family's own corrections, keyed `observanceId@date`. It
+ * is passed rather than read from storage so the serverless planner and the
+ * browser reach the same answer from the same argument.
+ */
+export function activeFastIdsOn(date, overrides) {
   const active = new Set()
-  const weekday = WEEKDAYS[date.getDay()]
 
-  for (const row of fastingData.masterIndex) {
-    const id = slugify(row.fastingTraditionName)
-    const boundDay = weekdayOf(row.frequency)
-
-    // A Monday fast cannot fall on a Thursday. Enforcing this first also stops
-    // multi-day calendar ranges from over-reporting: the row "Aug 3-24 | Sawan
-    // Somvar Vrat (4 Mondays)" would otherwise mark all 22 days, and its key
-    // "somvar" is a substring of the weekly "Somvar Vrat" name as well.
-    if (boundDay !== null && boundDay !== date.getDay()) continue
-
-    if (boundDay === date.getDay() &&
-      new RegExp(`every\\s+${weekday}`, 'i').test(row.frequency || '')) {
-      active.add(id)
-    }
-
-    const key = matchKey(row.fastingTraditionName)
-    if (key.length >= 4) {
-      for (const cal of fastingData.calendar2026) {
-        if (calendarRowMatches(cal.date, date) &&
-          String(cal.fastingTraditionsActive).toLowerCase().includes(key)) {
-          active.add(id)
-        }
-      }
-    }
+  for (const w of WEEKLY) {
+    if (w.weekday === date.getDay()) active.add(w.id)
   }
+
+  for (const o of observancesOn(date, overrides)) {
+    for (const id of o.fastIds) active.add(id)
+  }
+
   return active
 }
 
-/** Calendar rows describing `date`, for prompt context. */
-export function calendarNotesOn(date) {
-  return fastingData.calendar2026
-    .filter((c) => calendarRowMatches(c.date, date))
-    .map((c) => ({
-      date: c.date,
-      traditions: c.fastingTraditionsActive,
-      impact: c.dietaryImpactSummary,
-      appAction: c.appAction,
-    }))
+/** Observances on `date`, whatever their source. */
+export function observancesFor(date, overrides) {
+  return observancesOn(date, overrides)
+}
+
+/**
+ * Calendar context for `date`, for the meal-plan prompt.
+ *
+ * Every field carried here has a value. The engine now produces an observance
+ * on roughly half the days of the year against 25 curated rows before, and
+ * most of them — a Vinayaka Chaturthi, an Amavasya — have no dietary guidance
+ * attached. Emitting those as notes with empty impact and action fields would
+ * put a page of blanks in front of the model, so guidance appears only where
+ * it exists and the note itself still names the day.
+ */
+export function calendarNotesOn(date, overrides) {
+  return observancesOn(date, overrides).map((o) => {
+    const guidance = o.guidance || o.guidanceRow || null
+    const note = {
+      date: o.date,
+      observance: o.name,
+      religion: o.religion,
+      confidence: o.confidence,
+    }
+    if (o.tithi) note.tithi = `${o.tithi}, ${o.masa}`
+    if (o.through && o.through !== o.date) note.runsThrough = o.through
+    if (guidance) {
+      note.impact = guidance.dietaryImpactSummary
+      note.appAction = guidance.appAction
+    }
+    if (o.confidence === CONFIDENCE.PROVISIONAL) {
+      note.caution = 'Provisional — the Islamic month begins on a local sighting '
+        + 'of the crescent, so this may be a day either side.'
+    }
+    if (o.confidence === CONFIDENCE.UNSTABLE) {
+      note.caution = 'This date sits on a tithi boundary tight enough that it '
+        + 'could legitimately be the adjacent day; the family has been asked to confirm it.'
+    }
+    return note
+  })
 }
 
 /** Food rules for the named traditions, so the model gets the real constraints. */
@@ -108,16 +128,16 @@ appLogic: r.notesForAppLogic,
 /* ------------------------------------------------------------------ *
  * Month view                                                          *
  *                                                                     *
- * Lunar observances (Ekadashi, Navratri, Janmashtami) do not fall on
- * fixed Gregorian dates, so they are read from the calendar2026 rows
- * rather than computed. Weekly observances (Somvar, Shanivar) are not
- * in that calendar at all and come from masterIndex frequency instead.
- * activeFastIdsOn already merges both, so a month is just 28-31 calls.
+ * Every lunar date now comes from one index keyed by ISO date, so a
+ * day is a map lookup rather than a scan of calendar rows. Weekly
+ * observances (Somvar, Shanivar) still come from tradition frequency
+ * because no calendar lists them. activeFastIdsOn merges both, so a
+ * month is 28-31 calls and a year is twelve months.
  * ------------------------------------------------------------------ */
 
 /** The fasts this member observes that are active on `date`. */
-export function memberFastsOn(member, date) {
-  const active = activeFastIdsOn(date)
+export function memberFastsOn(member, date, overrides) {
+  const active = activeFastIdsOn(date, overrides)
   return (member.fasts || []).filter((id) => active.has(id))
 }
 
@@ -126,12 +146,12 @@ export function memberFastsOn(member, date) {
  *
  * @returns {{
  *   year, month, daysInMonth, firstWeekday,
- *   days: Array<{ day, date, isFasting, entries: Array<{memberId,memberName,fasts:string[]}>, labels: string[] }>,
+ *   days: Array<{ day, date, isFasting, entries, labels, observances, needsConfirmation }>,
  *   perMember: Array<{ memberId, name, dayCount, breakdown: Array<{label, count}> }>,
  *   totalFastingDays
  * }}
  */
-export function fastingMonth(family, year, month) {
+export function fastingMonth(family, year, month, overrides) {
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const firstWeekday = new Date(year, month, 1).getDay()
 
@@ -142,11 +162,8 @@ export function fastingMonth(family, year, month) {
   const days = []
   for (let day = 1; day <= daysInMonth; day += 1) {
     const date = new Date(year, month, day)
-    const active = activeFastIdsOn(date)
-
-    // Calendar rows name the specific occasion ("Aja Ekadashi") where the
-    // tradition list only knows the generic one ("Ekadashi Vrat").
-    const occasions = calendarNotesOn(date).map((c) => c.traditions)
+    const active = activeFastIdsOn(date, overrides)
+    const onThisDay = observancesOn(date, overrides)
 
     const entries = []
     const labelSet = new Set()
@@ -165,22 +182,28 @@ export function fastingMonth(family, year, month) {
       for (const label of labels) labelSet.add(label)
     }
 
-    // Prefer the calendar's specific wording when it refers to a fast someone
-    // here actually observes.
-    const labels = [...labelSet]
-    for (const occ of occasions) {
-      if (labels.some((l) => occ.toLowerCase().includes(l.split(' ')[0].toLowerCase()))) {
-        labels.unshift(occ)
-        break
-      }
-    }
+    // The observance knows the occasion by name — "Aja Ekadashi", not
+    // "Ekadashi Vrat" — so where one of today's observances maps to a fast
+    // somebody here keeps, its name leads the label list.
+    const observed = onThisDay.filter((o) =>
+      o.fastIds.some((id) => entries.some((e) => active.has(id) &&
+        family.some((m) => m.id === e.memberId && (m.fasts || []).includes(id)))))
+    const labels = [...new Set([...observed.map((o) => o.name), ...labelSet])]
 
     days.push({
       day,
       date,
       isFasting: entries.length > 0,
       entries,
-      labels: [...new Set(labels)],
+      labels,
+      observances: onThisDay.map((o) => ({
+        id: o.id,
+        name: o.name,
+        confidence: o.confidence,
+        source: o.source,
+      })),
+      // Only a date somebody here actually observes is worth interrupting for.
+      needsConfirmation: observed.some((o) => o.confidence === CONFIDENCE.UNSTABLE),
     })
   }
 
@@ -208,21 +231,16 @@ export function fastingMonth(family, year, month) {
  * A whole Gregorian year, as twelve month views.
  *
  * Deliberately a loop over fastingMonth rather than its own day loop. Every
- * weekday-bound rule lives inside activeFastIdsOn — the guard that stops
- * "Aug 3-24 | Sawan Somvar Vrat (4 Mondays)" marking all 22 days instead of
- * the four Mondays it means. Calling the month builder twelve times inherits
- * that by construction; a second day loop here would be a second place for
- * it to go wrong.
+ * weekday-bound rule lives inside activeFastIdsOn; calling the month builder
+ * twelve times inherits that by construction, where a second day loop here
+ * would be a second place for it to go wrong.
  *
- * Costs about 45ms for the year, nearly all of it in the 365 activeFastIdsOn
- * calls and almost independent of family size. Memoise at the call site.
- *
- * @returns {{ year, months, totalFastingDays, perMember }}
+ * @returns {{ year, months, totalFastingDays, perMember, confirmations }}
  */
-export function fastingYear(family, year) {
+export function fastingYear(family, year, overrides) {
   const months = []
   for (let month = 0; month < 12; month += 1) {
-    months.push(fastingMonth(family, year, month))
+    months.push(fastingMonth(family, year, month, overrides))
   }
 
   const perMember = new Map(
@@ -240,9 +258,16 @@ export function fastingYear(family, year) {
     }
   }
 
+  // The handful of dates that move when the ephemeris is perturbed, narrowed
+  // to the ones this family keeps. A date nobody observes needs no answer.
+  const observedIds = new Set(family.flatMap((m) => m.fasts || []))
+  const confirmations = datesNeedingConfirmation(year, overrides)
+    .filter((o) => o.fastIds.some((id) => observedIds.has(id)))
+
   return {
     year,
     months,
+    confirmations,
     totalFastingDays: months.reduce((n, mo) => n + mo.totalFastingDays, 0),
     perMember: [...perMember.values()]
       .map((r) => ({

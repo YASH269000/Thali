@@ -6,7 +6,11 @@ is computed at run time; nothing here is typed in by hand.
 Location: **Delhi** (28.6139°N, 77.209°E, UTC+5.5). Every Hindu date in this report is local to that place and would legitimately
 differ elsewhere in India.
 
-**The engine is wired to nothing.** No file under `src/` imports `panchanga/`.
+**The engine is wired in.** `src/lib/observances.js` imports it, and it is
+now the only source of every tithi-derived date the app shows. What it
+cannot compute — the Jain sect calendars and the Sikh Gurpurabs — stays in
+a short curated table, and the Islamic dates are arithmetic but marked
+provisional. `test/panchanga-source-of-truth.test.js` holds that shape.
 
 ## 1. Measured accuracy
 
@@ -55,7 +59,7 @@ shifted by ±15 minutes — far larger than the measured ephemeris error
 and the refraction uncertainty combined. If the answer does not move under
 that, the date is not in question however close the boundary looks.
 
-**5 of 234 observances across 2026–2027 move under that shift.**
+**5 of 328 observances across 2026–2027 move under that shift.**
 These are the dates that would carry a confirmation prompt:
 
 | date | observance | margin | why it is delicate |
@@ -71,6 +75,7 @@ margin-only report gets wrong:
 
 | date | observance | margin | verdict |
 | --- | --- | --- | --- |
+| 2026-02-24 | Masik Durgashtami | 11 min | **stable** — both sides of the boundary give the same day |
 | 2026-05-05 | Sankashti Chaturthi | 11 min | **stable** — both sides of the boundary give the same day |
 | 2026-05-27 | Ekadashi Vrat (Padmini) | 13 min | **stable** — both sides of the boundary give the same day |
 | 2026-06-29 | Purnima | 1 min | **stable** — both sides of the boundary give the same day |
@@ -78,9 +83,11 @@ margin-only report gets wrong:
 | 2026-11-27 | Sankashti Chaturthi | 13 min | **stable** — both sides of the boundary give the same day |
 | 2026-12-23 | Purnima | 12 min | moves — listed above |
 | 2027-04-24 | Sankashti Chaturthi | 4 min | **stable** — both sides of the boundary give the same day |
+| 2027-06-11 | Masik Durgashtami | 8 min | **stable** — both sides of the boundary give the same day |
+| 2027-10-07 | Masik Durgashtami | 10 min | **stable** — both sides of the boundary give the same day |
 
 Note what this corrects. Of the seven observances inside the fifteen-minute
-margin, 5 are stable; and 3 dates that the margin never flagged do move.
+margin, 8 are stable; and 3 dates that the margin never flagged do move.
 The margin was the wrong signal on its own — for anything resolved at
 sunset or moonrise it measures a distance to sunrise, which is not the
 quantity deciding the outcome. Stability is measured against the rule that
@@ -384,32 +391,42 @@ Meeus worked examples, reproduced by the ephemeris:
 | 47.a Moon latitude | −3.229126° | −3.229126° |
 | 25.a Sun true longitude, 1992-10-13 0h TD | 199.90987° | 199.90987° |
 
-## 5. Disagreements with the app's own 2026 calendar
+## 5. The app's 2026 calendar, before and after
 
-`src/data/fastingTraditions.json` carries 25 hand-entered 2026 rows. The
-engine is wired to none of it and this changes nothing there.
+`src/data/fastingTraditions.json` used to carry 25 hand-entered rows for
+2026 and they were the app's only lunar dates. Ekadashi appeared twice in
+a year that has twenty-four of it, and the rows below were on the wrong
+day. Both halves are now computed: the "app now" column is read from
+`src/data/observances.json`, which this engine generates.
 
 Each disagreement is settled by computation rather than assertion: the
-last column says what tithi actually runs at the deciding moment on the
-date the app gives. Where that is not the tithi the observance requires,
-the app row is refuted by calculation, not by opinion.
+last column says what tithi actually ran at the deciding moment on the
+date the app used to give. Where that is not the tithi the observance
+requires, the old row is refuted by calculation, not by opinion.
 
-| observance | app data | engine | what the app's date actually is |
+| observance | app before | app now | what the old date actually was |
 | --- | --- | --- | --- |
-| Makar Sankranti | 2026-01-14 | 2026-01-14 | agrees |
+| Makar Sankranti | 2026-01-14 | 2026-01-14 | unchanged — it was already right |
 | Maha Shivaratri | 2026-02-17 | 2026-02-15 | **shukla Pratipada**, not krishna Chaturdashi |
 | Janmashtami | 2026-08-14 | 2026-09-04 | **shukla Tritiya**, not krishna Ashtami |
 | Ganesh Chaturthi | 2026-08-27 | 2026-09-14 | **shukla Purnima**, not shukla Chaturthi |
 | Karwa Chauth | 2026-10-25 | 2026-10-29 | **shukla Chaturdashi**, not krishna Chaturthi |
-| Aja Ekadashi | 2026-09-07 | 2026-09-07 | agrees |
+| Aja Ekadashi | 2026-09-07 | 2026-09-07 | unchanged — it was already right |
 | Mokshada Ekadashi | 2026-12-22 | 2026-12-20 | **shukla Trayodashi**, not shukla Ekadashi |
 
 Read the last column carefully. Where it names a different tithi entirely,
-the app date cannot be that observance under any school or any location in
-India — a tithi is the same everywhere at a given instant, and only the
-sunrise it is measured against is local. Where it names the RIGHT tithi,
-the disagreement is about which day the tithi is assigned to, which is a
-legitimate difference of rule and not an error.
+the old date could not have been that observance under any school or any
+location in India — a tithi is the same everywhere at a given instant, and
+only the sunrise it is measured against is local. Where it names the RIGHT
+tithi, the disagreement was about which day the tithi is assigned to, which
+is a legitimate difference of rule and not an error.
+
+These five were the ones the report had already checked. Replacing the
+table wholesale moved more than five: the Adhik Maas of 2026 shifted every
+lunar date from late May onward, and the hand-entered rows had been
+compiled without it. Diwali moved from 29 October to 8 November, Sharad
+Navratri from 2 October to 11–20 October, Buddha Purnima from 12 May to
+1 May. The full list is in the commit that applied it.
 
 ## 6. Islamic dates — provisional by nature
 
@@ -515,95 +532,142 @@ every later name one month early.
 | Jain Chaturdashi | 2026-01-02 | sunrise | shukla Chaturdashi | 531 min |
 | Purnima | 2026-01-03 | sunrise | shukla Purnima | 499 min |
 | Sankashti Chaturthi | 2026-01-06 | moonrise | krishna Chaturthi | 21 min |
+| Kalashtami | 2026-01-11 | sunrise | krishna Ashtami | 70 min |
 | Pradosh Vrat | 2026-01-16 | pradosh | krishna Trayodashi | 532 min |
 | Jain Chaturdashi | 2026-01-17 | sunrise | krishna Chaturdashi | 430 min |
 | Amavasya | 2026-01-18 | sunrise | krishna Amavasya | 352 min |
+| Vinayaka Chaturthi | 2026-01-22 | madhyahna | shukla Chaturthi | 266 min |
+| Masik Durgashtami | 2026-01-26 | sunrise | shukla Ashtami | 481 min |
 | Pradosh Vrat | 2026-01-30 | pradosh | shukla Trayodashi | 77 min |
 | Jain Chaturdashi | 2026-01-31 | sunrise | shukla Chaturdashi | 76 min |
 | Purnima | 2026-02-01 | sunrise | shukla Purnima | 76 min |
 | Sankashti Chaturthi | 2026-02-05 | moonrise | krishna Chaturthi | 403 min |
+| Kalashtami | 2026-02-09 (V 2026-02-10) | sunrise | krishna Ashtami | 25 min |
 | Pradosh Vrat | 2026-02-14 | pradosh | krishna Trayodashi | 542 min |
 | Maha Shivaratri | 2026-02-15 | nishita | krishna Chaturdashi | 606 min |
 | Jain Chaturdashi | 2026-02-16 | sunrise | krishna Chaturdashi | 606 min |
 | Amavasya | 2026-02-17 | sunrise | krishna Amavasya | 634 min |
+| Vinayaka Chaturthi | 2026-02-21 | madhyahna | shukla Chaturthi | 367 min |
+| Masik Durgashtami | 2026-02-24 | sunrise | shukla Ashtami | 11 min |
 | Pradosh Vrat | 2026-03-01 | pradosh | shukla Trayodashi | 602 min |
 | Jain Chaturdashi | 2026-03-02 | sunrise | shukla Chaturdashi | 671 min |
 | Purnima | 2026-03-03 | sunrise | shukla Purnima | 624 min |
 | Sankashti Chaturthi | 2026-03-06 | moonrise | krishna Chaturthi | 673 min |
+| Kalashtami | 2026-03-11 | sunrise | krishna Ashtami | 134 min |
 | Pradosh Vrat | 2026-03-16 | pradosh | krishna Trayodashi | 176 min |
 | Jain Chaturdashi | 2026-03-18 | sunrise | krishna Chaturdashi | 119 min |
 | Amavasya | 2026-03-19 | sunrise | krishna Amavasya | 28 min |
+| Chaitra Navratri | 2026-03-19 | sunrise | shukla Pratipada | 28 min |
+| Vinayaka Chaturthi | 2026-03-22 | madhyahna | shukla Chaturthi | 386 min |
+| Masik Durgashtami | 2026-03-26 | sunrise | shukla Ashtami | 331 min |
+| Ram Navami | 2026-03-27 | sunrise | shukla Navami | 231 min |
 | Pradosh Vrat | 2026-03-30 | pradosh | shukla Trayodashi | 44 min |
+| Mahavir Jayanti | 2026-03-31 | sunrise | shukla Trayodashi | 44 min |
 | Jain Chaturdashi | 2026-04-01 | sunrise | shukla Chaturdashi | 44 min |
 | Purnima | 2026-04-02 | sunrise | shukla Purnima | 56 min |
 | Sankashti Chaturthi | 2026-04-05 | moonrise | krishna Chaturthi | 354 min |
+| Kalashtami | 2026-04-10 | sunrise | krishna Ashtami | 403 min |
 | Pradosh Vrat | 2026-04-15 | pradosh | krishna Trayodashi | 342 min |
 | Jain Chaturdashi | 2026-04-16 | sunrise | krishna Chaturdashi | 442 min |
 | Amavasya | 2026-04-17 | sunrise | krishna Amavasya | 581 min |
+| Vinayaka Chaturthi | 2026-04-20 | madhyahna | shukla Chaturthi | 94 min |
+| Masik Durgashtami | 2026-04-24 | sunrise | shukla Ashtami | 537 min |
 | Pradosh Vrat | 2026-04-28 | pradosh | shukla Trayodashi | 589 min |
 | Jain Chaturdashi | 2026-04-30 | sunrise | shukla Chaturdashi | 507 min |
 | Purnima | 2026-05-01 | sunrise | shukla Purnima | 406 min |
+| Buddha Purnima / Vesak | 2026-05-01 | sunrise | shukla Purnima | 406 min |
 | Sankashti Chaturthi | 2026-05-05 | moonrise | krishna Chaturthi | 11 min |
+| Kalashtami | 2026-05-10 | sunrise | krishna Ashtami | 510 min |
 | Pradosh Vrat | 2026-05-14 | pradosh | krishna Trayodashi | 182 min |
 | Jain Chaturdashi | 2026-05-15 | sunrise | krishna Chaturdashi | 18 min |
 | Amavasya | 2026-05-16 | sunrise | krishna Amavasya | 18 min |
+| Vinayaka Chaturthi | 2026-05-20 | madhyahna | shukla Chaturthi | 340 min |
+| Masik Durgashtami | 2026-05-23 | sunrise | shukla Ashtami | 21 min |
 | Pradosh Vrat | 2026-05-28 | pradosh | shukla Trayodashi | 153 min |
 | Jain Chaturdashi | 2026-05-30 | sunrise | shukla Chaturdashi | 267 min |
 | Purnima | 2026-05-31 | sunrise | shukla Purnima | 395 min |
 | Sankashti Chaturthi | 2026-06-03 | moonrise | krishna Chaturthi | 351 min |
+| Kalashtami | 2026-06-08 | sunrise | krishna Ashtami | 117 min |
 | Pradosh Vrat | 2026-06-12 | pradosh | krishna Trayodashi | 585 min |
 | Jain Chaturdashi | 2026-06-14 | sunrise | krishna Chaturdashi | 418 min |
 | Amavasya | 2026-06-15 | sunrise | krishna Amavasya | 182 min |
+| Vinayaka Chaturthi | 2026-06-18 | madhyahna | shukla Chaturthi | 464 min |
+| Masik Durgashtami | 2026-06-22 | sunrise | shukla Ashtami | 598 min |
 | Pradosh Vrat | 2026-06-27 | pradosh | shukla Trayodashi | 281 min |
 | Jain Chaturdashi | 2026-06-28 | sunrise | shukla Chaturdashi | 139 min |
 | Purnima | 2026-06-29 (V 2026-06-30) | sunrise | shukla Purnima | 1 min |
 | Sankashti Chaturthi | 2026-07-03 | moonrise | krishna Chaturthi | 354 min |
+| Kalashtami | 2026-07-08 | sunrise | krishna Ashtami | 413 min |
 | Pradosh Vrat | 2026-07-12 | pradosh | krishna Trayodashi | 207 min |
 | Jain Chaturdashi | 2026-07-13 | sunrise | krishna Chaturdashi | 421 min |
 | Amavasya | 2026-07-14 | sunrise | krishna Amavasya | 581 min |
+| Vinayaka Chaturthi | 2026-07-17 | madhyahna | shukla Chaturthi | 51 min |
+| Masik Durgashtami | 2026-07-21 | sunrise | shukla Ashtami | 20 min |
 | Pradosh Vrat | 2026-07-26 | pradosh | shukla Trayodashi | 499 min |
 | Jain Chaturdashi | 2026-07-28 | sunrise | shukla Chaturdashi | 636 min |
 | Purnima | 2026-07-29 | sunrise | shukla Purnima | 575 min |
 | Sankashti Chaturthi | 2026-08-02 | moonrise | krishna Chaturthi | 388 min |
+| Kalashtami | 2026-08-06 | sunrise | krishna Ashtami | 542 min |
 | Pradosh Vrat | 2026-08-10 | pradosh | krishna Trayodashi | 53 min |
 | Jain Chaturdashi | 2026-08-11 | sunrise | krishna Chaturdashi | 53 min |
 | Amavasya | 2026-08-12 | sunrise | krishna Amavasya | 235 min |
 | Hariyali Teej | 2026-08-15 | sunrise | shukla Tritiya | 663 min |
+| Vinayaka Chaturthi | 2026-08-16 | madhyahna | shukla Chaturthi | 662 min |
+| Masik Durgashtami | 2026-08-20 | sunrise | shukla Ashtami | 515 min |
 | Pradosh Vrat | 2026-08-25 | pradosh | shukla Trayodashi | 26 min |
 | Jain Chaturdashi | 2026-08-27 | sunrise | shukla Chaturdashi | 123 min |
 | Purnima | 2026-08-28 | sunrise | shukla Purnima | 193 min |
 | Sankashti Chaturthi | 2026-08-31 | moonrise | krishna Chaturthi | 103 min |
 | Krishna Janmashtami | 2026-09-04 | nishita | krishna Ashtami | 215 min |
+| Kalashtami | 2026-09-04 | sunrise | krishna Ashtami | 215 min |
 | Pradosh Vrat | 2026-09-08 | pradosh | krishna Trayodashi | 388 min |
 | Jain Chaturdashi | 2026-09-10 | sunrise | krishna Chaturdashi | 270 min |
 | Amavasya | 2026-09-11 | sunrise | krishna Amavasya | 173 min |
 | Ganesh Chaturthi | 2026-09-14 | madhyahna | shukla Chaturthi | 62 min |
+| Vinayaka Chaturthi | 2026-09-14 | madhyahna | shukla Chaturthi | 62 min |
+| Hartalika Teej | 2026-09-14 | sunrise | shukla Tritiya | 62 min |
+| Masik Durgashtami | 2026-09-19 | sunrise | shukla Ashtami | 414 min |
 | Pradosh Vrat | 2026-09-24 | pradosh | shukla Trayodashi | 412 min |
 | Jain Chaturdashi | 2026-09-25 | sunrise | shukla Chaturdashi | 412 min |
 | Purnima | 2026-09-26 | sunrise | shukla Purnima | 424 min |
 | Sankashti Chaturthi | 2026-09-29 | moonrise | krishna Chaturthi | 522 min |
+| Kalashtami | 2026-10-03 | sunrise | krishna Ashtami | 23 min |
 | Pradosh Vrat | 2026-10-08 | pradosh | krishna Trayodashi | 421 min |
 | Jain Chaturdashi | 2026-10-09 | sunrise | krishna Chaturdashi | 482 min |
 | Amavasya | 2026-10-10 | sunrise | krishna Amavasya | 523 min |
+| Sharad Navratri | 2026-10-11 | sunrise | shukla Pratipada | 529 min |
+| Vinayaka Chaturthi | 2026-10-14 | madhyahna | shukla Chaturthi | 308 min |
+| Masik Durgashtami | 2026-10-19 | sunrise | shukla Ashtami | 125 min |
+| Dussehra / Vijayadashami | 2026-10-21 | sunrise | shukla Dashami | 386 min |
 | Pradosh Vrat | 2026-10-23 | pradosh | shukla Trayodashi | 430 min |
 | Jain Chaturdashi | 2026-10-25 | sunrise | shukla Chaturdashi | 328 min |
 | Purnima | 2026-10-26 | sunrise | shukla Purnima | 193 min |
 | Sankashti Chaturthi | 2026-10-29 | moonrise | krishna Chaturthi | 324 min |
 | Karwa Chauth | 2026-10-29 | moonrise | krishna Chaturthi | 324 min |
+| Kalashtami | 2026-11-02 | sunrise | krishna Ashtami | 398 min |
+| Ahoi Ashtami | 2026-11-02 | sunrise | krishna Ashtami | 398 min |
 | Pradosh Vrat | 2026-11-06 | pradosh | krishna Trayodashi | 235 min |
+| Diwali (Lakshmi Puja) | 2026-11-08 | pradosh | krishna Amavasya | 290 min |
 | Jain Chaturdashi | 2026-11-08 | sunrise | krishna Chaturdashi | 251 min |
 | Amavasya | 2026-11-09 | sunrise | krishna Amavasya | 290 min |
+| Vinayaka Chaturthi | 2026-11-13 | madhyahna | shukla Chaturthi | 600 min |
+| Chhath Puja | 2026-11-15 | sunrise | shukla Shashthi | 283 min |
+| Masik Durgashtami | 2026-11-17 | sunrise | shukla Ashtami | 41 min |
 | Pradosh Vrat | 2026-11-22 | pradosh | shukla Trayodashi | 112 min |
 | Jain Chaturdashi | 2026-11-23 | sunrise | shukla Chaturdashi | 252 min |
 | Purnima | 2026-11-24 | sunrise | shukla Purnima | 428 min |
 | Sankashti Chaturthi | 2026-11-27 | moonrise | krishna Chaturthi | 13 min |
+| Kalashtami | 2026-12-01 | sunrise | krishna Ashtami | 404 min |
 | Pradosh Vrat | 2026-12-06 | pradosh | krishna Trayodashi | 278 min |
 | Jain Chaturdashi | 2026-12-07 | sunrise | krishna Chaturdashi | 168 min |
 | Amavasya | 2026-12-08 | sunrise | krishna Amavasya | 40 min |
+| Vinayaka Chaturthi | 2026-12-13 | madhyahna | shukla Chaturthi | 423 min |
+| Masik Durgashtami | 2026-12-17 | sunrise | shukla Ashtami | 461 min |
 | Pradosh Vrat | 2026-12-21 | pradosh | shukla Trayodashi | 434 min |
 | Purnima | 2026-12-23 | sunrise | shukla Purnima | 12 min |
 | Jain Chaturdashi | 2026-12-23 | sunrise | shukla Chaturdashi | 217 min |
 | Sankashti Chaturthi | 2026-12-26 | moonrise | krishna Chaturthi | 602 min |
+| Kalashtami | 2026-12-31 | sunrise | krishna Ashtami | 320 min |
 
 **2027**
 
@@ -612,95 +676,142 @@ every later name one month early.
 | Pradosh Vrat | 2027-01-05 | pradosh | krishna Trayodashi | 634 min |
 | Jain Chaturdashi | 2027-01-06 | sunrise | krishna Chaturdashi | 480 min |
 | Amavasya | 2027-01-07 | sunrise | krishna Amavasya | 321 min |
+| Vinayaka Chaturthi | 2027-01-11 | madhyahna | shukla Chaturthi | 134 min |
+| Masik Durgashtami | 2027-01-16 | sunrise | shukla Ashtami | 389 min |
 | Pradosh Vrat | 2027-01-20 | pradosh | shukla Trayodashi | 152 min |
 | Jain Chaturdashi | 2027-01-21 | sunrise | shukla Chaturdashi | 362 min |
 | Purnima | 2027-01-22 | sunrise | shukla Purnima | 583 min |
 | Sankashti Chaturthi | 2027-01-25 | moonrise | krishna Chaturthi | 58 min |
+| Kalashtami | 2027-01-29 | sunrise | krishna Ashtami | 132 min |
 | Pradosh Vrat | 2027-02-03 | pradosh | krishna Trayodashi | 403 min |
 | Jain Chaturdashi | 2027-02-05 | sunrise | krishna Chaturdashi | 564 min |
 | Amavasya | 2027-02-06 | sunrise | krishna Amavasya | 580 min |
+| Vinayaka Chaturthi | 2027-02-10 | madhyahna | shukla Chaturthi | 238 min |
+| Masik Durgashtami | 2027-02-14 | sunrise | shukla Ashtami | 294 min |
 | Pradosh Vrat | 2027-02-18 | pradosh | shukla Trayodashi | 258 min |
 | Purnima | 2027-02-20 | sunrise | shukla Purnima | 65 min |
 | Jain Chaturdashi | 2027-02-20 | sunrise | shukla Chaturdashi | 65 min |
 | Sankashti Chaturthi | 2027-02-24 | moonrise | krishna Chaturthi | 542 min |
+| Kalashtami | 2027-02-28 | sunrise | krishna Ashtami | 420 min |
 | Pradosh Vrat | 2027-03-05 | pradosh | krishna Trayodashi | 192 min |
 | Maha Shivaratri | 2027-03-06 | nishita | krishna Chaturdashi | 323 min |
 | Jain Chaturdashi | 2027-03-07 | sunrise | krishna Chaturdashi | 323 min |
 | Amavasya | 2027-03-08 | sunrise | krishna Amavasya | 427 min |
+| Vinayaka Chaturthi | 2027-03-12 | madhyahna | shukla Chaturthi | 503 min |
+| Masik Durgashtami | 2027-03-16 | sunrise | shukla Ashtami | 144 min |
 | Pradosh Vrat | 2027-03-20 | pradosh | shukla Trayodashi | 428 min |
 | Jain Chaturdashi | 2027-03-21 | sunrise | shukla Chaturdashi | 579 min |
 | Purnima | 2027-03-22 | sunrise | shukla Purnima | 590 min |
 | Sankashti Chaturthi | 2027-03-25 | moonrise | krishna Chaturthi | 378 min |
+| Kalashtami | 2027-03-30 | sunrise | krishna Ashtami | 632 min |
 | Pradosh Vrat | 2027-04-04 | pradosh | krishna Trayodashi | 43 min |
 | Jain Chaturdashi | 2027-04-05 | sunrise | krishna Chaturdashi | 25 min |
 | Amavasya | 2027-04-06 | sunrise | krishna Amavasya | 25 min |
+| Chaitra Navratri | 2027-04-07 | sunrise | shukla Pratipada | 44 min |
+| Vinayaka Chaturthi | 2027-04-10 | madhyahna | shukla Chaturthi | 269 min |
+| Masik Durgashtami | 2027-04-14 | sunrise | shukla Ashtami | 567 min |
+| Ram Navami | 2027-04-15 | sunrise | shukla Navami | 445 min |
 | Pradosh Vrat | 2027-04-18 | pradosh | shukla Trayodashi | 17 min |
+| Mahavir Jayanti | 2027-04-19 | sunrise | shukla Trayodashi | 17 min |
 | Jain Chaturdashi | 2027-04-19 | sunrise | shukla Chaturdashi | 17 min |
 | Purnima | 2027-04-20 | sunrise | shukla Purnima | 59 min |
 | Sankashti Chaturthi | 2027-04-24 | moonrise | krishna Chaturthi | 4 min |
+| Kalashtami | 2027-04-29 | sunrise | krishna Ashtami | 408 min |
 | Pradosh Vrat | 2027-05-04 | pradosh | krishna Trayodashi | 574 min |
 | Jain Chaturdashi | 2027-05-05 | sunrise | krishna Chaturdashi | 606 min |
 | Amavasya | 2027-05-06 | sunrise | krishna Amavasya | 652 min |
+| Vinayaka Chaturthi | 2027-05-09 | madhyahna | shukla Chaturthi | 49 min |
+| Masik Durgashtami | 2027-05-13 | sunrise | shukla Ashtami | 379 min |
 | Pradosh Vrat | 2027-05-17 | pradosh | shukla Trayodashi | 635 min |
 | Jain Chaturdashi | 2027-05-19 | sunrise | shukla Chaturdashi | 635 min |
 | Purnima | 2027-05-20 | sunrise | shukla Purnima | 635 min |
+| Buddha Purnima / Vesak | 2027-05-20 | sunrise | shukla Purnima | 635 min |
 | Sankashti Chaturthi | 2027-05-23 | moonrise | krishna Chaturthi | 386 min |
+| Kalashtami | 2027-05-29 | sunrise | krishna Ashtami | 62 min |
 | Pradosh Vrat | 2027-06-02 | pradosh | krishna Trayodashi | 72 min |
 | Jain Chaturdashi | 2027-06-03 | sunrise | krishna Chaturdashi | 72 min |
 | Amavasya | 2027-06-04 | sunrise | krishna Amavasya | 77 min |
+| Vinayaka Chaturthi | 2027-06-08 | madhyahna | shukla Chaturthi | 419 min |
+| Masik Durgashtami | 2027-06-11 | sunrise | shukla Ashtami | 8 min |
 | Pradosh Vrat | 2027-06-16 | pradosh | shukla Trayodashi | 122 min |
 | Jain Chaturdashi | 2027-06-17 | sunrise | shukla Chaturdashi | 48 min |
 | Purnima | 2027-06-18 (V 2027-06-19) | sunrise | shukla Purnima | 48 min |
 | Sankashti Chaturthi | 2027-06-22 | moonrise | krishna Chaturthi | 464 min |
+| Kalashtami | 2027-06-27 | sunrise | krishna Ashtami | 400 min |
 | Pradosh Vrat | 2027-07-01 | pradosh | krishna Trayodashi | 597 min |
 | Jain Chaturdashi | 2027-07-03 | sunrise | krishna Chaturdashi | 399 min |
 | Amavasya | 2027-07-04 | sunrise | krishna Amavasya | 184 min |
+| Vinayaka Chaturthi | 2027-07-07 | madhyahna | shukla Chaturthi | 460 min |
+| Masik Durgashtami | 2027-07-11 | sunrise | shukla Ashtami | 379 min |
 | Pradosh Vrat | 2027-07-15 | pradosh | shukla Trayodashi | 548 min |
 | Jain Chaturdashi | 2027-07-17 | sunrise | shukla Chaturdashi | 646 min |
 | Purnima | 2027-07-18 | sunrise | shukla Purnima | 500 min |
 | Sankashti Chaturthi | 2027-07-22 | moonrise | krishna Chaturthi | 49 min |
+| Kalashtami | 2027-07-27 | sunrise | krishna Ashtami | 274 min |
 | Pradosh Vrat | 2027-07-31 | pradosh | krishna Trayodashi | 203 min |
 | Jain Chaturdashi | 2027-08-01 | sunrise | krishna Chaturdashi | 404 min |
 | Amavasya | 2027-08-02 | sunrise | krishna Amavasya | 592 min |
 | Hariyali Teej | 2027-08-04 | sunrise | shukla Tritiya | 35 min |
+| Vinayaka Chaturthi | 2027-08-05 | madhyahna | shukla Chaturthi | 35 min |
+| Masik Durgashtami | 2027-08-09 | sunrise | shukla Ashtami | 433 min |
 | Pradosh Vrat | 2027-08-14 | pradosh | shukla Trayodashi | 28 min |
 | Jain Chaturdashi | 2027-08-16 | sunrise | shukla Chaturdashi | 124 min |
 | Purnima | 2027-08-17 | sunrise | shukla Purnima | 279 min |
 | Sankashti Chaturthi | 2027-08-20 | moonrise | krishna Chaturthi | 589 min |
 | Krishna Janmashtami | 2027-08-24 | nishita | krishna Ashtami | 570 min |
+| Kalashtami | 2027-08-25 | sunrise | krishna Ashtami | 570 min |
 | Pradosh Vrat | 2027-08-29 | pradosh | krishna Trayodashi | 15 min |
 | Jain Chaturdashi | 2027-08-30 | sunrise | krishna Chaturdashi | 15 min |
 | Amavasya | 2027-08-31 | sunrise | krishna Amavasya | 197 min |
+| Hartalika Teej | 2027-09-03 | sunrise | shukla Tritiya | 500 min |
 | Ganesh Chaturthi | 2027-09-04 | madhyahna | shukla Chaturthi | 386 min |
+| Vinayaka Chaturthi | 2027-09-04 | madhyahna | shukla Chaturthi | 386 min |
+| Masik Durgashtami | 2027-09-08 | sunrise | shukla Ashtami | 327 min |
 | Pradosh Vrat | 2027-09-13 | pradosh | shukla Trayodashi | 325 min |
 | Jain Chaturdashi | 2027-09-14 | sunrise | shukla Chaturdashi | 197 min |
 | Purnima | 2027-09-15 | sunrise | shukla Purnima | 93 min |
 | Sankashti Chaturthi | 2027-09-19 | moonrise | krishna Chaturthi | 61 min |
+| Kalashtami | 2027-09-23 | sunrise | krishna Ashtami | 92 min |
 | Pradosh Vrat | 2027-09-27 | pradosh | krishna Trayodashi | 463 min |
 | Jain Chaturdashi | 2027-09-29 | sunrise | krishna Chaturdashi | 283 min |
 | Amavasya | 2027-09-30 | sunrise | krishna Amavasya | 113 min |
+| Sharad Navratri | 2027-09-30 | sunrise | shukla Pratipada | 38 min |
+| Vinayaka Chaturthi | 2027-10-03 | madhyahna | shukla Chaturthi | 246 min |
+| Masik Durgashtami | 2027-10-07 (V 2027-10-08) | sunrise | shukla Ashtami | 10 min |
+| Dussehra / Vijayadashami | 2027-10-10 | sunrise | shukla Dashami | 164 min |
 | Pradosh Vrat | 2027-10-12 | pradosh | shukla Trayodashi | 595 min |
 | Jain Chaturdashi | 2027-10-14 | sunrise | shukla Chaturdashi | 689 min |
 | Purnima | 2027-10-15 | sunrise | shukla Purnima | 665 min |
 | Sankashti Chaturthi | 2027-10-18 | moonrise | krishna Chaturthi | 619 min |
 | Karwa Chauth | 2027-10-18 | moonrise | krishna Chaturthi | 619 min |
+| Kalashtami | 2027-10-23 | sunrise | krishna Ashtami | 213 min |
+| Ahoi Ashtami | 2027-10-23 | sunrise | krishna Ashtami | 213 min |
 | Pradosh Vrat | 2027-10-27 | pradosh | krishna Trayodashi | 325 min |
 | Jain Chaturdashi | 2027-10-28 | sunrise | krishna Chaturdashi | 459 min |
 | Amavasya | 2027-10-29 | sunrise | krishna Amavasya | 582 min |
+| Diwali (Lakshmi Puja) | 2027-10-29 | pradosh | krishna Amavasya | 582 min |
+| Vinayaka Chaturthi | 2027-11-02 | madhyahna | shukla Chaturthi | 643 min |
+| Chhath Puja | 2027-11-04 | sunrise | shukla Shashthi | 537 min |
+| Masik Durgashtami | 2027-11-06 | sunrise | shukla Ashtami | 227 min |
 | Pradosh Vrat | 2027-11-11 | pradosh | shukla Trayodashi | 208 min |
 | Jain Chaturdashi | 2027-11-13 | sunrise | shukla Chaturdashi | 194 min |
 | Purnima | 2027-11-14 | sunrise | shukla Purnima | 134 min |
 | Sankashti Chaturthi | 2027-11-17 | moonrise | krishna Chaturthi | 182 min |
+| Kalashtami | 2027-11-21 | sunrise | krishna Ashtami | 632 min |
 | Pradosh Vrat | 2027-11-25 | pradosh | krishna Trayodashi | 177 min |
 | Jain Chaturdashi | 2027-11-27 | sunrise | krishna Chaturdashi | 135 min |
 | Amavasya | 2027-11-28 | sunrise | krishna Amavasya | 121 min |
+| Vinayaka Chaturthi | 2027-12-01 | madhyahna | shukla Chaturthi | 284 min |
+| Masik Durgashtami | 2027-12-06 | sunrise | shukla Ashtami | 420 min |
 | Pradosh Vrat | 2027-12-11 | pradosh | shukla Trayodashi | 249 min |
 | Jain Chaturdashi | 2027-12-12 | sunrise | shukla Chaturdashi | 321 min |
 | Purnima | 2027-12-13 | sunrise | shukla Purnima | 429 min |
 | Sankashti Chaturthi | 2027-12-16 | moonrise | krishna Chaturthi | 208 min |
+| Kalashtami | 2027-12-20 | sunrise | krishna Ashtami | 214 min |
 | Pradosh Vrat | 2027-12-25 | pradosh | krishna Trayodashi | 459 min |
 | Jain Chaturdashi | 2027-12-26 | sunrise | krishna Chaturdashi | 409 min |
 | Amavasya | 2027-12-27 | sunrise | krishna Amavasya | 330 min |
+| Vinayaka Chaturthi | 2027-12-31 | madhyahna | shukla Chaturthi | 59 min |
 
 ### 7d. Solar ingresses
 

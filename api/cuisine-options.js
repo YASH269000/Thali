@@ -47,6 +47,30 @@ function mealDescription(requiredFlags, allergens = []) {
   return `${trimmed.join(', ')} meal`
 }
 
+/**
+ * The family's calendar corrections, as sent by the browser.
+ *
+ * Validated rather than trusted: this arrives over the wire and is used to
+ * decide whether today is a fast, which is the one decision the planner must
+ * not get wrong. Anything not shaped like `observanceId@YYYY-MM-DD` mapping to
+ * a confirmation is dropped, and the date the answer moves an observance TO
+ * has to be a date.
+ */
+function readOverrides(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {}
+  const out = {}
+  for (const [key, value] of Object.entries(raw).slice(0, 200)) {
+    if (!/^[a-z0-9_]+@\d{4}-\d{2}-\d{2}$/.test(key)) continue
+    if (!value || typeof value !== 'object') continue
+    const entry = { confirmed: value.confirmed === true }
+    if (typeof value.movedTo === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value.movedTo)) {
+      entry.movedTo = value.movedTo
+    }
+    out[key] = entry
+  }
+  return out
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -71,7 +95,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: `Invalid date: ${body.date}` })
   }
 
-  const activeFastIds = activeFastIdsOn(date)
+  const activeFastIds = activeFastIdsOn(date, readOverrides(body.observanceOverrides))
   const { mains, constraints } = filterRecipes(RECIPES, [...diners, ...guests], activeFastIds)
 
   // Reported rather than refused here: this endpoint only tells the picker

@@ -9,7 +9,6 @@
       "frequency": "Twice per month (24/year)",
       "durationPerOccurrence": "1 day each",
       "calendarSystem": "Hindu Lunar (Tithi)",
-      "approxDates2026": "Every 11th tithi of each fortnight; next: Sep 7 (Aja Ekadashi)",
       "fastStrictnessLevel": "Strict",
       "popularity": "H",
       "whoTypicallyObserves": "All Vaishnavites; many general Hindus",
@@ -24,7 +23,6 @@
       "frequency": "Twice per year",
       "durationPerOccurrence": "9 days each",
       "calendarSystem": "Hindu Lunar",
-      "approxDates2026": "Chaitra: Mar 19-27; Sharad: Oct 2-10, 2026",
       "fastStrictnessLevel": "Moderate to Strict",
       "popularity": "H",
       "whoTypicallyObserves": "Women primarily; all devotees of Devi",
@@ -39,7 +37,6 @@
       "frequency": "Weekly (every Monday)",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Gregorian weekly",
-      "approxDates2026": "Every Monday; especially sacred during Shravan (Jul 30 – Aug 28)",
       "fastStrictnessLevel": "Moderate",
       "popularity": "H",
       "whoTypicallyObserves": "Shiva devotees; unmarried girls; married women",
@@ -54,7 +51,6 @@
       "frequency": "Weekly (every Tuesday)",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Gregorian weekly",
-      "approxDates2026": "Every Tuesday",
       "fastStrictnessLevel": "Moderate",
       "popularity": "M",
       "whoTypicallyObserves": "Hanuman devotees; those with Mangal dosha",
@@ -69,7 +65,6 @@
       "frequency": "Weekly (every Thursday)",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Gregorian weekly",
-      "approxDates2026": "Every Thursday",
       "fastStrictnessLevel": "Moderate",
       "popularity": "M",
       "whoTypicallyObserves": "Those seeking wisdom/prosperity; Sai Baba devotees",
@@ -84,7 +79,6 @@
       "frequency": "Weekly (every Friday)",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Gregorian weekly",
-      "approxDates2026": "Every Friday",
       "fastStrictnessLevel": "Moderate",
       "popularity": "M",
       "whoTypicallyObserves": "Women seeking wealth and harmony; Santoshi Maa devotees",
@@ -99,7 +93,6 @@
       "frequency": "Weekly (every Saturday)",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Gregorian weekly",
-      "approxDates2026": "Every Saturday",
       "fastStrictnessLevel": "Moderate",
       "popularity": "M",
       "whoTypicallyObserves": "Those with Shani dosha; general devotees",
@@ -114,7 +107,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1 day (sunrise to moonrise)",
       "calendarSystem": "Hindu Lunar (Kartik Krishna Chaturthi)",
-      "approxDates2026": "Oct 25, 2026",
       "fastStrictnessLevel": "Very Strict (nirjala — no water)",
       "popularity": "H",
       "whoTypicallyObserves": "Married Hindu women (North India primarily)",
@@ -129,7 +121,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "3 days (36-hour nirjala fast)",
       "calendarSystem": "Hindu Lunar (Kartik Shukla Shashthi)",
-      "approxDates2026": "Oct 28-31, 2026",
       "fastStrictnessLevel": "Extremely Strict",
       "popularity": "H",
       "whoTypicallyObserves": "Primarily Bihar, Jharkhand, UP, Delhi",
@@ -144,7 +135,6 @@
       "frequency": "Twice per month",
       "durationPerOccurrence": "1 day (twilight fasting)",
       "calendarSystem": "Hindu Lunar (Trayodashi — 13th tithi)",
-      "approxDates2026": "24 per year; varies monthly",
       "fastStrictnessLevel": "Moderate",
       "popularity": "M",
       "whoTypicallyObserves": "Shiva devotees",
@@ -159,7 +149,6 @@
       "frequency": "Once per month",
       "durationPerOccurrence": "1 day (sunrise to moonrise)",
       "calendarSystem": "Hindu Lunar (Krishna Chaturthi)",
-      "approxDates2026": "12 per year; varies monthly",
       "fastStrictnessLevel": "Moderate",
       "popularity": "M",
       "whoTypicallyObserves": "Ganesha devotees (especially Maharashtra)",
@@ -174,7 +163,6 @@
       "frequency": "Monthly (Purnima) or occasional",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Hindu Lunar (Purnima)",
-      "approxDates2026": "Every Purnima (full moon day)",
       "fastStrictnessLevel": "Light",
       "popularity": "M",
       "whoTypicallyObserves": "General Hindu households",
@@ -189,7 +177,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1 day + night vigil",
       "calendarSystem": "Hindu Lunar (Magha/Phalguna Krishna Trayodashi)",
-      "approxDates2026": "Feb 17, 2026",
       "fastStrictnessLevel": "Strict",
       "popularity": "H",
       "whoTypicallyObserves": "All Shiva devotees across India",
@@ -204,7 +191,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1 day (until midnight)",
       "calendarSystem": "Hindu Lunar (Bhadrapada Krishna Ashtami)",
-      "approxDates2026": "Aug 14, 2026",
       "fastStrictnessLevel": "Strict",
       "popularity": "H",
       "whoTypicallyObserves": "All Krishna devotees; ISKCON followers",
@@ -219,7 +205,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Hindu Lunar (Chaitra Shukla Navami)",
-      "approxDates2026": "Mar 27, 2026",
       "fastStrictnessLevel": "Moderate",
       "popularity": "H",
       "whoTypicallyObserves": "Rama devotees across India",
@@ -234,7 +219,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1-11 days",
       "calendarSystem": "Hindu Lunar (Bhadrapada Shukla Chaturthi)",
-      "approxDates2026": "Aug 27-Sep 6, 2026",
       "fastStrictnessLevel": "Light to Moderate",
       "popularity": "H",
       "whoTypicallyObserves": "All Hindus; especially Maharashtra, AP, Karnataka",
@@ -249,7 +233,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Hindu Lunar (Kartik Krishna Ashtami)",
-      "approxDates2026": "Oct 21, 2026",
       "fastStrictnessLevel": "Moderate",
       "popularity": "M",
       "whoTypicallyObserves": "Mothers (especially North India)",
@@ -264,7 +247,6 @@
       "frequency": "Once or twice per year",
       "durationPerOccurrence": "1 day each",
       "calendarSystem": "Hindu Lunar",
-      "approxDates2026": "Hariyali Teej: Aug 11; Hartalika Teej: Aug 26, 2026",
       "fastStrictnessLevel": "Strict (nirjala for Hartalika)",
       "popularity": "H",
       "whoTypicallyObserves": "Married and unmarried women (North India)",
@@ -279,7 +261,6 @@
       "frequency": "4 Mondays during Shravan month",
       "durationPerOccurrence": "1 day each",
       "calendarSystem": "Hindu Lunar (Shravan month)",
-      "approxDates2026": "Aug 3, 10, 17, 24, 2026",
       "fastStrictnessLevel": "Strict",
       "popularity": "H",
       "whoTypicallyObserves": "Shiva devotees; unmarried girls; married women",
@@ -294,7 +275,6 @@
       "frequency": "Monthly",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Hindu Lunar (Full Moon)",
-      "approxDates2026": "Every full moon day (12 per year)",
       "fastStrictnessLevel": "Light",
       "popularity": "M",
       "whoTypicallyObserves": "General Hindu devotees",
@@ -309,7 +289,6 @@
       "frequency": "Monthly",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Hindu Lunar (New Moon)",
-      "approxDates2026": "Every new moon day (12 per year)",
       "fastStrictnessLevel": "Light",
       "popularity": "L",
       "whoTypicallyObserves": "Those performing ancestral rites",
@@ -324,7 +303,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "8 days (Shvetambar) / 10 days (Digambar)",
       "calendarSystem": "Jain Lunar (Bhadrapada)",
-      "approxDates2026": "Sep 9-16, 2026 (Shvetambar)",
       "fastStrictnessLevel": "Very Strict",
       "popularity": "H",
       "whoTypicallyObserves": "All Jains — the most important Jain festival",
@@ -339,7 +317,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "10 days",
       "calendarSystem": "Jain Lunar (Bhadrapada Shukla)",
-      "approxDates2026": "Sep 13-22, 2026 (Digambar)",
       "fastStrictnessLevel": "Strict",
       "popularity": "H",
       "whoTypicallyObserves": "Digambar Jains",
@@ -354,7 +331,6 @@
       "frequency": "Twice per year",
       "durationPerOccurrence": "9 days each",
       "calendarSystem": "Jain Lunar (Chaitra + Ashwin)",
-      "approxDates2026": "Chaitra: Apr 2-10; Ashwin: Sep 28-Oct 6, 2026 (approx)",
       "fastStrictnessLevel": "Strict",
       "popularity": "H",
       "whoTypicallyObserves": "Shvetambar Jains primarily",
@@ -369,7 +345,6 @@
       "frequency": "Any day (personal choice)",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Any day",
-      "approxDates2026": "Any day chosen by the practitioner",
       "fastStrictnessLevel": "Moderate",
       "popularity": "M",
       "whoTypicallyObserves": "Jain laity and monastics",
@@ -384,7 +359,6 @@
       "frequency": "Any day (personal choice; common during festivals)",
       "durationPerOccurrence": "1 day (no food for 24 hours)",
       "calendarSystem": "Any day",
-      "approxDates2026": "Often on Ashtami, Chaturdashi, Purnima",
       "fastStrictnessLevel": "Very Strict",
       "popularity": "M",
       "whoTypicallyObserves": "Jain laity and monastics",
@@ -399,7 +373,6 @@
       "frequency": "During Paryushana or any time",
       "durationPerOccurrence": "8 continuous days",
       "calendarSystem": "During festivals or personal penance",
-      "approxDates2026": "During Paryushana (Sep 9-16, 2026)",
       "fastStrictnessLevel": "Extremely Strict",
       "popularity": "L",
       "whoTypicallyObserves": "Devout Jains; monastics",
@@ -414,7 +387,6 @@
       "frequency": "Year-long practice",
       "durationPerOccurrence": "Alternate-day fasting for 13+ months",
       "calendarSystem": "Continuous",
-      "approxDates2026": "Parana (fast-breaking) on Akshaya Tritiya",
       "fastStrictnessLevel": "Extremely Strict",
       "popularity": "L",
       "whoTypicallyObserves": "Highly devout Jains",
@@ -429,7 +401,6 @@
       "frequency": "Every day — permanent",
       "durationPerOccurrence": "Permanent lifestyle",
       "calendarSystem": "N/A — always active",
-      "approxDates2026": "Always",
       "fastStrictnessLevel": "Baseline (always active)",
       "popularity": "H",
       "whoTypicallyObserves": "All practising Jains",
@@ -444,7 +415,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Jain Lunar (Chaitra Shukla Trayodashi)",
-      "approxDates2026": "Apr 12, 2026",
       "fastStrictnessLevel": "Moderate",
       "popularity": "H",
       "whoTypicallyObserves": "All Jains",
@@ -459,7 +429,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "29-30 days",
       "calendarSystem": "Islamic Lunar (Hijri — 9th month)",
-      "approxDates2026": "Feb 18 – Mar 19, 2026 (approx; depends on moon sighting)",
       "fastStrictnessLevel": "Very Strict",
       "popularity": "H",
       "whoTypicallyObserves": "All healthy adult Muslims (mandatory)",
@@ -474,7 +443,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1-2 days (9th + 10th Muharram)",
       "calendarSystem": "Islamic Lunar (Muharram 10)",
-      "approxDates2026": "Jul 5-6, 2026 (approx)",
       "fastStrictnessLevel": "Sunnah (recommended, not mandatory)",
       "popularity": "M",
       "whoTypicallyObserves": "Sunni Muslims primarily",
@@ -489,7 +457,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "6 days (any time in Shawwal month)",
       "calendarSystem": "Islamic Lunar (Shawwal — month after Ramadan)",
-      "approxDates2026": "Mar 20 – Apr 18, 2026 (any 6 days)",
       "fastStrictnessLevel": "Sunnah (recommended)",
       "popularity": "M",
       "whoTypicallyObserves": "Devout Muslims",
@@ -504,7 +471,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1 day (9th Dhul Hijjah)",
       "calendarSystem": "Islamic Lunar",
-      "approxDates2026": "Jun 5, 2026 (approx)",
       "fastStrictnessLevel": "Sunnah (highly recommended)",
       "popularity": "M",
       "whoTypicallyObserves": "Non-pilgrims (those NOT performing Hajj)",
@@ -519,7 +485,6 @@
       "frequency": "Weekly (optional)",
       "durationPerOccurrence": "1-2 days per week",
       "calendarSystem": "Gregorian weekly",
-      "approxDates2026": "Any Monday and/or Thursday",
       "fastStrictnessLevel": "Sunnah (optional)",
       "popularity": "M",
       "whoTypicallyObserves": "Devout Muslims following Sunnah",
@@ -534,7 +499,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "Multiple days in Sha'ban month",
       "calendarSystem": "Islamic Lunar (Sha'ban — 8th month)",
-      "approxDates2026": "Jan-Feb 2026 (approx)",
       "fastStrictnessLevel": "Sunnah (optional)",
       "popularity": "L",
       "whoTypicallyObserves": "Devout Muslims",
@@ -549,7 +513,6 @@
       "frequency": "Monthly",
       "durationPerOccurrence": "3 days (13th, 14th, 15th of each Islamic month)",
       "calendarSystem": "Islamic Lunar",
-      "approxDates2026": "3 days around each full moon in the Islamic calendar",
       "fastStrictnessLevel": "Sunnah (optional)",
       "popularity": "L",
       "whoTypicallyObserves": "Devout Muslims",
@@ -564,7 +527,6 @@
       "frequency": "Permanent / Festival days",
       "durationPerOccurrence": "N/A — not a formal fast tradition",
       "calendarSystem": "Nanakshahi Calendar",
-      "approxDates2026": "N/A — Sikhism generally discourages ritualistic fasting",
       "fastStrictnessLevel": "N/A",
       "popularity": "Context-dependent",
       "whoTypicallyObserves": "Some individual Sikhs",
@@ -579,7 +541,6 @@
       "frequency": "4-5 major ones per year",
       "durationPerOccurrence": "1-3 days each",
       "calendarSystem": "Nanakshahi Calendar",
-      "approxDates2026": "Guru Nanak Gurpurab: Nov 5, 2026; Guru Gobind Singh: Jan 5, 2026; Vaisakhi: Apr 14, 2026",
       "fastStrictnessLevel": "Langar (communal meal) not fasting",
       "popularity": "H",
       "whoTypicallyObserves": "All Sikhs",
@@ -594,7 +555,6 @@
       "frequency": "Four times per month (lunar)",
       "durationPerOccurrence": "1 day each",
       "calendarSystem": "Buddhist Lunar Calendar",
-      "approxDates2026": "1st, 8th, 15th, 23rd of each lunar month",
       "fastStrictnessLevel": "Moderate (no solid food after noon)",
       "popularity": "L",
       "whoTypicallyObserves": "Buddhist monastics and devout laity",
@@ -609,7 +569,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1 day",
       "calendarSystem": "Hindu/Buddhist Lunar (Vaishakha Purnima)",
-      "approxDates2026": "May 12, 2026",
       "fastStrictnessLevel": "Light (vegetarian + no food after noon)",
       "popularity": "M",
       "whoTypicallyObserves": "All Buddhists; many general Indians",
@@ -624,7 +583,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "1-4 days",
       "calendarSystem": "Solar Calendar",
-      "approxDates2026": "Jan 14-15, 2026",
       "fastStrictnessLevel": "Light (pre-festival fast in some traditions)",
       "popularity": "H",
       "whoTypicallyObserves": "Pan-India (regional variations)",
@@ -639,7 +597,6 @@
       "frequency": "Once per year",
       "durationPerOccurrence": "10 days",
       "calendarSystem": "Malayalam Calendar (Chingam)",
-      "approxDates2026": "Aug 24 – Sep 2, 2026",
       "fastStrictnessLevel": "Feast not fast (Onam Sadhya)",
       "popularity": "H",
       "whoTypicallyObserves": "All Keralites (cross-religion)",
@@ -1108,233 +1065,183 @@
       "flavorTextureNotes": "Jaggery is universally accepted across Jain traditions. Provides similar sweetness with mineral richness."
     }
   ],
-  "calendar2026": [
+  "curatedDates": [
     {
-      "date": "Jan 5",
-      "day": "Monday",
-      "fastingTraditionsActive": "Guru Gobind Singh Gurpurab",
+      "observanceId": "guru_gobind_singh_gurpurab",
+      "name": "Guru Gobind Singh Gurpurab",
       "religion": "Sikh",
+      "dates": [
+        {
+          "date": "2026-01-05"
+        }
+      ],
       "affectedFamilyMembers": "Sikh family members",
       "dietaryImpactSummary": "Langar-style simple vegetarian meal",
-      "appAction": "Suggest simple dal-roti-sabzi langar menu"
+      "appAction": "Suggest simple dal-roti-sabzi langar menu",
+      "confidence": "curated",
+      "note": "Poh Sudi Saptami in the Bikrami reckoning, which the engine does not model. No 2027 date is entered because none was verified; the app shows nothing rather than a guess.",
+      "source": "Nanakshahi calendar"
     },
     {
-      "date": "Jan 14",
-      "day": "Wednesday",
-      "fastingTraditionsActive": "Makar Sankranti / Pongal",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "All family",
+      "observanceId": "vaisakhi",
+      "name": "Vaisakhi / Baisakhi",
+      "religion": "Sikh",
+      "dates": [
+        {
+          "date": "2026-04-14"
+        },
+        {
+          "date": "2027-04-14"
+        }
+      ],
+      "affectedFamilyMembers": "Sikh and Punjabi family members",
+      "dietaryImpactSummary": "Festive meal — makki di roti, sarson da saag, lassi",
+      "appAction": "Suggest Punjabi festive menu",
+      "confidence": "curated",
+      "note": "Fixed at 1 Vaisakh in the Nanakshahi calendar, so it does not move with the moon.",
+      "source": "Nanakshahi calendar"
+    },
+    {
+      "observanceId": "guru_nanak_gurpurab",
+      "name": "Guru Nanak Gurpurab",
+      "religion": "Sikh",
+      "dates": [
+        {
+          "date": "2026-11-24"
+        },
+        {
+          "date": "2027-11-14"
+        }
+      ],
+      "affectedFamilyMembers": "Sikh family members",
+      "dietaryImpactSummary": "Langar-style communal meal",
+      "appAction": "Suggest langar menu",
+      "confidence": "curated",
+      "note": "Kept on Kartika Purnima. These dates were taken from the engine’s Kartika Purnima and are corrections: the row this replaces gave 5 November 2026, nineteen days early.",
+      "source": "Kartika Purnima, cross-checked against panchanga/"
+    },
+    {
+      "observanceId": "paryushana_parva",
+      "name": "Paryushana Parva (Shvetambar)",
+      "religion": "Jain",
+      "dates": [
+        {
+          "date": "2026-09-09",
+          "until": "2026-09-16"
+        }
+      ],
+      "affectedFamilyMembers": "Shvetambar Jain family members",
+      "dietaryImpactSummary": "8 days of intensive fasting/restricted diet",
+      "appAction": "Enable Paryushana mode — ask fasting level (Ayambil/Ekasana/Upvas)",
+      "confidence": "curated",
+      "note": "Set by the Shvetambar order, not by a tithi rule the engine holds. Worth re-checking for 2026: an Adhik Maas moved every lunar date that year, and this row predates that correction. No 2027 date is entered.",
+      "source": "Shvetambar Jain calendar"
+    },
+    {
+      "observanceId": "das_lakshana_parva",
+      "name": "Das Lakshana Parva (Digambar)",
+      "religion": "Jain",
+      "dates": [
+        {
+          "date": "2026-09-13",
+          "until": "2026-09-22"
+        }
+      ],
+      "affectedFamilyMembers": "Digambar Jain family members",
+      "dietaryImpactSummary": "10 days of restricted diet; boiled water, no root vegetables, single meal",
+      "appAction": "Enable Das Lakshana mode — Jain-safe single-meal plans",
+      "confidence": "curated",
+      "note": "Set by the Digambar order. Same caveat as Paryushana above.",
+      "source": "Digambar Jain calendar"
+    },
+    {
+      "observanceId": "navpad_oli",
+      "name": "Navpad Oli (Ayambil Oli)",
+      "religion": "Jain",
+      "dates": [
+        {
+          "date": "2026-04-02",
+          "until": "2026-04-10"
+        },
+        {
+          "date": "2026-09-28",
+          "until": "2026-10-06"
+        }
+      ],
+      "affectedFamilyMembers": "Shvetambar Jain members",
+      "dietaryImpactSummary": "9 days of Ayambil — one bland meal/day",
+      "appAction": "Auto-enable Ayambil menu for 9 days",
+      "confidence": "curated",
+      "note": "Twice yearly, dates set by the order. Same caveat as Paryushana above.",
+      "source": "Shvetambar Jain calendar"
+    }
+  ],
+  "observanceGuidance": {
+    "makar_sankranti": {
       "dietaryImpactSummary": "Til-gur laddoo, khichdi, Pongal",
       "appAction": "Suggest festive harvest recipes"
     },
-    {
-      "date": "Feb 17",
-      "day": "Tuesday",
-      "fastingTraditionsActive": "Maha Shivaratri",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Shiva devotees",
+    "maha_shivaratri": {
       "dietaryImpactSummary": "Strict fast — fruits, milk, bhaang thandai",
       "appAction": "Auto-switch to fruit + milk menu for observers"
     },
-    {
-      "date": "Feb 18",
-      "day": "Wednesday",
-      "fastingTraditionsActive": "Ramadan Begins (approx)",
-      "religion": "Islam",
-      "affectedFamilyMembers": "Muslim family members",
-      "dietaryImpactSummary": "Suhoor + Iftar planning for 30 days",
-      "appAction": "Enable Ramadan mode: auto-plan Suhoor (pre-dawn) and Iftar (sunset) meals"
-    },
-    {
-      "date": "Mar 19",
-      "day": "Thursday",
-      "fastingTraditionsActive": "Chaitra Navratri Begins + Eid ul-Fitr (approx)",
-      "religion": "Hindu + Islam",
-      "affectedFamilyMembers": "Hindu women (Navratri) + Muslims (Eid)",
-      "dietaryImpactSummary": "Dual planning: Navratri fasting + Eid feast",
-      "appAction": "Complex day — different plans for different members"
-    },
-    {
-      "date": "Mar 27",
-      "day": "Friday",
-      "fastingTraditionsActive": "Ram Navami + Chaitra Navratri Day 9",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Rama devotees + Navratri observers",
-      "dietaryImpactSummary": "Final day of Navratri fast; Navami puja",
-      "appAction": "Plan Navratri-compliant festive meal + Navami havan food"
-    },
-    {
-      "date": "Apr 12",
-      "day": "Sunday",
-      "fastingTraditionsActive": "Mahavir Jayanti",
-      "religion": "Jain",
-      "affectedFamilyMembers": "Jain family members",
-      "dietaryImpactSummary": "Simple vegetarian Jain meal; charity",
-      "appAction": "Suggest Jain-safe festive menu"
-    },
-    {
-      "date": "Apr 14",
-      "day": "Tuesday",
-      "fastingTraditionsActive": "Vaisakhi / Baisakhi",
-      "religion": "Sikh + Hindu (Punjab)",
-      "affectedFamilyMembers": "Sikh and Punjabi family members",
-      "dietaryImpactSummary": "Festive meal — makki di roti, sarson da saag, lassi",
-      "appAction": "Suggest Punjabi festive menu"
-    },
-    {
-      "date": "May 12",
-      "day": "Tuesday",
-      "fastingTraditionsActive": "Buddha Purnima / Vesak",
-      "religion": "Buddhist",
-      "affectedFamilyMembers": "Buddhist family members",
-      "dietaryImpactSummary": "Vegetarian only; no food after noon for observers",
-      "appAction": "Plan substantial vegetarian brunch"
-    },
-    {
-      "date": "Jun 5",
-      "day": "Friday",
-      "fastingTraditionsActive": "Day of Arafah (approx)",
-      "religion": "Islam",
-      "affectedFamilyMembers": "Non-pilgrim Muslims",
-      "dietaryImpactSummary": "Dawn-to-sunset fast",
-      "appAction": "Plan Suhoor + Iftar"
-    },
-    {
-      "date": "Jun 6",
-      "day": "Saturday",
-      "fastingTraditionsActive": "Eid ul-Adha / Bakrid (approx)",
-      "religion": "Islam",
-      "affectedFamilyMembers": "Muslim family members",
-      "dietaryImpactSummary": "Feast day — biryani, kebabs, sewaiyan",
-      "appAction": "Suggest festive non-veg menu (halal)"
-    },
-    {
-      "date": "Jul 5",
-      "day": "Sunday",
-      "fastingTraditionsActive": "Ashura (approx)",
-      "religion": "Islam",
-      "affectedFamilyMembers": "Muslim family members",
-      "dietaryImpactSummary": "1-2 day Sunnah fast",
-      "appAction": "Plan Suhoor + Iftar for 1-2 days"
-    },
-    {
-      "date": "Aug 3-24",
-      "day": "Mondays",
-      "fastingTraditionsActive": "Sawan Somvar Vrat (4 Mondays)",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Shiva devotees; women",
-      "dietaryImpactSummary": "Strict Monday fast during Shravan",
-      "appAction": "Auto-enable Shravan fast mode on Mondays in Aug"
-    },
-    {
-      "date": "Aug 14",
-      "day": "Friday",
-      "fastingTraditionsActive": "Janmashtami",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Krishna devotees",
-      "dietaryImpactSummary": "Fast until midnight; no grains",
-      "appAction": "Plan fruit/milk menu until midnight, then feast"
-    },
-    {
-      "date": "Aug 27",
-      "day": "Thursday",
-      "fastingTraditionsActive": "Ganesh Chaturthi Begins",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "All Hindus (esp. Maharashtra)",
-      "dietaryImpactSummary": "Modak, puri, ukadiche modak",
-      "appAction": "Suggest festive Ganesh menu with modak"
-    },
-    {
-      "date": "Sep 7",
-      "day": "Monday",
-      "fastingTraditionsActive": "Aja Ekadashi",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Vaishnavites + general Hindus",
-      "dietaryImpactSummary": "No grains, no pulses, sendha namak only",
-      "appAction": "Auto-switch to Ekadashi menu"
-    },
-    {
-      "date": "Sep 9",
-      "day": "Wednesday",
-      "fastingTraditionsActive": "Paryushana Begins (Shvetambar)",
-      "religion": "Jain",
-      "affectedFamilyMembers": "All Jain family members",
-      "dietaryImpactSummary": "8 days of intensive fasting/restricted diet",
-      "appAction": "Enable Paryushana mode — ask fasting level (Ayambil/Ekasana/Upvas)"
-    },
-    {
-      "date": "Sep 28",
-      "day": "Monday",
-      "fastingTraditionsActive": "Navpad Oli Begins (approx)",
-      "religion": "Jain",
-      "affectedFamilyMembers": "Shvetambar Jain members",
-      "dietaryImpactSummary": "9 days of Ayambil — one bland meal/day",
-      "appAction": "Auto-enable Ayambil menu for 9 days"
-    },
-    {
-      "date": "Oct 2",
-      "day": "Friday",
-      "fastingTraditionsActive": "Sharad Navratri Begins",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Hindu women; Devi devotees",
+    "navratri_chaitra": {
       "dietaryImpactSummary": "9 days Navratri fasting diet",
       "appAction": "Switch to Navratri menu (kuttu, singhara, sabudana)"
     },
-    {
-      "date": "Oct 10",
-      "day": "Saturday",
-      "fastingTraditionsActive": "Dussehra / Vijayadashami",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "All Hindus",
+    "ram_navami": {
+      "dietaryImpactSummary": "Final day of Navratri fast; Navami puja",
+      "appAction": "Plan Navratri-compliant festive meal + Navami havan food"
+    },
+    "mahavir_jayanti": {
+      "dietaryImpactSummary": "Simple vegetarian Jain meal; charity",
+      "appAction": "Suggest Jain-safe festive menu"
+    },
+    "buddha_purnima": {
+      "dietaryImpactSummary": "Vegetarian only; no food after noon for observers",
+      "appAction": "Plan substantial vegetarian brunch"
+    },
+    "sawan_somvar": {
+      "dietaryImpactSummary": "Strict Monday fast during Shravan",
+      "appAction": "Auto-enable Shravan fast mode on Mondays in Aug"
+    },
+    "janmashtami": {
+      "dietaryImpactSummary": "Fast until midnight; no grains",
+      "appAction": "Plan fruit/milk menu until midnight, then feast"
+    },
+    "ganesh_chaturthi": {
+      "dietaryImpactSummary": "Modak, puri, ukadiche modak",
+      "appAction": "Suggest festive Ganesh menu with modak"
+    },
+    "ekadashi_vrat": {
+      "dietaryImpactSummary": "No grains, no pulses, sendha namak only",
+      "appAction": "Auto-switch to Ekadashi menu"
+    },
+    "navratri_sharad": {
+      "dietaryImpactSummary": "9 days Navratri fasting diet",
+      "appAction": "Switch to Navratri menu (kuttu, singhara, sabudana)"
+    },
+    "dussehra": {
       "dietaryImpactSummary": "Feast day post-Navratri",
       "appAction": "Plan celebratory feast — end of 9-day fast"
     },
-    {
-      "date": "Oct 21",
-      "day": "Wednesday",
-      "fastingTraditionsActive": "Ahoi Ashtami",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Mothers (North India)",
+    "ahoi_ashtami": {
       "dietaryImpactSummary": "Fast until star-sighting at night",
       "appAction": "Plan pre-dawn meal + post-star meal"
     },
-    {
-      "date": "Oct 25",
-      "day": "Sunday",
-      "fastingTraditionsActive": "Karwa Chauth",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Married women (North India)",
+    "karwa_chauth": {
       "dietaryImpactSummary": "Nirjala fast (no water) sunrise to moonrise",
       "appAction": "Plan Sargi (pre-dawn) + elaborate post-moonrise dinner"
     },
-    {
-      "date": "Oct 29",
-      "day": "Thursday",
-      "fastingTraditionsActive": "Diwali",
-      "religion": "Hindu + Jain",
-      "affectedFamilyMembers": "All family",
+    "diwali": {
       "dietaryImpactSummary": "Feast + sweets — NOT a fasting day",
       "appAction": "Suggest Diwali special menu: sweets, namkeen, festive dinner"
     },
-    {
-      "date": "Nov 5",
-      "day": "Thursday",
-      "fastingTraditionsActive": "Guru Nanak Gurpurab",
-      "religion": "Sikh",
-      "affectedFamilyMembers": "Sikh family members",
-      "dietaryImpactSummary": "Langar-style communal meal",
-      "appAction": "Suggest langar menu"
-    },
-    {
-      "date": "Dec 22",
-      "day": "Tuesday",
-      "fastingTraditionsActive": "Mokshada Ekadashi",
-      "religion": "Hindu",
-      "affectedFamilyMembers": "Vaishnavites",
-      "dietaryImpactSummary": "Standard Ekadashi fasting rules",
-      "appAction": "Apply Ekadashi food rules"
+    "chhath_puja": {
+      "dietaryImpactSummary": "36-hour nirjala fast around the Shashti evening arghya; thekua, kheer and seasonal fruit as prasad",
+      "appAction": "Plan the Kharna meal the evening before and the prasad after the morning arghya"
     }
-  ],
+  },
   "appLogicRules": [
     {
       "ruleId": "R01",

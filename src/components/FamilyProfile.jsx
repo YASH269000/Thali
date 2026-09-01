@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { activeFastIdsOn } from '../lib/fastingRules.js'
+import { loadOverrides } from '../lib/observanceOverrides.js'
 import { loadFamily, saveFamily } from '../lib/family.js'
 import { familyIdWarnings } from '../lib/memberValidation.js'
 import { avatarTone, initials } from '../lib/avatar.js'
@@ -68,9 +69,10 @@ export default function FamilyProfile() {
   }, [family])
 
   const today = useMemo(() => new Date(), [])
+  const overrides = useMemo(() => loadOverrides(), [])
 
   const stats = useMemo(() => {
-    const activeIds = activeFastIdsOn(today)
+    const activeIds = activeFastIdsOn(today, overrides)
 
     const observed = new Set()
     for (const m of family) for (const id of m.fasts || []) observed.add(id)
@@ -91,7 +93,7 @@ export default function FamilyProfile() {
       activeLabels: activeToday.map((id) => FAST_LABEL[id] || id),
       constraints: constraints.size,
     }
-  }, [family, today])
+  }, [family, today, overrides])
 
   const openAdd = () => {
     setEditing(null)
